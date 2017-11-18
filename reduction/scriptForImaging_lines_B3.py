@@ -21,31 +21,34 @@ for ms in mslist:
 for spw,spws in enumerate([(0,4), (1,5), (2,6), (3,7)]):
 
     for suffix, niter in (('clarkclean1000', 1000), ):
-        
+
         step = 1920/32
         for startchan in np.arange(0, 1920, step):
 
             imagename = 'OrionSourceI.B3.spw{0}.lines{2}-{3}.{1}'.format(spw, suffix, startchan, startchan+step)
-            print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
-            tclean(vis=mslist,
-                   imagename=imagename,
-                   datacolumn='data',
-                   spw=['{0}'.format(ss) for ss in spws],
-                   field='Orion_BNKL_source_I',
-                   specmode='cube',
-                   outframe='LSRK',
-                   start=startchan,
-                   nchan=step,
-                   threshold='1mJy',
-                   imsize=[6000, 6000],
-                   cell=['0.007arcsec'],
-                   niter=niter,
-                   deconvolver='clark',
-                   gridder='standard',
-                   weighting='briggs',
-                   robust=0.5,
-                   pbcor=True,
-                   pblimit=0.2,
-                   savemodel='none',
-                   interactive=False)
-            makefits(imagename)
+            if not os.path.exists("{0}.image.pbcor.fits".format(imagename)):
+                print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
+                tclean(vis=mslist,
+                       imagename=imagename,
+                       datacolumn='data',
+                       spw=",".join(['{0}'.format(ss) for ss in spws]),
+                       field='Orion_BNKL_source_I',
+                       specmode='cube',
+                       outframe='LSRK',
+                       threshold='1mJy',
+                       imsize=[4800, 4800],
+                       cell=['0.016arcsec'],
+                       niter=niter,
+                       deconvolver='clark',
+                       gridder='standard',
+                       weighting='briggs',
+                       robust=0.5,
+                       pbcor=True,
+                       pblimit=0.2,
+                       savemodel='none',
+                       chanchunks=1,
+                       start=startchan,
+                       nchan=step,
+                       parallel=True,
+                       interactive=False)
+                makefits(imagename)

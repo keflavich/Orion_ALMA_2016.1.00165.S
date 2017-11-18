@@ -73,7 +73,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
 
     big_filename = '{1}_{0}{2}_lines.fits'.format(spw, fntemplate, fnsuffix)
 
-    header_fn = glob.glob('OrionSourceI.{0}.lines0-{4}.clarkclean1000.{3}'
+    header_fn = glob.glob('OrionSourceI.B3.{0}.lines0-{4}.clarkclean1000.{3}'
                           .format(spw, fntemplate, fnsuffix, filesuffix,
                                   first_endchannel))
     if len(header_fn) != 1:
@@ -167,7 +167,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
 
     # Find the appropriate files (this is NOT a good way to do this!  Better to
     # provide a list.  But wildcards are quick & easy...
-    fileglob = "OrionSourceI.{0}.lines*{3}".format(spw, fntemplate, fnsuffix,
+    fileglob = "OrionSourceI.B3.{0}.lines*{3}".format(spw, fntemplate, fnsuffix,
                                                   filesuffix)
     files = glob.glob(fileglob)
     log.info("Files to be merged with glob {0}: ".format(fileglob))
@@ -348,14 +348,14 @@ if __name__ == "__main__":
     robust = 0
     for spw in (0,):#1,2,3):
 
-        mxind = get_max_ind('OrionSourceI.N.spw{0}.lines*fits'.format(spw, robust))
+        mxind = get_max_ind('OrionSourceI.B3.spw{0}.lines*fits'.format(spw, robust))
         if mxind < min_nchans:
             log.critical("Skipping {0}:{1} b/c only {2} chans".format(robust, spw, mxind))
             continue
         nchans_total[spw] = mxind
         log.info("nchans_total[{0},{1}] = {2}".format(spw, robust, mxind))
 
-        if os.path.exists('OrionSourceI.N.spw{0}.lines0-60.clarkclean1000.image.pbcor.fits'.format(spw, robust)):
+        if os.path.exists('OrionSourceI.B3.spw{0}.lines0-60.clarkclean1000.image.pbcor.fits'.format(spw, robust)):
 
             make_spw_cube(spw='spw{0}', spwnum=spw,
                           fntemplate='full_OrionSourceI',
