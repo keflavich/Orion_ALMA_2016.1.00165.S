@@ -1,0 +1,34 @@
+# This is a config file for submitting jobs to the cluster scheduler.
+# The COMMAND is expected to be a script or binary.
+# This config file happens to be for running casa.
+
+#
+# These are required
+#
+MEM="16gb"
+#VMEM="100gb"
+WORK_DIR='/lustre/aginsbur/orion/2016.1.00165.S/imaging'
+COMMAND=$WORK_DIR/'run_line_imaging.sh'
+
+#
+# These are optional
+#
+NUM_NODES="1"      # default is 1
+NUM_CORES="9"      # default is 1
+#MAILTO="nm-4386"   # default is the user submitting the job
+#QUEUE="batch"      # default is the batch queue
+DATE=`date +%Y%M%D_%H%M%S`
+STDOUT="run_casa_lines_log_stdout"    # file relative to WORK_DIR.  default is no output
+STDERR="run_casa_lines_log_stderr"    # file relative to WORK_DIR.  default is no output
+#UMASK="0117"       # default is 0077
+
+# MAIL_OPTIONS:
+#   n  no mail will be sent.
+#   a  mail is sent when the job is aborted by the batch system.
+#   b  mail is sent when the job begins execution.
+#   e  mail is sent when the job terminates.
+MAIL_OPTIONS="abe"   # default is "n" therefore no email
+
+# JOB_NAME: <= 15 non-whitespace characters.  First character alphabetic.
+JOB_NAME="orion_LB_lines"
+
