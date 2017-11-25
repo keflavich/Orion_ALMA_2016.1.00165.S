@@ -344,21 +344,19 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
         log.setLevel(lvl)
 
 if __name__ == "__main__":
-    #for robust in (0,2):
-    robust = 0
-    for spw in (0,):#1,2,3):
+    for spw in (0,1,2,3):
 
-        mxind = get_max_ind('OrionSourceI.B3.spw{0}.lines*fits'.format(spw, robust))
+        mxind = get_max_ind('OrionSourceI.B3.spw{0}.lines*fits'.format(spw, ))
         if mxind < min_nchans:
-            log.critical("Skipping {0}:{1} b/c only {2} chans".format(robust, spw, mxind))
+            log.critical("Skipping {0} b/c only {1} chans".format(spw, mxind))
             continue
         nchans_total[spw] = mxind
-        log.info("nchans_total[{0},{1}] = {2}".format(spw, robust, mxind))
+        log.info("nchans_total[{0}] = {1}".format(spw, mxind))
 
-        if os.path.exists('OrionSourceI.B3.spw{0}.lines0-60.clarkclean1000.image.pbcor.fits'.format(spw, robust)):
+        if os.path.exists('OrionSourceI.B3.spw{0}.lines0-60.clarkclean1000.image.pbcor.fits'.format(spw)):
 
             make_spw_cube(spw='spw{0}', spwnum=spw,
-                          fntemplate='full_OrionSourceI',
+                          fntemplate='full_OrionSourceI_B3',
                           overwrite_existing=False, bmaj_limits=None,
                           fnsuffix="", filesuffix='image.pbcor.fits',
                           first_endchannel=60,

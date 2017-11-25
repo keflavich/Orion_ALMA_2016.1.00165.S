@@ -4,12 +4,18 @@ import os
 import glob
 import datetime
 
-def makefits(myimagebase):
+def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
     exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.model', fitsimage=myimagebase+'.model.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.residual', fitsimage=myimagebase+'.residual.fits', dropdeg=True, overwrite=True) # export the PB image
+
+    if cleanup:
+        for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
+                       'mask', 'image'):
+            os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))
+
 
 
 

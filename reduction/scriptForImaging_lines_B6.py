@@ -17,7 +17,10 @@ mslist = ['uid___A001_X88e_X1d3_calibrated.ms',
           'uid___A002_Xb925ef_X4334_calibrated.ms']
 
 for ms in mslist:
-    listobs(ms, listfile=ms+'.listobs', overwrite=True)
+    print("Listing {0}".format(ms))
+    result = listobs(ms, listfile=ms+'.listobs', overwrite=True)
+    print("Done listing {0}".format(ms))
+    assert result,"Listing {0} failed".format(ms)
 
 for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
 
