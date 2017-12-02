@@ -37,6 +37,8 @@ def get_max_ind(globstr):
     # replace nchans_total with the correct version from the actual data on
     # disk
     files = glob.glob(globstr)
+    if len(files) == 0:
+        return -1
     maxind = max([max(getinds(fn)) for fn in files])
     return maxind
 
@@ -47,6 +49,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
                   cropends=False,
                   minimize=True,
                   debug_mode=False,
+                  check_last_plane=False,
                   add_beam_info=True):
     """
     Parameters
@@ -258,7 +261,8 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
 
 
         plane = hdul[0].data[ind0]
-        if np.all(plane == 0) or overwrite_existing:
+        lastplane = hdul[0].data[ind1-1]
+        if np.all(plane == 0) or overwrite_existing or (check_last_plane and np.all(lastplane==0)):
             log.info("Replacing indices {0}->{2} {1}"
                      .format(getinds(fn), fn, (ind0,ind1)))
 
@@ -360,5 +364,6 @@ if __name__ == "__main__":
                           overwrite_existing=False, bmaj_limits=None,
                           fnsuffix="", filesuffix='image.pbcor.fits',
                           first_endchannel=60,
+                          check_last_plane=True,
                           #debug_mode=True,
                           cropends=0, minimize=True, add_beam_info=True)
