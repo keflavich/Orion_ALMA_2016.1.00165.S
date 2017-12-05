@@ -45,7 +45,11 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
                    outframe='LSRK',
                    start=startchan,
                    nchan=step,
-                   threshold='1mJy',
+                   threshold='15mJy',
+                   cycleniter=-1, # -1 is default
+                   cyclethreshold=0.0001, # set very small: try to prevent major cycles
+                   # clean only Source I and BN
+                   mask='circle[[5h35m14.520s,-5d22m30.636s],0.222arcsec],circle[[5h35m14.108s,-5d22m22.669s],0.066arcsec]',
                    imsize=[7168, 7168],
                    cell=['0.004arcsec'],
                    niter=niter,

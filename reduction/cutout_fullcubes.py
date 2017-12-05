@@ -1,7 +1,21 @@
 import spectral_cube
 from astropy import units as u
 
+
 for spw in range(4):
+    print("Spw {0} for band {1}".format(spw, 6))
+    cube = spectral_cube.SpectralCube.read('full_OrionSourceI_B6_spw{0}_lines.fits'.format(spw))
+
+    sourceIsubcube = cube[:, 3582-625:3582+625, 3560-625:3560+625]
+
+    sourceIsubcube.write('full_OrionSourceI_B6_spw{0}_lines_cutout.fits'.format(spw), overwrite=True)
+
+    BNsubcube = cube[:, 5560-300:5560+300, 5097-300:5097+300]
+
+    BNsubcube.write('full_OrionBN_B6_spw{0}_lines_cutout.fits'.format(spw), overwrite=True)
+
+for spw in range(4):
+    print("Spw {0} for band {1}".format(spw, 3))
     cube = spectral_cube.SpectralCube.read('full_OrionSourceI_B3_spw{0}_lines.fits'.format(spw))
 
     sourceIsubcube = cube[:,2200:2600,2200:2600]
@@ -32,14 +46,3 @@ for spw in range(4):
         sio30v1cube.write('OrionSourceI_SiO_v=1_J=2-1_cutout.fits', overwrite=True)
         sio30v1cube.beam_threshold=0.1
         sio30v1cube.spectral_slab(-20*u.km/u.s, 35*u.km/u.s).moment1().write('OrionSourceI_30SiO_v=1_J=2-1_moment1.fits', overwrite=True)
-
-for spw in range(4):
-    cube = spectral_cube.SpectralCube.read('full_OrionSourceI_B6_spw{0}_lines.fits'.format(spw))
-
-    sourceIsubcube = cube[:, 3582-625:3582+625, 3560-625:3560+625]
-
-    sourceIsubcube.write('full_OrionSourceI_B6_spw{0}_lines_cutout.fits'.format(spw), overwrite=True)
-
-    BNsubcube = cube[:, 5560-300:5560+300, 5097-300:5097+300]
-
-    BNsubcube.write('full_OrionBN_B6_spw{0}_lines_cutout.fits'.format(spw), overwrite=True)

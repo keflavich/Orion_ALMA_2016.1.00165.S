@@ -323,7 +323,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
                     raise ValueError("Something is wrong with dataind0")
             else:
                 dataslice = slice(dataind0, dataind1, 1)
-            log.info("Dataslice is {0}".format(dataslice))
+            log.info("Dataslice is {0}.  cdelt_sign={1}".format(dataslice, cdelt_sign))
 
             assert hdul[0].data[ind0:ind1].shape == data[dataslice, slices[1], slices[2]].shape
 
