@@ -30,6 +30,11 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
         for startchan in np.arange(0, 1920, step):
 
             imagename = 'OrionSourceI.B6.spw{0}.lines{2}-{3}.{1}'.format(spw, suffix, startchan, startchan+step)
+
+            if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
+                print("Skipping completed file {0}".format(imagename))
+                continue
+
             print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
             tclean(vis=mslist,
                    imagename=imagename,
@@ -51,5 +56,6 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
                    pbcor=True,
                    pblimit=0.2,
                    savemodel='none',
+                   parallel=True,
                    interactive=False)
             makefits(imagename)
