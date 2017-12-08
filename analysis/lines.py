@@ -1,5 +1,5 @@
 from astropy import units as u
-disk_lines = {'CH3OCHO_20(3,17)-19(4,16)A':229.504723*u.GHz,
+disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'CH3OCHO_19(3,17)-18(2,16)E':229.590456*u.GHz,
               'Unknown_1':230.321535*u.GHz,
               'Unknown_2':230.780241*u.GHz,
@@ -17,7 +17,8 @@ disk_lines = {'CH3OCHO_20(3,17)-19(4,16)A':229.504723*u.GHz,
               '29SiOv=0_5-4': 214.3857577*u.GHz,
               'Unknown_11': 214.54879*u.GHz,
               'Unknown_12': 214.637167*u.GHz, # SiSv=3 12-11?
-              'Unknown_13': 215.88712*u.GHz,
+              #'Unknown_13': 215.88712*u.GHz,
+              '13CH3OH_4(2,2)-3(1,2)': 215.886979*u.GHz,
               'Unknown_14': 233.170797*u.GHz,
               'Unknown_15': 233.6083343*u.GHz,
               'Unknown_16': 232.16300227817646*u.GHz,
