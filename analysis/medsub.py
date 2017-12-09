@@ -2,6 +2,14 @@ from spectral_cube import SpectralCube
 from astropy import units as u
 
 files = [
+'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw0.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw1.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw2.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw3.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw0.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw1.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw2.clarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw3.clarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw0.maskedclarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw1.maskedclarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw2.maskedclarkclean10000.image.pbcor.fits',

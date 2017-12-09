@@ -76,7 +76,7 @@ def make_spw_cube(spw='spw{0}', spwnum=0, fntemplate='OrionSourceI',
 
     big_filename = '{1}_{0}{2}_lines.fits'.format(spw, fntemplate, fnsuffix)
 
-    header_fn = glob.glob('OrionSourceI.B6.{0}.lines0-{4}.clarkclean1000.{3}'
+    header_fn = glob.glob('OrionSourceI.B6.{0}.lines0-{4}.maskedclarkclean1000.{3}'
                           .format(spw, fntemplate, fnsuffix, filesuffix,
                                   first_endchannel))
     if len(header_fn) != 1:
@@ -357,10 +357,10 @@ if __name__ == "__main__":
         nchans_total[spw] = mxind
         log.info("nchans_total[{0}] = {1}".format(spw, mxind))
 
-        if os.path.exists('OrionSourceI.B6.spw{0}.lines0-60.clarkclean1000.image.pbcor.fits'.format(spw)):
+        if os.path.exists('OrionSourceI.B6.spw{0}.lines0-60.maskedclarkclean1000.image.pbcor.fits'.format(spw)):
 
             make_spw_cube(spw='spw{0}', spwnum=spw,
-                          fntemplate='full_OrionSourceI_B6',
+                          fntemplate='full_OrionSourceI_B6_maskedclean',
                           overwrite_existing=False, bmaj_limits=None,
                           fnsuffix="", filesuffix='image.pbcor.fits',
                           first_endchannel=60,
