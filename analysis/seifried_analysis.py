@@ -99,7 +99,7 @@ for fn, vmin, vmax, savename, rms in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0
 
     ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b')
     maxdist=150*u.au
-    show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[19], linestyles=['-'])
+    show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10, 19], linestyles=[':','-'], colors=['g','r'])
     ax.set_aspect(2)
 
 
