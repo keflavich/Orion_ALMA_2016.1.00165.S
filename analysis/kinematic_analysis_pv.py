@@ -40,7 +40,7 @@ diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
 diskycoorddict[source] = diskycoords
 
 for name, cutoutname, source, vrange, vcen in (
-    ('sourceI', 'sourceI', coord, (-30,40), 6.5),
+    ('sourceI', 'sourceI', coord, (-30,40), 6.0),
    ):
 
     for fnt in ('/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',

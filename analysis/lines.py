@@ -31,6 +31,8 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'Unknown_B3_3': 89.2210022*u.GHz,
               'Unknown_B3_4': 89.1509141*u.GHz,
               'Unknown_B3_5': 88.5912644*u.GHz,
+              'SiOv=0_5-4': 217.10498*u.GHz,
+              'SiOv=1_5-4': 215.59595*u.GHz,
              }
 
 outflow_lines = {'Si34S_13-12': 229.499086*u.GHz,

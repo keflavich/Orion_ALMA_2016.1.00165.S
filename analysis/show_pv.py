@@ -41,8 +41,8 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
     assert maxdist > 0
 
 
-    imvmin,imvmax = (np.nanmin(data[plotted_slice]),
-                     np.nanmax(data[plotted_slice]))
+    #imvmin,imvmax = (np.nanmin(data[plotted_slice]),
+    #                 np.nanmax(data[plotted_slice]))
     im = ax.imshow(data, cmap='gray_r',
                    vmin=imvmin, vmax=imvmax*1.1,
                    interpolation='none')
