@@ -5,6 +5,8 @@ from astropy import units as u
 import pylab as pl
 from astropy import wcs
 
+from constants import d_orion
+
 def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
     
 
@@ -62,13 +64,13 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
             (vrange[0]+3)*scalefactor,
             "50 au", color='r', transform=trans, ha='center')
     ax.plot(u.Quantity([leftmost_position, rightmost_position]).value,
-            u.Quantity([vcen,vcen]).to(u.m/u.s).value, 'w:', transform=trans)
+            u.Quantity([vcen,vcen]).to(u.m/u.s).value, 'w--', transform=trans)
 
 
     ax.vlines(0, #origin.to(u.arcsec).value,
               (vrange[0]-5)*scalefactor,
               (vrange[1]+5)*scalefactor,
-              color='r', linestyle='--', linewidth=2.0,
+              color='w', linestyle='--', linewidth=2.0,
               alpha=0.6, transform=trans)
 
     ax.set_xlim(good_limits)
@@ -94,7 +96,9 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
 
 def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
                       linestyles=':::',
-                      colors=['r','g','b']):
+                      colors=['r','g','b'],
+                      radii={19: ([10, 100], ['m', 'm'])},
+                     ):
 
     trans = ax.get_transform('world')
 
@@ -116,3 +120,13 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
         #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), linestyle=linestyle,
                 color=color, linewidth=1.0, alpha=1.0, transform=trans)
+
+    for mass in radii:
+        for radius,color in zip(*radii[mass]):
+            rad_as = (radius*u.au/d_orion).to(u.arcsec, u.dimensionless_angles())
+            vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(u.m/u.s)
+            print("rad, vel: {0}, {1}".format(rad_as, vel))
+            ax.plot(u.Quantity([-rad_as, rad_as]),
+                    (vcen+u.Quantity([-vel, vel])).to(u.m/u.s),
+                    color=color, linestyle='--',
+                    transform=trans)

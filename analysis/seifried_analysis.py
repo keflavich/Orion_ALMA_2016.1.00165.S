@@ -30,13 +30,17 @@ origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
                          extraction_path)*u.deg
 
-for fn, vmin, vmax, savename, rms in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
-                                       'H2O_kepler_SeifriedPlot.png', 1*u.mJy),
-                                      ('pv/sourceI_29SiOv=0_2-1_robust-2_diskpv.fits', -0.05, 1,
-                                       'SiOv0_2-1_kepler_SeifriedPlot.png', 1*u.mJy),
-                                      ('pv/sourceI_29SiOv=0_5-4_robust0.5_diskpv.fits', -0.01, 0.05,
-                                       'SiOv0_5-4_kepler_SeifriedPlot.png', 2*u.mJy),
-                                     ]:
+for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
+                                              'H2O_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_29SiOv=0_2-1_robust-2_diskpv.fits', -0.05, 1,
+                                              '29SiOv0_2-1_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_29SiOv=0_5-4_robust0.5_diskpv.fits', -0.01, 0.05,
+                                              '29SiOv0_5-4_kepler_SeifriedPlot.png', 2*u.mJy, [10,100]),
+                                             ('pv/sourceI_SiS_12-11_robust0.5_diskpv.fits', -0.01, 0.05,
+                                              'SiS_12-11_kepler_SeifriedPlot.png', 1*u.mJy, [30,200]),
+                                             ('pv/sourceI_Unknown_1_robust0.5_diskpv.fits', -0.005, 0.02,
+                                              'Unknown_1_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
+                                            ]:
     print(fn, vmin, vmax, savename, rms)
     fh = fits.open(paths.dpath(fn))
     data = fh[0].data
@@ -97,9 +101,11 @@ for fn, vmin, vmax, savename, rms in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0
                              origin, vrange=[-40,55], vcen=vcen,
                              imvmin=vmin, imvmax=vmax)
 
-    ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b')
+    ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b',
+            zorder=200, alpha=0.9)
     maxdist=150*u.au
-    show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10, 19], linestyles=[':','-'], colors=['g','r'])
+    show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10, 19], linestyles=[':','-'], colors=['g','r'],
+                              radii={19: (radii, ('m','m'))})
     ax.set_aspect(2)
 
 

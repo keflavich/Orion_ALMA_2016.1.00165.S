@@ -1,10 +1,19 @@
-Title: The Mass of Orion's Source I
+\documentclass[twocolumn]{aastex61}
+\input{preface}
+\begin{document}
+
+\title{The Mass of Orion's Source I}
+\begin{abstract}
+    Abstract:
+    1. We resolve the disk
+    2. We measure the rotation curve
+\end{abstract}
 
 \section{Introduction}
 
 Several attempts have been made to measure the mass of Orion Source I using the
 rotation curve of various molecular lines:
-\begin{\itemize}
+\begin{itemize}
     \item \citet{Hirota2014a} observed vibrationally excited \water emission
         from the $v_2=0, 10_{2,9}-9_{3,6}$ and  $v_2=1, 5_{2,3}-6_{1,6}$ lines
         with $E_L=1846$ and 2939 K, respectively.  They imaged these lines
@@ -12,11 +21,15 @@ rotation curve of various molecular lines:
         \textit{velocity centroid maps} of the position of peak intensity
         as a function of velocity to measure the rotationally supported
         mass in Source I.  They obtained a mass estimate of $5-7\msun$.
-    \item \citet{Plambeck2016a}
-    \item \citet{Matthews2010a}
+    \item \citet{Plambeck2016a} measured both the SED and the rotation
+        curve of gas around Source I.  
+    \item \citet{Matthews2010a} blah
 \end{itemize}
 
+
 \section{Results}
+
+\subsection{Continuum}
 We detect the disk in the continuum at 3mm, 1mm, and 0.8mm, but we detect
 spectral lines only from the surfaces above and below the continuum disk at 1
 mm.  The nondetection of lines in the disk midplane is a strong indication
@@ -27,7 +40,9 @@ observational structure.  We used a linear model (i.e., an infinitely thin
 perfectly edge-on disk) for the disk, with endpoints, amplitude, and smoothing
 kernel as free parameters.  We determined that the disk is resolved in both
 directions, with a scale height of 0.076\arcsec (31.5 AU) and a length of 0.223
-\arcsec (92.5 AU), resulting in a radius $r_{disk}=46.3$ AU.
+\arcsec (92.5 AU), resulting in a radius $r_{disk}=46.3$ AU.  These measurements
+are very close to those published by \citet{Plambeck2016a}, though their data
+only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant 2.5 mJy residual pointlike source at 
 05h35m14.5182s -05d22m30.6084s.  This additional source may be part of a flared
@@ -35,8 +50,11 @@ inner disk, a companion (unlikely), or part of the inner outflow.  It could
 also be part of an accretion flow?  It would be worth monitoring this blob
 to see if it is in orbit or infalling or something else.
 
-The disk has a brightness temperature ranging from 200-500 K.
+The disk has a brightness temperature ranging from 200-500 K.  These measurements
+agree well with the continuum model of \citet{Plambeck2016a}, who inferred
+the presence of an optically thick $T=500$ K surface from the SED.
 
+\subsection{Water Line}
 The brightest and most interesting line is the \water $5_{5,0}-6_{4,3}$ line at
 232.68670 GHz, with $E_U=3461.9$ K.  \citet{Hirota2012a} detected this line
 in 2\arcsec resolution ALMA Science Verification data, but believed it to be masing.
@@ -44,6 +62,31 @@ We report here that it is most likely a thermal line, similar to the 336 GHz vib
 excited water line reported in \citet{Hirota2014a}, with peak brightness
 temperature $\sim1000$ K.
 
+\subsection{Kinematics: a Keplerian disk}
+Following \citet{Seifried2016a}, we measure the outer edge of the detected
+emission to define the rotation curve surrounding Source I.
+
+Of the detected lines, only the \water line spans a significant range of velocities
+as a function of radius; as shown in Figure XXX, there is \water emission
+spanning at least from 10 to 100 AU radius.  Many other molecules, most of
+which we have not been able to identify, span a range of 30-80 AU, while SiS
+spans 30 AU to an unconstrained outer radius.
+
+We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge
+of the \water line reasonably well, and is also an acceptable match to
+the outer profiles of other lines.  A smaller mass, such as the 5-10 \msun
+suggested by previous authors \citep{}, is well within the regime where emission
+is detected outside of the Keplerian curve.  These lower masses are therefore
+excluded.
+
+There are two reasons our measurements differ from those of \citet{Plambeck2016a},
+\citet{Hirota2014a}, and \citet{Wright2010a}: first is our substantially better
+spatial resolution, and second is the method we use to infer the mass from the
+rotation curve.  Since our measurement is motivated by simulations, we believe
+it is more accurate [but, I'm asking simulators if they can reproduce the underestimate
+caused by other modeling approaches].
+
+what about turbulence?
 
 
 \section{Discussion}
@@ -54,3 +97,15 @@ Reasons:
 of the disk.
 2. Method: Siefried showed that vel-of-highest-channel is better than centroid-based
 approaches
+
+\subsection{Is this disk consistent with the dynamical ejection model?}
+\citet{Plambeck2016a} argue that both the mass of Source I and the presence of the disk
+rule out the dynamical ejection model of \citet{Bally2011a}.  We show here that
+the star is significantly more massive, but what about the disk?
+
+First, we note that the disk truncates at $R<50$ AU.  At this radius, the
+orbital timescale is $\sim100$ years, so gas at the disk's outer radius would
+have had five dynamical times to relax into a disk configuration after the
+explosive event.
+
+\end{document}
