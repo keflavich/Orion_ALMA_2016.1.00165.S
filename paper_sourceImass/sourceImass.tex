@@ -68,6 +68,11 @@ All detected lines, including the water line, appear above and below the
 continuum disk.  There are no lines clearly detected in emission directly
 toward the disk midplane.
 
+While the continuum disk truncates at r=50 AU, the emission lines show emission
+beyond this radius, with \water exhibiting emission out to $r\sim100$ AU.
+[see PV diagram - however, also note that this may only be a feature of the
+above-plane emission]
+
 \subsection{Kinematics: a Keplerian disk}
 Following \citet{Seifried2016a}, we measure the outer edge of the detected
 emission to define the rotation curve surrounding Source I.
@@ -85,6 +90,28 @@ suggested by previous authors \citep{}, is well within the regime where emission
 is detected outside of the Keplerian curve.  These lower masses are therefore
 excluded.
 
+\Figure{figures/H2O_kepler_SeifriedPlot.png}
+{Position-velocity diagram of \water $5_{5,0}-6_{4,3}$.
+The blue dotted curve is the outer envelope of the velocity curve
+determined using the method of \citet{Seifried2016a}.
+Red curves show the Keplerian velocity profile surrounding a 19 \msun
+central source; green dotted curves show a Keplerian profile for a 10 \msun
+source.
+White dashed lines indicate the adopted source central position
+J2000 5:35:14.519 -5:22:30.633 (FK5) and central velocity (6 \kms).
+The purple dashed lines show the full orbital path for radii of
+10 and 100 AU, and indicate the approximate limits of the disk.
+This version of the PV diagram is extracted from a range $\pm0.05\arcsec$ (50 AU)
+around the fitted centerline of the continuum emission [actually, it's from
+a drawn line right now], so it includes significant amounts of `superdisk'
+emission.
+}
+{fig:h2okepler}{1}{4in}
+
+\Figure{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.png}
+{Moment-0 (integrated intensity) map of the \water line with continuum overlaid in contours.}
+{fig:h2omom0}{1}{4in}
+
 There are two reasons our measurements differ from those of \citet{Plambeck2016a},
 \citet{Hirota2014a}, and \citet{Matthews2010a}: first is our substantially better
 spatial resolution, and second is the method we use to infer the mass from the
@@ -95,7 +122,9 @@ underestimates the central source mass.
 what about turbulence?  Other authors have argued that there should be unresolved
 supersonic turbulence.  If there's not, and we assume $T\sim1000$ K, the
 linewidth is 2.7 \kms, which is enough to lead us to overestimate the mass by a
-non-negligible amount...
+non-negligible amount...  {\color{red} How can we best correct for the thermal
+(and maybe turbulent) linewidth?  Subtract 1/2 of the sigma-width from the extrema?
+Or perhaps subtract the HWHM?}
 
 
 \section{Discussion}

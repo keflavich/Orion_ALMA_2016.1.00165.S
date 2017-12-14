@@ -25,13 +25,17 @@ diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
 
 source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                               unit=(u.hour, u.deg))
-extraction_path = pvextractor.Path(diskycoords, width=0.1*u.arcsec)
+extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
 origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
                          extraction_path)*u.deg
 
 for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
                                               'H2O_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.01.fits', -0.0005, 0.055,
+                                              'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
+                                              'H2O_kepler_SeifriedPlot_0.1arcsec.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_2-1_robust-2_diskpv.fits', -0.05, 1,
                                               '29SiOv0_2-1_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_5-4_robust0.5_diskpv.fits', -0.01, 0.05,
