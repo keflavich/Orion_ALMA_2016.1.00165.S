@@ -44,16 +44,23 @@ for sourcename in ('SourceI', 'BN'):
 
                 mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
                              .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
-                mx.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05],
-                                            colors=['r']*10)
+                mx.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
+                                                            0.02, 0.03, 0.04,
+                                                            0.05],
+                                           colors=['r']*10)
                 mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
                                    .format(linename, sourcename))
 
+                pl.figure(1).clf()
 
                 m0.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
                              .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
 
-                m0.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05],
-                                            colors=['r']*10)
+                m0.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
+                                                            0.02, 0.03, 0.04,
+                                                            0.05],
+                                           colors=['r']*10)
                 m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
                                    .format(linename, sourcename))
+
+                pl.figure(1).clf()

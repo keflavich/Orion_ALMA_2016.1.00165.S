@@ -7,6 +7,10 @@ import radio_beam
 import lmfit
 from constants import d_orion
 from image_registration.fft_tools import shift
+import paths
+from mpl_plot_templates import asinh_norm
+
+import pylab as pl
 
 fh = fits.open('/Users/adam/work/orion/alma_lb/FITS/uid_A001_X88e_X1d3_calibrated_final_cont.pbcor.fits')
 
@@ -14,6 +18,9 @@ cropslice_x = slice(3510,3610)
 cropslice_y = slice(3520,3620)
 data = fh[0].data.squeeze()[cropslice_y, cropslice_x]
 mywcs = wcs.WCS(fh[0].header).celestial[cropslice_y, cropslice_x]
+hdu = fits.PrimaryHDU(data=data, header=mywcs.to_header())
+hdu.writeto(paths.dpath('OrionSourceI_continuum_cutout_for_modeling.fits'),
+            overwrite=True)
 pixscale = wcs.utils.proj_plane_pixel_area(mywcs)**0.5 * u.deg
 
 diskends = coordinates.SkyCoord(['5:35:14.5232 -5:22:30.73',
@@ -26,6 +33,7 @@ diskends_pix = np.array(mywcs.wcs_world2pix(diskends.ra.deg, diskends.dec.deg, 0
 observed_beam = radio_beam.Beam.from_fits_header(fh[0].header)
 
 data_K = (data*u.Jy).to(u.K, observed_beam.jtok_equiv(fh[0].header['CRVAL3']*u.Hz))
+jtok = observed_beam.jtok(fh[0].header['CRVAL3']*u.Hz)
 
 def model(x1, x2, y1, y2, scale, kernelmajor=None, kernelminor=None, kernelpa=None,
           ptsrcx=None, ptsrcy=None, ptsrcamp=None):
@@ -121,7 +129,6 @@ ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result3.params['ptsrcx'], result3.para
 fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
 print("Fitted point source location = {0}".format(fitted_ptsrc.to_string('hmsdms')))
 
-import pylab as pl
 pl.figure(1)
 pl.clf()
 pl.subplot(2,2,1)
@@ -141,7 +148,7 @@ pl.plot([result.params['x1'], result.params['x2']],
         'r')
 pl.axis(axlims)
 
-pl.savefig("SourceI_Disk_model.png")
+pl.savefig(paths.fpath("contmodel/SourceI_Disk_model.png"), bbox_inches='tight')
 
 pl.figure(2)
 pl.clf()
@@ -162,7 +169,7 @@ pl.plot([result2.params['x1'], result2.params['x2']],
         'r')
 pl.axis(axlims)
 
-pl.savefig("SourceI_Disk_model_bigbeam.png")
+pl.savefig(paths.fpath("contmodel/SourceI_Disk_model_bigbeam.png"), bbox_inches='tight')
 
 pl.figure(3)
 pl.clf()
@@ -183,7 +190,7 @@ pl.plot([result2.params['x1'], result2.params['x2']],
         'r')
 pl.axis(axlims)
 
-pl.savefig("SourceI_Disk_model_bigbeam_withptsrc.png")
+pl.savefig(paths.fpath("contmodel/SourceI_Disk_model_bigbeam_withptsrc.png"), bbox_inches='tight')
 
 pl.figure(4)
 pl.clf()
@@ -213,3 +220,98 @@ length_au = (length_as * d_orion).to(u.au, u.dimensionless_angles())
 
 print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g}  or radius {2:0.3g}"
       .format(length_as, length_au, length_au/2))
+
+
+# publication figures
+fig5 = pl.figure(5)
+fig5.clf()
+ax = fig5.gca()
+im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='viridis')
+im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='viridis')
+cb2 = fig5.colorbar(mappable=im0)
+cb2.set_label('$T_B$ [K]')
+cb = fig5.colorbar(mappable=im)
+cb.set_label('$S_{1.3 mm}$ [mJy beam$^{-1}$]')
+ax.set_xticks([])
+ax.set_yticks([])
+
+beam_ellipse = observed_beam.ellipse_to_plot(90, 10, pixscale)
+beam_ellipse.set_edgecolor('w')
+beam_ellipse.set_facecolor('w')
+ax.add_patch(beam_ellipse)
+fig5.savefig(paths.fpath('contmodel/OrionSourceI_data.png'), bbox_inches='tight')
+
+fig5.clf()
+ax = fig5.gca()
+im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='viridis', vmin=-5, vmax=40)
+im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='viridis', vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3)
+cb2 = fig5.colorbar(mappable=im0)
+cb2.set_label('$T_B$ [K]')
+cb = fig5.colorbar(mappable=im)
+cb.set_label('$S_{1.3 mm}$ [mJy beam$^{-1}$]')
+ax.set_xticks([])
+ax.set_yticks([])
+
+beam_ellipse = observed_beam.ellipse_to_plot(90, 10, pixscale)
+beam_ellipse.set_edgecolor('w')
+beam_ellipse.set_facecolor('w')
+ax.add_patch(beam_ellipse)
+fig5.savefig(paths.fpath('contmodel/OrionSourceI_data_stretched.png'), bbox_inches='tight')
+
+
+
+
+fig6 = pl.figure(6)
+fig6.clf()
+ax1 = fig6.add_subplot(3,3,1)
+im = ax1.imshow(bestdiskmod_beam*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm())
+vmin,vmax = im.norm.vmin, im.norm.vmax
+ax2 = fig6.add_subplot(3,3,2)
+im = ax2.imshow(bestdiskmod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm(),
+                vmin=vmin, vmax=vmax)
+ax3 = fig6.add_subplot(3,3,3)
+im = ax3.imshow(bestdiskplussourcemod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm(),
+                vmin=vmin, vmax=vmax)
+cb = fig6.colorbar(mappable=im)
+cb.set_label("$T_B$ [K]")
+
+ax4 = fig6.add_subplot(3,3,4)
+im = ax4.imshow((data - bestdiskmod_beam)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm(),
+                vmin=vmin, vmax=vmax)
+ax5 = fig6.add_subplot(3,3,5)
+im = ax5.imshow((data - bestdiskmod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm(),
+                vmin=vmin, vmax=vmax)
+ax6 = fig6.add_subplot(3,3,6)
+im = ax6.imshow((data - bestdiskplussourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                norm=asinh_norm.AsinhNorm(),
+                vmin=vmin, vmax=vmax)
+cb = fig6.colorbar(mappable=im)
+cb.set_label("$T_B$ [K]")
+
+ax7 = fig6.add_subplot(3,3,7)
+im = ax7.imshow((data - bestdiskmod_beam)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                vmin=-40, vmax=50,
+               )
+vmin,vmax = im.norm.vmin, im.norm.vmax
+ax8 = fig6.add_subplot(3,3,8)
+im = ax8.imshow((data - bestdiskmod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                vmin=vmin, vmax=vmax)
+ax9 = fig6.add_subplot(3,3,9)
+im = ax9.imshow((data - bestdiskplussourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+                vmin=vmin, vmax=vmax)
+cb = fig6.colorbar(mappable=im)
+cb.set_label("$T_B$ [K]")
+
+
+for ax in fig6.get_axes():
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+pl.subplots_adjust(wspace=0, hspace=0.05)
+
+fig6.savefig(paths.fpath('contmodel/models_and_residuals.png'), bbox_inches='tight')

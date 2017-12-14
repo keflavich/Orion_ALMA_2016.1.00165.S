@@ -47,7 +47,7 @@ are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant 2.5 mJy residual pointlike source at 
-05h35m14.5182s -05d22m30.6084s.  This additional source may be part of a flared
+J2000 05h35m14.5182s -05d22m30.6084s.  This additional source may be part of a flared
 inner disk, a companion (unlikely), or part of the inner outflow.  It could
 also be part of an accretion flow?  It would be worth monitoring this blob
 to see if it is in orbit or infalling or something else.
@@ -55,6 +55,41 @@ to see if it is in orbit or infalling or something else.
 The disk has a brightness temperature ranging from 200-500 K.  These measurements
 agree well with the continuum model of \citet{Plambeck2016a}, who inferred
 the presence of an optically thick $T=500$ K surface from the SED.
+
+\FigureTwo
+{figures/OrionSourceI_data.png}
+{figures/OrionSourceI_data_stretched.png}
+{The continuum image of Orion Source I at 1.3 mm.  The beam is shown in the
+bottom right, with size $0.052\arcsec\times0.030\arcsec$ at PA$=103\deg$.
+The left panel shows the full intensity range, while the right panel
+shows a narrower stretch to highlight some of the extended features
+around the disk, which may be imaging artifacts {\color{red}TODO: might
+be able to clean this up a bit, but it might not be worth it for this paper
+because it could require indefinite commitment.}.
+Both panels have flux density and brightness temperature colorbars.
+}
+{fig:continuum_data}{1}{3.5in}
+
+\Figure{figures/models_and_residuals.png}
+{A series of plots showing the models used and their residuals.
+The top row shows the models, starting from a simple 1D linear model
+convolved with the beam (left), continuing with a disk with a 0.076\arcsec (31.5 AU)
+scale height and a 0.038\arcsec (16 AU) smoothing width (middle), and finally
+a version of the middle model with a point source added at 
+J2000 05h35m14.5182s -05d22m30.6084s with amplitude 2.5 mJy (39 K).
+The second and third row show the residuals (data - model) for each of the models
+in the top row; the bottom row uses a narrow linear scale to emphasize the lower-amplitude
+residuals, while the top two use an arcsinh stretch to display the full dynamic range.
+}
+{fig:contmodel_residuals}{1}{7.5in}
+
+% \FigureThree
+% {figures/SourceI_Disk_model.png}
+% {figures/SourceI_Disk_model_bigbeam.png}
+% {figures/SourceI_Disk_model_bigbeam_withptsrc.png}
+% {continuum modeling}
+% {fig:contmodels}{1}{3in}
+
 
 \subsection{Water Line}
 The brightest and most interesting line is the \water $5_{5,0}-6_{4,3}$ line at

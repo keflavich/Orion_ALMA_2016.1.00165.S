@@ -69,7 +69,7 @@ for width in (0.1, 0.01):
                 # of the actual line emission comes from just above/below...
                 #extraction_path = pvextractor.Path(diskycoords, width=0.05*u.arcsec)
                 extraction_path = pvextractor.Path(diskycoords, width=width*u.arcsec)
-                log.info("Beginning extraction")
+                log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
                 extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
                 outfn = paths.dpath(os.path.join('pv',
                                                  os.path.split(fn.replace(".image.pbcor.fits",
@@ -100,8 +100,8 @@ for width in (0.1, 0.01):
                         basename = "{0}_{1}_diskpv_{2}.fits".format(name, linename, width)
                     outfn = paths.dpath(os.path.join("pv/", basename))
 
-                    extraction_path = pvextractor.Path(diskycoords, 0.05*u.arcsec)
-                    log.info("Beginning extraction")
+                    extraction_path = pvextractor.Path(diskycoords, width*u.arcsec)
+                    log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
                     extracted = pvextractor.extract_pv_slice(subcube, extraction_path)
                     log.info("Writing to {0}".format(outfn))
                     extracted.writeto(outfn, overwrite=True)
@@ -152,7 +152,7 @@ for width in (0.1, 0.01):
                     vmin = -0.0025
                     if vmax < 0.5:
                         vmax = np.min([0.02, vmax])
-                    if 'H2O' in linename:
+                    if 'H2O' in linename and width > 0.05:
                         vmax = 0.1
 
                     fig,ax = show_pv.show_pv(extracted.data, ww,
