@@ -32,7 +32,7 @@ origin = offset_to_point(source.ra.deg,
 
 for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
                                               'H2O_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.01.fits', -0.0005, 0.055,
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.01.fits', -0.0005, 0.048,
                                               'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
                                               'H2O_kepler_SeifriedPlot_0.1arcsec.png', 1*u.mJy, [10,100]),
