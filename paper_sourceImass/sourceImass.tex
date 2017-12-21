@@ -21,13 +21,21 @@ rotation curve of various molecular lines:
         \textit{velocity centroid maps} of the position of peak intensity
         as a function of velocity to measure the rotationally supported
         mass in Source I.  They obtained a mass estimate of $5-7\msun$.
-    \item \citet{Plambeck2016a} measured both the SED and the rotation
+    \item \citet{Plambeck2016a} measured both the continuum SED and the rotation
         curve of gas around Source I.  They used a centroiding approach
-        similar to \citet{Hirota2014a} to measure the rotation curve
-        and infer the source mass.
-    \item \citet{Matthews2010a} blah
+        similar to \citet{Hirota2014a} to measure the rotation curve of
+        SO, SiS, SiO, and CO and infer the source mass $M\sim5-7$ \msun.
+    \item \citet{Matthews2010a} used 3D measurements of SiO maser velocities
+        at 0.5 mas (0.2 AU) resolution along a `bridge' hovering just above and
+        below the disk and an assumed radius $r\sim35$ AU  to infer a mass
+        $M\approx8-10$ \msun.
 \end{itemize}
 
+\section{Observations}
+
+At 1.3 mm in our Robust 0.5 image, the beam is $0.052\times0.030$ \arcsec at
+PA$=-77.7\degrees$ ($21.8\times12.7$ AU), resulting in a 
+conversion factor of 15000 K Jy$^{-1}$.
 
 \section{Results}
 
@@ -37,7 +45,7 @@ spectral lines only from the surfaces above and below the continuum disk at 1
 mm.  The nondetection of lines in the disk midplane is a strong indication
 that the continuum is optically thick.
 
-We fit the continuum image with a simple model to determine the basic
+We fit the 1.3 mm continuum image with a simple model to determine the basic
 observational structure.  We used a linear model (i.e., an infinitely thin
 perfectly edge-on disk) for the disk, with endpoints, amplitude, and smoothing
 kernel as free parameters.  We determined that the disk is resolved in both
@@ -60,7 +68,7 @@ the presence of an optically thick $T=500$ K surface from the SED.
 {figures/OrionSourceI_data.png}
 {figures/OrionSourceI_data_stretched.png}
 {The continuum image of Orion Source I at 1.3 mm.  The beam is shown in the
-bottom right, with size $0.052\arcsec\times0.030\arcsec$ at PA$=103\deg$.
+bottom right, with size $0.052\arcsec\times0.030\arcsec$ at PA$=103\degrees$.
 The left panel shows the full intensity range, while the right panel
 shows a narrower stretch to highlight some of the extended features
 around the disk, which may be imaging artifacts {\color{red}TODO: might
@@ -99,14 +107,40 @@ We report here that it is most likely a thermal line, similar to the 336 GHz vib
 excited water line reported in \citet{Hirota2014a}, with peak brightness
 temperature $\sim1000$ K.
 
-All detected lines, including the water line, appear above and below the
-continuum disk.  There are no lines clearly detected in emission directly
-toward the disk midplane.
+The water line traces an X-shaped feature above and below the disk, closely
+resembling the overall distribution of SiO masers.
 
 While the continuum disk truncates at r=50 AU, the emission lines show emission
 beyond this radius, with \water exhibiting emission out to $r\sim100$ AU.
-[see PV diagram - however, also note that this may only be a feature of the
-above-plane emission]
+
+\subsection{Other lines}
+Several unidentified lines exhibit emission at the outer edge of the continuum disk.
+The peak signal from these lines appears within the $T_B\gtrsim75$ K contour
+(Figure \ref{fig:U1peak})...
+their lack of association with the inner disk suggests that they trace the outer
+surface of an optically thick disk, that they are slightly more thick than that disk
+but perhaps at similar temperature
+
+\FigureTwo
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak}.png}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_peak}.png}
+{Peak intensity map of an unknown line (U230.321535; left) and the \water
+line with continuum overlaid
+in contours.  Continuum contours are shown in red at levels of 1, 5, 10, 20, and 30
+mJy \perbeam (15, 75, 150, 300, 450 K).
+The \water and unknown line clearly trace different physical structures, as
+they exhibit no coincident emission.
+}
+{fig:U1peak}{1}{3in}
+
+\FigureTwo
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0}.png}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.png}
+{Moment-0 (integrated intensity) map of the U230.321535 and \water line with continuum overlaid
+in contours.  Continuum contours are shown in red at levels of 1, 5, 10, 20, and 30
+mJy \perbeam (15, 75, 150, 300, 450 K).
+}
+{fig:h2omom0}{1}{3in}
 
 \subsection{Kinematics: a Keplerian disk}
 Following \citet{Seifried2016a}, we measure the outer edge of the detected
@@ -149,9 +183,6 @@ identical data.}
 }
 {fig:h2okepler}{1}{3.5in}
 
-\Figure{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.png}
-{Moment-0 (integrated intensity) map of the \water line with continuum overlaid in contours.}
-{fig:h2omom0}{1}{4in}
 
 There are two reasons our measurements differ from those of \citet{Plambeck2016a},
 \citet{Hirota2014a}, and \citet{Matthews2010a}: first is our substantially better

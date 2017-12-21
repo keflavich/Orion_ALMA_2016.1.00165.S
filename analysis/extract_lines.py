@@ -13,6 +13,9 @@ for sourcename in ('SourceI', 'BN'):
                                        ('H30a', 231.900928*u.GHz, [-120, 130]),
                                        ('Unknown_1', 230.321535*u.GHz, [-60,70]),
                                        ('SiS_12-11', 217.817644*u.GHz, [-60,70]),
+                                       ('29SiOv=0_5-4', 214.3857577*u.GHz, [-60,70]),
+                                       ('SiOv=0_5-4', 217.10498*u.GHz, [-60,70]),
+                                       ('SiOv=1_5-4', 215.59595*u.GHz, [-60,70]),
                                       ]:
         for spw in (0,1,2,3):
             cube = SpectralCube.read(ftemplate.format(spw, sourcename))
@@ -48,6 +51,7 @@ for sourcename in ('SourceI', 'BN'):
                                                             0.02, 0.03, 0.04,
                                                             0.05],
                                            colors=['r']*10)
+                mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
                 mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
                                    .format(linename, sourcename))
 
@@ -60,6 +64,7 @@ for sourcename in ('SourceI', 'BN'):
                                                             0.02, 0.03, 0.04,
                                                             0.05],
                                            colors=['r']*10)
+                m0.FITSFigure.colorbar.set_axis_label_text("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
                 m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
                                    .format(linename, sourcename))
 
