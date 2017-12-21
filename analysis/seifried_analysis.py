@@ -22,6 +22,8 @@ diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
                                                                u.deg),
                                    frame='fk5')
 
+# I prefer 6 km/s to the 5 km/s used by other groups
+vcen = 6.0*u.km/u.s
 
 source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                               unit=(u.hour, u.deg))
@@ -44,6 +46,10 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
                                               'SiS_12-11_kepler_SeifriedPlot.png', 1*u.mJy, [30,200]),
                                              ('pv/sourceI_Unknown_1_robust0.5_diskpv.fits', -0.005, 0.02,
                                               'Unknown_1_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
+                                             ('pv/sourceI_Unknown_4_robust0.5_diskpv.fits', -0.005, 0.02,
+                                              'Unknown_4_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
+                                             ('pv/sourceI_Unknown_5_robust0.5_diskpv.fits', -0.005, 0.02,
+                                              'Unknown_5_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
                                             ]:
     print(fn, vmin, vmax, savename, rms)
     fh = fits.open(paths.dpath(fn))
@@ -67,7 +73,6 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
     else:
         scalefactor = 1.0
 
-    vcen = 6.0*u.km/u.s
     vcen_ypix = int(np.round(ww.sub([2]).wcs_world2pix([vcen.value], 0)[0][0]))
     vcen_ypix_left = int(np.round(ww.sub([2]).wcs_world2pix([(vcen-5*u.km/u.s).to(u.m/u.s).value], 0)[0][0]))
     vcen_ypix_right = int(np.round(ww.sub([2]).wcs_world2pix([(vcen+5*u.km/u.s).to(u.m/u.s).value], 0)[0][0]))

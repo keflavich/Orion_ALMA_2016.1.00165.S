@@ -97,7 +97,7 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
 def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
                       linestyles=':::',
                       colors=['r','g','b'],
-                      radii={19: ([10, 100], ['m', 'm'])},
+                      radii={19: ([30, 80], ['m', 'm'])},
                      ):
 
     trans = ax.get_transform('world')

@@ -34,7 +34,8 @@ for sourcename in ('SourceI', 'BN'):
                 scube = (cube.with_spectral_unit(u.km/u.s,
                                                  velocity_convention='radio',
                                                  rest_value=linefreq)
-                         .spectral_slab(-60*u.km/u.s, 70*u.km/u.s))
+                         .spectral_slab(vrange[0]*u.km/u.s,
+                                        vrange[1]*u.km/u.s))
 
                 cubeK = scube.to(u.K)
                 cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K.fits').format(linename, sourcename),

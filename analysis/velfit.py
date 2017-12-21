@@ -30,7 +30,7 @@ extraction_region1, extraction_region2 = pyregion.open(paths.rpath('spectral_ext
 linedata_fits = {}
 
 for name, cutoutname, source, vrange, vcen in (
-    ('sourceI', 'sourceI', coord, (-30,40), 6.5),
+    ('sourceI', 'sourceI', coord, (-30,40), 6.0),
    ):
 
     for spw in (0,1,2,3):

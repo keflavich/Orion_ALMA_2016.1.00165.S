@@ -5,7 +5,7 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'Unknown_2':230.780241*u.GHz,
               'Unknown_3':229.2474253*u.GHz, # maybe acetone?
               'H2Ov2=1_5(5,0)-6(4,3)': 232.6867*u.GHz,
-              'Unknown_4': 232.511*u.GHz,
+              'Unknown_4': 232.51255*u.GHz,
               'SiS_12-11': 217.817644*u.GHz,
               'Unknown_5': 217.9802311*u.GHz,
               'Unknown_6': 217.6660212*u.GHz,
@@ -33,6 +33,7 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'Unknown_B3_5': 88.5912644*u.GHz,
               'SiOv=0_5-4': 217.10498*u.GHz,
               'SiOv=1_5-4': 215.59595*u.GHz,
+              'H30a': 231.900928*u.GHz, # not actually detected
              }
 
 outflow_lines = {'Si34S_13-12': 229.499086*u.GHz,
