@@ -1,24 +1,29 @@
 import paths
+import os
 from astropy import constants, units as u, table, stats, coordinates, wcs, log
 from astropy.io import fits
 from spectral_cube import SpectralCube, wcs_utils, tests
 import pylab as pl
+from lines import disk_lines
 
 ftemplate = '/Volumes/external/orion/Orion{1}_only.B6.robust0.5.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
 
 conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 
 for sourcename in ('SourceI', 'BN'):
-    for linename, linefreq, vrange in [('H2Ov2=1_5(5,0)-6(4,3)', 232.6867*u.GHz, [-60, 70]),
-                                       ('H30a', 231.900928*u.GHz, [-120, 130]),
-                                       ('Unknown_1', 230.321535*u.GHz, [-60,70]),
-                                       ('SiS_12-11', 217.817644*u.GHz, [-60,70]),
-                                       ('29SiOv=0_5-4', 214.3857577*u.GHz, [-60,70]),
-                                       ('SiOv=0_5-4', 217.10498*u.GHz, [-60,70]),
-                                       ('SiOv=1_5-4', 215.59595*u.GHz, [-60,70]),
-                                      ]:
+    for linename, linefreq in disk_lines.items():
+        if 'H30a' in linename:
+            vrange = [-120,130]
+        else:
+            vrange = [-30,40]
+
         for spw in (0,1,2,3):
-            cube = SpectralCube.read(ftemplate.format(spw, sourcename))
+            filename = ftemplate.format(spw, sourcename)
+            if os.path.exists(filename):
+                cube = SpectralCube.read(filename)
+            else:
+                log.exception("File {0} does not exist".format(filename))
+                continue
 
             fmin, fmax = cube.spectral_extrema
 
