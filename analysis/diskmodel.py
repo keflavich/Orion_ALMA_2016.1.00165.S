@@ -8,6 +8,7 @@ import lmfit
 from constants import d_orion
 from image_registration.fft_tools import shift
 import paths
+import regions
 from mpl_plot_templates import asinh_norm
 
 import pylab as pl
@@ -23,9 +24,11 @@ hdu.writeto(paths.dpath('OrionSourceI_continuum_cutout_for_modeling.fits'),
             overwrite=True)
 pixscale = wcs.utils.proj_plane_pixel_area(mywcs)**0.5 * u.deg
 
-diskends = coordinates.SkyCoord(['5:35:14.5232 -5:22:30.73',
-                                 '5:35:14.5132 -5:22:30.54'],
-                                frame='fk5', unit=(u.hour, u.deg))
+# old version diskends = coordinates.SkyCoord(['5:35:14.5232 -5:22:30.73',
+# old version                                  '5:35:14.5132 -5:22:30.54'],
+# old version                                 frame='fk5', unit=(u.hour, u.deg))
+diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
+diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs])
 
 diskends_pix = np.array(mywcs.wcs_world2pix(diskends.ra.deg, diskends.dec.deg, 0))
 (x1,x2),(y1,y2) = diskends_pix
@@ -128,6 +131,21 @@ bestdiskplussourcemod = model(**result3.params)
 ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result3.params['ptsrcx'], result3.params['ptsrcy'], 0)
 fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
 print("Fitted point source location = {0}".format(fitted_ptsrc.to_string('hmsdms')))
+
+print("diskends: {0}".format(diskends))
+fitted_diskends_mod1 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result.params['x1'], result.params['x2']], [result.params['y1'], result.params['y2']], 0),
+                                            unit=(u.deg, u.deg),
+                                            frame=mywcs.wcs.radesys.lower())
+print("fitted diskends (model 1): {0}".format(fitted_diskends_mod1))
+fitted_diskends_mod2 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result2.params['x1'], result2.params['x2']], [result2.params['y1'], result2.params['y2']], 0),
+                                            unit=(u.deg, u.deg),
+                                            frame=mywcs.wcs.radesys.lower())
+print("fitted diskends (model 2): {0}".format(fitted_diskends_mod2))
+fitted_diskends_mod3 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result3.params['x1'], result3.params['x2']], [result3.params['y1'], result3.params['y2']], 0),
+                                            unit=(u.deg, u.deg),
+                                            frame=mywcs.wcs.radesys.lower())
+print("fitted diskends (model 3): {0}".format(fitted_diskends_mod3))
+
 
 pl.figure(1)
 pl.clf()

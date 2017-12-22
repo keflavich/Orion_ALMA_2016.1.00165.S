@@ -3,11 +3,13 @@ import regions
 from astropy import units as u
 from astropy.modeling import models, fitting
 from astropy import wcs
+from astropy import coordinates
 from spectral_cube import SpectralCube
 from gaussfit_catalog.core import gaussfit_image
 import paths
 import os
 import pylab as pl
+import shapely.geometry as geom
 
 
 regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_Unknown_4.reg'))
@@ -91,3 +93,56 @@ for vel,vslice in zip(cube.spectral_axis, cube):
         os.mkdir(paths.fpath('velcentroid/diagnostics/{0}/').format(basename))
     pl.savefig(paths.fpath('velcentroid/diagnostics/{0}/{1}.png')
                .format(basename, thisvel))
+
+
+diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
+diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs])
+
+center = coordinates.SkyCoord(diskends.ra.mean(), diskends.dec.mean(), frame=diskends.frame)
+ref_cen_x, ref_cen_y = cube.wcs.celestial.wcs_world2pix(center.ra.deg, center.dec.deg, 0)
+
+def offset_to_point(xx, yy):
+    line = geom.LineString(zip(diskends.ra.deg, diskends.dec.deg))
+    point = geom.Point(xx, yy)
+    return line.project(point)
+
+ref_offset = offset_to_point(center.ra.deg, center.dec.deg)
+
+
+fig1 = pl.figure(1)
+pl.clf()
+ax1 = fig1.add_subplot(1,2,1)
+ax2 = fig1.add_subplot(1,2,2)
+
+diskends_x, diskends_y = cube.wcs.celestial.wcs_world2pix(diskends.ra.deg,
+                                                          diskends.dec.deg,
+                                                          0)
+ax1.plot(diskends_x-ref_cen_x, diskends_y-ref_cen_y, 'k-', linewidth=3, alpha=0.2, zorder=-100)
+ax1.plot(0, 0, 'ko', markersize=5, alpha=0.5, zorder=-50)
+
+cmap = pl.cm.Spectral_r
+cmap = pl.cm.spectral
+vmin, vmax = -15, 27
+norm = pl.matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+
+for vel in results:
+    fit_result = results[vel]
+    fitted = fit_result[0]
+    n_submodels = fitted.n_submodels()
+    color = cmap(norm(vel))
+    if n_submodels > 1:
+        for ii in range(n_submodels):
+            xcen, ycen = getattr(fitted, 'x_mean_{0}'.format(ii)), getattr(fitted, 'y_mean_{0}'.format(ii))
+            ax1.plot(xcen-ref_cen_x,
+                     ycen-ref_cen_y,
+                     color=color,
+                     marker='o')
+            ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
+            offset = offset_to_point(ra, dec)
+            ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s')
+    else:
+        xcen, ycen = fitted.x_mean, fitted.y_mean
+        ax1.plot(xcen-ref_cen_x, ycen-ref_cen_y, color=color, marker='o')
+        ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
+        offset = offset_to_point(ra, dec)
+        ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s')
