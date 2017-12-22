@@ -5,12 +5,18 @@ from astropy.modeling import models, fitting
 from astropy import wcs
 from astropy import coordinates
 from spectral_cube import SpectralCube
+import pvextractor
 from gaussfit_catalog.core import gaussfit_image
 import paths
 import os
 import pylab as pl
 import shapely.geometry as geom
+from show_pv import show_keplercurves
+from edge_on_ring_velocity_model import thindiskcurve
+from constants import d_orion
 
+
+linename = 'Unknown_4'
 
 regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_Unknown_4.reg'))
 
@@ -99,6 +105,7 @@ diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
 diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs])
 
 center = coordinates.SkyCoord(diskends.ra.mean(), diskends.dec.mean(), frame=diskends.frame)
+center = regions.read_ds9(paths.rpath('sourceI_center.reg'))[1].center
 ref_cen_x, ref_cen_y = cube.wcs.celestial.wcs_world2pix(center.ra.deg, center.dec.deg, 0)
 
 def offset_to_point(xx, yy):
@@ -112,7 +119,11 @@ ref_offset = offset_to_point(center.ra.deg, center.dec.deg)
 fig1 = pl.figure(1)
 pl.clf()
 ax1 = fig1.add_subplot(1,2,1)
-ax2 = fig1.add_subplot(1,2,2)
+pvwcs = pvextractor.utils.wcs_slicing.slice_wcs(cube.wcs, pixscale)
+pvwcs.wcs.cdelt[1] /= 1e3
+pvwcs.wcs.cunit[1] = ' ' # force wcs.set to NOT revert to m/s
+ax2 = fig1.add_subplot(1,2,2, projection=pvwcs)
+trans = ax2.get_transform('world')
 
 diskends_x, diskends_y = cube.wcs.celestial.wcs_world2pix(diskends.ra.deg,
                                                           diskends.dec.deg,
@@ -139,10 +150,40 @@ for vel in results:
                      marker='o')
             ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
             offset = offset_to_point(ra, dec)
-            ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s')
+            ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
+                     transform=trans)
     else:
         xcen, ycen = fitted.x_mean, fitted.y_mean
         ax1.plot(xcen-ref_cen_x, ycen-ref_cen_y, color=color, marker='o')
         ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
         offset = offset_to_point(ra, dec)
-        ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s')
+        ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
+                 transform=trans)
+
+assumed_vcen = 6*u.km/u.s
+show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={})
+
+xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=20*u.au, rmax=50*u.au)
+ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
+         yy_thindisk + assumed_vcen,
+         'k:',
+         transform=trans)
+xx_thindisk, yy_thindisk = thindiskcurve(mass=5*u.M_sun, rmin=20*u.au, rmax=50*u.au)
+ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
+         yy_thindisk + assumed_vcen,
+         'k-',
+         transform=trans)
+
+xlim, ylim = pvwcs.wcs_world2pix([-0.2,0.2], [-25, 35], 0)
+ax2.set_ylim(*ylim)
+ax2.set_xlim(*xlim)
+ax2.yaxis.tick_right() # mpl version; incompatible with wcsaxes
+ax2.coords[1].set_ticklabel_position('r')
+ax2.coords[1].set_axislabel_position('r')
+ax2.set_ylabel("$V_{LSR}$ [km s$^{-1}$]")
+ax2.set_xlabel("Offset Position (arcsec)")
+ax1.set_xlabel("Offset RA (arcsec)")
+ax1.set_ylabel("Offset Dec (arcsec)")
+
+pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
+           bbox_inches='tight')

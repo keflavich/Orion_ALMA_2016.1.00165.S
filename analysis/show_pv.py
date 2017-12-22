@@ -39,7 +39,7 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
                                           vrange[0]*scalefactor,
                                           0)[0]*u.arcsec
     assert rightmost_position > 0
-    maxdist = ((rightmost_position)*415*u.pc).to(u.au, u.dimensionless_angles())
+    maxdist = ((rightmost_position)*d_orion).to(u.au, u.dimensionless_angles())
     assert maxdist > 0
 
 
@@ -53,7 +53,7 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
 
 
     trans = ax.get_transform('world')
-    length = (50*u.au / (415*u.pc)).to(u.deg, u.dimensionless_angles())
+    length = (50*u.au / (d_orion)).to(u.deg, u.dimensionless_angles())
     endpoints_x = u.Quantity([0.1*u.arcsec, 0.1*u.arcsec+length]) + leftmost_position
     ax.plot(endpoints_x.to(u.arcsec),
             ([vrange[0]+2]*2*u.km/u.s).to(u.m/u.s),
@@ -98,6 +98,7 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
                       linestyles=':::',
                       colors=['r','g','b'],
                       radii={19: ([30, 80], ['m', 'm'])},
+                      yaxis_unit=u.m/u.s
                      ):
 
     trans = ax.get_transform('world')
@@ -112,21 +113,21 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
 
     for mass,color,linestyle in zip(masses,colors,linestyles):
         # this is the 3d velocity, so assumes edge-on
-        vel = (((constants.G * mass*u.M_sun)/(positions))**0.5).to(u.m/u.s)
-        loc = (positions/(415*u.pc)).to(u.arcsec, u.dimensionless_angles())
-        ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), linestyle=linestyle,
+        vel = (((constants.G * mass*u.M_sun)/(positions))**0.5).to(yaxis_unit)
+        loc = (positions/(d_orion)).to(u.arcsec, u.dimensionless_angles())
+        ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), linestyle=linestyle,
                 color=color, linewidth=1.0, alpha=1.0, transform=trans)
-        #ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
-        #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
-        ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(u.m/u.s), linestyle=linestyle,
+        #ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
+        #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
+        ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), linestyle=linestyle,
                 color=color, linewidth=1.0, alpha=1.0, transform=trans)
 
     for mass in radii:
         for radius,color in zip(*radii[mass]):
             rad_as = (radius*u.au/d_orion).to(u.arcsec, u.dimensionless_angles())
-            vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(u.m/u.s)
+            vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(yaxis_unit)
             print("rad, vel: {0}, {1}".format(rad_as, vel))
             ax.plot(u.Quantity([-rad_as, rad_as]),
-                    (vcen+u.Quantity([-vel, vel])).to(u.m/u.s),
+                    (vcen+u.Quantity([-vel, vel])).to(yaxis_unit),
                     color=color, linestyle='--',
                     transform=trans)
