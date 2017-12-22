@@ -4,9 +4,7 @@
 
 \title{The Mass of Orion's Source I}
 \begin{abstract}
-    Abstract:
-    1. We resolve the disk
-    2. We measure the rotation curve
+   We resolve the disk around source I and measure the rotation curve.
 \end{abstract}
 
 \section{Introduction}
@@ -42,23 +40,32 @@ conversion factor of 15000 K Jy$^{-1}$.
 \subsection{Continuum}
 We detect the disk in the continuum at 3mm, 1mm, and 0.8mm, but we detect
 spectral lines only from the surfaces above and below the continuum disk at 1
-mm.  The nondetection of lines in the disk midplane is a strong indication
-that the continuum is optically thick.
+mm (Figure \ref{fig:contdata} shows the 1 mm continuum).  The nondetection of
+lines in the disk midplane is a strong indication that the continuum is
+optically thick, as has previously been noted
+\citep[e.g.][]{Plambeck2016a}.
 
 We fit the 1.3 mm continuum image with a simple model to determine the basic
 observational structure.  We used a linear model (i.e., an infinitely thin
-perfectly edge-on disk) for the disk, with endpoints, amplitude, and smoothing
-kernel as free parameters.  We determined that the disk is resolved in both
+perfectly edge-on disk) for the disk, with endpoints and amplitude as free parameters.
+This simple model left significant residuals, so we added a two-dimensional
+Gaussian smoothing kernel as another three free parameters to obtain a
+substantially better fit (see Figure \ref{fig:contmodel_residuals}).
+
+We determined that the disk is resolved in both
 directions, with a scale height of 0.076\arcsec (31.5 AU) and a length of 0.223
 \arcsec (92.5 AU), resulting in a radius $r_{disk}=46.3$ AU.  These measurements
 are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
-This simple model leaves a significant 2.5 mJy residual pointlike source at 
-J2000 05h35m14.5182s -05d22m30.6084s.  This additional source may be part of a flared
-inner disk, a companion (unlikely), or part of the inner outflow.  It could
-also be part of an accretion flow?  It would be worth monitoring this blob
-to see if it is in orbit or infalling or something else.
+This simple model leaves a significant 2.5 mJy residual pointlike source at
+J2000 05h35m14.5182s -05d22m30.6084s, which we measured by adding a point
+source to the model in Figure \ref{fig:contmodel_residuals}.  This additional
+source may be part of a flared or warped inner disk, a large companion, or part
+of the inner outflow.  Could it also be part of an accretion flow?  It would be
+worth monitoring this blob to see if it is in orbit or infalling or something
+else.  {\color{red} If we decide we believe this source is real, we will add
+a discussion section about it.}
 
 The disk has a brightness temperature ranging from 200-500 K.  These measurements
 agree well with the continuum model of \citet{Plambeck2016a}, who inferred
@@ -71,9 +78,10 @@ the presence of an optically thick $T=500$ K surface from the SED.
 bottom right, with size $0.052\arcsec\times0.030\arcsec$ at PA$=103\degrees$.
 The left panel shows the full intensity range, while the right panel
 shows a narrower stretch to highlight some of the extended features
-around the disk, which may be imaging artifacts {\color{red}TODO: might
-be able to clean this up a bit, but it might not be worth it for this paper
-because it could require indefinite commitment.}.
+around the disk, which may be imaging artifacts {\color{red}TODO: We might
+be able to clean this up a bit, but it is not obviously worthwhile for this paper
+because it could require indefinite commitment and would add little to the key
+results.}.
 Both panels have flux density and brightness temperature colorbars.
 }
 {fig:continuum_data}{1}{3.5in}
@@ -112,7 +120,9 @@ The water line traces an X-shaped feature above and below the disk, closely
 resembling the overall distribution of SiO masers.
 
 While the continuum disk truncates at r=50 AU, the lines show emission
-beyond this radius, with \water exhibiting emission out to $r\sim100$ AU.
+beyond this radius, with \water exhibiting emission out to $r\sim100$ AU
+{\color{red} This is a coarse estimate, and the water probably only goes out to
+$r>50$ AU above and below the disk}.
 
 \subsection{Other lines}
 Several unidentified lines exhibit emission at the outer edge of the continuum disk.
@@ -120,8 +130,10 @@ The peak signal from these lines appears within the $T_B\gtrsim75$ K contour
 (Figure \ref{fig:U1peak}).
 Their lack of association with the inner disk suggests that they trace the outer
 surface of an optically thick disk.
-If the lines are at a similar temperature, but approach an optical depth near unity
-at a lower column density of \hh than the dust, they should appear in emission.
+If a molecule is at a similar temperature to the dust, but its line approaches
+an optical depth near unity at a lower column density of \hh than the dust,
+it should appear in emission.  These lines therefore appear to trace the disk
+directly and provide the best direct tools for measuring the disk kinematics.
 
 \FigureTwo
 {{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak}.png}
@@ -153,14 +165,17 @@ velocities as a function of radius; as shown in Figures \ref{fig:h2okepler},
 there is \water emission spanning at least from radius 10 to 100 AU.  Many
 other molecules, most of
 which we have not been able to identify, span a range of 30-80 AU, while SiS
-spans 30 AU to an unconstrained outer radius.
+spans 30 AU to an unconstrained outer radius.  Because the water line,
+which traces emission mostly above and below the disk, shows a good kinematic
+match to the unknown lines that more directly trace the disk, we argue it is
+a good tracer of the disk's kinematics.
 
-We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge
-of the \water line reasonably well, and is also an acceptable match to
-the outer profiles of other lines.  A smaller mass, such as the 5-10 \msun
-suggested previously \citep{Plambeck2016a,Hirota2014a}, is well within the
-regime where emission is detected outside of the Keplerian curve.  These lower
-masses are therefore excluded.
+We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge of
+the \water line reasonably well, and is also an acceptable match to the outer
+profiles of other lines.  A smaller mass, such as the 5-10 \msun suggested
+previously \citep{Plambeck2016a,Hirota2014a}, is inconsistent with the data:
+for such masses, emission is clearly detected outside of the Keplerian curve.
+These lower masses are therefore excluded.  
 
 \FigureTwo
 {figures/H2O_kepler_SeifriedPlot_0.01arcsec.png}
@@ -181,8 +196,8 @@ a drawn line right now], so it includes significant amounts of `superdisk'
 emission.  The right version is extracted from a narrower $\pm0.01\arcsec$
 range, less than a beam width, and shows the best approximation of the midplane
 available.
-{\color{red} Why are these figures different sizes?  They are from nearly
-identical data.}
+{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
+identical data and \emph{should} be identical shapes.}
 }
 {fig:h2okepler}{1}{3.5in}
 
@@ -191,25 +206,38 @@ There are two reasons our measurements differ from those of \citet{Plambeck2016a
 \citet{Hirota2014a}, and \citet{Matthews2010a}: first is our substantially better
 spatial resolution, and second is the method we use to infer the mass from the
 rotation curve.  Our method is motivated by the simulations of \citet{Seifried2016a},
-who show that the centroid-based method used by the other authors systematically
+who show that the centroid-based method used by the other authors (which they were forced
+to use because of the lower resolution of previous data) systematically
 underestimates the central source mass.
 
-what about turbulence?  Other authors have argued that there should be unresolved
-supersonic turbulence.  If there's not, and we assume $T\sim1000$ K, the
-linewidth is 2.7 \kms, which is enough to lead us to overestimate the mass by a
-non-negligible amount...  {\color{red} How can we best correct for the thermal
-(and maybe turbulent) linewidth?  Subtract 1/2 of the sigma-width from the extrema?
-Or perhaps subtract the HWHM?}
+{\color{red} Note to coauthors:
+What uncertainties are there in these measurements?
+Do we need to account for turbulent line broadening?
+\citet{Flaherty2017a} suggest that there is negligible turbulence in low-mass disks,
+but what about Source I?
+
+If there's no turbulence, and we assume $T\sim1000$ K, the
+linewidth of \hh is 2.7 \kms, which is enough to lead us to overestimate the mass by a
+non-negligible amount.  Do we need to correct for this by subtracting off (2.7 / 2) \kms
+from the line extrema?  Or, do we assume that the molecules we are detecting have
+much narrower thermal broadening because they come from massive molecules, e.g., \methanol,
+such that the linewidths are $<1 \kms$?
+}
 
 
 \section{Discussion}
+{\color{red} Note to coauthors: the discussion is a placeholder, but highlights
+the key topics we are likely to discuss.  We'll expand on this further when
+we are confident in the measurements.}
 We measure a mass of XXX, which is higher than reported by Hirota, Matthews, etc.
 
 Reasons:
-1. Higher frequency (336 GHz, for example) is more optically thick, traces less
+\begin{itemize}
+    \item1. Higher frequency (336 GHz, for example) is more optically thick, traces less
 of the disk.
-2. Method: Siefried showed that vel-of-highest-channel is better than centroid-based
+\item2. Method: Siefried showed that vel-of-highest-channel is better than centroid-based
 approaches
+\end{itemize}
 
 \subsection{Is this disk consistent with the dynamical ejection model?}
 \citet{Plambeck2016a} argue that both the mass of Source I and the presence of the disk
@@ -225,6 +253,10 @@ explosive event.
 
 \appendix
 \section{Other unidentified lines with interesting morphology}
+In this section, we show two of the other unidentified lines that appear to trace
+the disk.  These figures (\ref{fig:U4} and \ref{fig:U5}) show that the lines
+are nearly absent from the continuum-bright disk, but are detected along the upper and
+lower surfaces and at the extrema along the disk.  The associated position-velocity diagrams
 
 \FigureThree
 {{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0}.png}
@@ -234,6 +266,8 @@ explosive event.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
 The overlaid dotted curves show Keplerian velocity profiles for 5 (red), 10 (green), 20 (blue) \msun.
 The dashed magenta lines show the velocity curves at r=30 and 80 AU.
+{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
+guess at the unidentified line's rest velocity.}
 }
 {fig:U4}{1}{2.25in}
 
@@ -245,6 +279,8 @@ The dashed magenta lines show the velocity curves at r=30 and 80 AU.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
 The overlaid dotted curves show Keplerian velocity profiles for 5 (red), 10 (green), 20 (blue) \msun.
 The dashed magenta lines show the velocity curves at r=30 and 80 AU.
+{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
+guess at the unidentified line's rest velocity.}
 }
 {fig:U5}{1}{2.25in}
 
