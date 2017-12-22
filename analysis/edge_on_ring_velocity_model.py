@@ -24,7 +24,36 @@ def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
     return (u.Quantity(x_plt, u.au),
             u.Quantity(np.nanmean((v_los * mask1), axis=0), yaxis_unit))
 
-    #pl.clf()
-    #x_plt = (xx[0,:] - npix/2)/npix/2 * maxdist/np.sqrt(2)
-    #pl.plot(x_plt, v_los.mean(axis=0))
-    #pl.plot(x_plt, np.nanmean((v_los * mask1), axis=0))
+if __name__ == "__main__":
+
+    import pylab as pl
+    import paths
+
+
+    fig1 = pl.figure(1)
+    fig1.clf()
+    ax = fig1.gca()
+
+    xx,yy = thindiskcurve(mass=20*u.M_sun, rmin=20*u.au, rmax=50*u.au)
+    ax.plot(xx, yy, label="M=20, 20 < r < 50", linestyle='-')
+
+    xx,yy = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=50*u.au)
+    ax.plot(xx, yy, label="M=20, 30 < r < 50", linestyle='-')
+
+    xx,yy = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
+    ax.plot(xx, yy, label="M=20, 30 < r < 80", linestyle='-')
+
+    xx,yy = thindiskcurve(mass=5*u.M_sun, rmin=20*u.au, rmax=50*u.au)
+    ax.plot(xx, yy, label="M=5, 20 < r < 50", linestyle='--')
+
+    xx,yy = thindiskcurve(mass=5*u.M_sun, rmin=30*u.au, rmax=50*u.au)
+    ax.plot(xx, yy, label="M=5, 30 < r < 50", linestyle='--')
+
+    xx,yy = thindiskcurve(mass=5*u.M_sun, rmin=30*u.au, rmax=80*u.au)
+    ax.plot(xx, yy, label="M=5, 30 < r < 80", linestyle='--')
+
+
+    ax.set_xlabel("Offset (AU)")
+    ax.set_ylabel("$V_{obs}$ [km s$^{-1}$]")
+    pl.legend(loc='best')
+    pl.savefig(paths.fpath('velcentroid/radius_mass_demo.pdf'), bbox_inches='tight')

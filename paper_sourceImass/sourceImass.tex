@@ -292,7 +292,17 @@ lines.  Unlike previous works, we have had to fit multiple Gaussians in several
 channels, since we resolve the structure and see `blobs' both above and below
 the disk.
 
-Figure \ref{fig:velcen} shows the results of this analysis.
+Figure \ref{fig:velcen} shows the results of this analysis.  While the
+lower-mass source agrees better with the tilt of the velocity curve, it fails
+to reproduce the high observed maximum velocities.  Different inner-radius
+cutoffs have an effect on the inner velocity profile slope similar to changing
+the central mass, so it is likely that the disk parameters, rather than the
+central source mass, dominate our uncertainties in this approach. 
+
+Figure \ref{fig:massradiusdemo} demonstrates this effect: the inner slope of
+a 5 \msun, $20 \mathrm{AU} < r < 50 \mathrm{AU}$ disk is indistinguishable
+from a 20 \msun , $30 \mathrm{AU} < r < 80 \mathrm{AU}$ disk, though the latter
+extends to higher velocity and radius.
 
 \Figure{figures/Unknown_4_pp_pv_plots.pdf}
 {Results of the centroid-velocity analysis.
@@ -312,5 +322,10 @@ Both models show clear discrepancies with the data, likely indicating that
 the selected cutoff radii are incorrect.
 }
 {fig:velcen}{1}{6in}
+
+\Figure{figures/radius_mass_demo.pdf}
+{Plots of the predicted centroid rotation curves for different masses
+and inner and outer radial cutoffs.}
+{fig:massradiusdemo}{1}{6in}
 
 \end{document}
