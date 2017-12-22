@@ -144,6 +144,10 @@ in contours.  Continuum contours are shown in red at levels of 1, 5, 10, 20, and
 mJy \perbeam (15, 75, 150, 300, 450 K).
 The \water and unknown line clearly trace different physical structures, as
 they exhibit no coincident emission.
+{\color{red} Note to coauthors: there is a slight difference in position between the
+center of the continuum emission and the midpoint of the two line emission blobs.
+Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
+analysis in the Appendices.}
 }
 {fig:U1peak}{1}{3in}
 
@@ -291,6 +295,16 @@ profiles to each `blob' in each velocity channel in the PPV cubes of spectral
 lines.  Unlike previous works, we have had to fit multiple Gaussians in several
 channels, since we resolve the structure and see `blobs' both above and below
 the disk.
+
+{\color{red} Question to coauthors: How should I implement this modeling?
+My current implementation lives at
+\url{https://github.com/keflavich/Orion_ALMA_2016.1.00165.S/blob/master/analysis/edge_on_ring_velocity_model.py},
+and effectively assumes an infinitely small beam.  A larger effective beam will
+have some effect on the observed velocity profile; I believe it will weight
+toward higher velocities, therefore steepening the slope.  I don't incorporate
+line width at all in this analysis, but I can't convince myself it should have
+any effect under the assumption that the disk is symmetric and we are measuring
+centroids.}
 
 Figure \ref{fig:velcen} shows the results of this analysis.  While the
 lower-mass source agrees better with the tilt of the velocity curve, it fails
