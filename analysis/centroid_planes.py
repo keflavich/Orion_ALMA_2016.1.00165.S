@@ -128,8 +128,12 @@ trans = ax2.get_transform('world')
 diskends_x, diskends_y = cube.wcs.celestial.wcs_world2pix(diskends.ra.deg,
                                                           diskends.dec.deg,
                                                           0)
-ax1.plot(diskends_x-ref_cen_x, diskends_y-ref_cen_y, 'k-', linewidth=3, alpha=0.2, zorder=-100)
+ax1.plot((diskends_x-ref_cen_x)*pixscale.to(u.arcsec),
+         (diskends_y-ref_cen_y)*pixscale.to(u.arcsec), 'k-', linewidth=3, alpha=0.2, zorder=-100)
 ax1.plot(0, 0, 'ko', markersize=5, alpha=0.5, zorder=-50)
+
+loc = pl.matplotlib.ticker.MultipleLocator(base=0.04)
+ax1.xaxis.set_major_locator(loc)
 
 cmap = pl.cm.Spectral_r
 cmap = pl.cm.spectral
@@ -185,6 +189,8 @@ ax2.set_ylabel("$V_{LSR}$ [km s$^{-1}$]")
 ax2.set_xlabel("Offset Position (arcsec)")
 ax1.set_xlabel("Offset RA (arcsec)")
 ax1.set_ylabel("Offset Dec (arcsec)")
+ax1.set_xlim(-0.1, 0.10)
+ax1.set_ylim(-0.12, 0.12)
 
 pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
            bbox_inches='tight')
