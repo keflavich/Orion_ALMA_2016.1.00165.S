@@ -10,7 +10,7 @@ import os
 import pylab as pl
 
 
-regs = regions.read_ds9('../regions/velo_centroid_guesses_Unknown_4.reg')
+regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_Unknown_4.reg'))
 
 guesses = {}
 
