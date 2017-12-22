@@ -144,8 +144,8 @@ for vel in results:
     if n_submodels > 1:
         for ii in range(n_submodels):
             xcen, ycen = getattr(fitted, 'x_mean_{0}'.format(ii)), getattr(fitted, 'y_mean_{0}'.format(ii))
-            ax1.plot(xcen-ref_cen_x,
-                     ycen-ref_cen_y,
+            ax1.plot((xcen-ref_cen_x)*pixscale.to(u.arcsec),
+                     (ycen-ref_cen_y)*pixscale.to(u.arcsec),
                      color=color,
                      marker='o')
             ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
@@ -154,7 +154,8 @@ for vel in results:
                      transform=trans)
     else:
         xcen, ycen = fitted.x_mean, fitted.y_mean
-        ax1.plot(xcen-ref_cen_x, ycen-ref_cen_y, color=color, marker='o')
+        ax1.plot((xcen-ref_cen_x)*pixscale.to(u.arcsec),
+                 (ycen-ref_cen_y)*pixscale.to(u.arcsec), color=color, marker='o')
         ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
         offset = offset_to_point(ra, dec)
         ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
