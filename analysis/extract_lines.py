@@ -14,6 +14,8 @@ for sourcename in ('SourceI', 'BN'):
     for linename, linefreq in disk_lines.items():
         if 'H30a' in linename:
             vrange = [-120,130]
+        elif 'SiO' in linename:
+            vrange = [-50,60]
         else:
             vrange = [-30,40]
 
