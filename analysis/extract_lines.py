@@ -6,74 +6,75 @@ from spectral_cube import SpectralCube, wcs_utils, tests
 import pylab as pl
 from lines import disk_lines
 
-ftemplate = '/Volumes/external/orion/Orion{1}_only.B6.robust0.5.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
+ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust0.5.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
 
 conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 
-for sourcename in ('SourceI', 'BN'):
-    for linename, linefreq in disk_lines.items():
-        if 'H30a' in linename:
-            vrange = [-120,130]
-        elif 'SiO' in linename:
-            vrange = [-50,60]
-        else:
-            vrange = [-30,40]
-
-        for spw in (0,1,2,3):
-            filename = ftemplate.format(spw, sourcename)
-            if os.path.exists(filename):
-                cube = SpectralCube.read(filename)
+for band in ('B3', 'B6'):
+    for sourcename in ('SourceI', 'BN'):
+        for linename, linefreq in disk_lines.items():
+            if 'H30a' in linename:
+                vrange = [-120,130]
+            elif 'SiO' in linename:
+                vrange = [-50,60]
             else:
-                log.exception("File {0} does not exist".format(filename))
-                continue
+                vrange = [-30,40]
 
-            fmin, fmax = cube.spectral_extrema
+            for spw in (0,1,2,3):
+                filename = ftemplate.format(spw, sourcename, band)
+                if os.path.exists(filename):
+                    cube = SpectralCube.read(filename)
+                else:
+                    log.exception("File {0} does not exist".format(filename))
+                    continue
 
-            if linefreq > fmin and linefreq < fmax:
+                fmin, fmax = cube.spectral_extrema
 
-                print("Writing {0} in spw {1}".format(linename, spw))
+                if linefreq > fmin and linefreq < fmax:
 
-                scube = (cube.with_spectral_unit(u.km/u.s,
-                                                 velocity_convention='radio',
-                                                 rest_value=linefreq)
-                         .spectral_slab(vrange[0]*u.km/u.s,
-                                        vrange[1]*u.km/u.s))
+                    print("Writing {0} in spw {1}".format(linename, spw))
 
-                cubeK = scube.to(u.K)
-                cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K.fits').format(linename, sourcename),
-                            overwrite=True)
+                    scube = (cube.with_spectral_unit(u.km/u.s,
+                                                     velocity_convention='radio',
+                                                     rest_value=linefreq)
+                             .spectral_slab(vrange[0]*u.km/u.s,
+                                            vrange[1]*u.km/u.s))
 
-                m0 = cubeK.moment0(axis=0)
-                mx = cubeK.max(axis=0)
+                    cubeK = scube.to(u.K)
+                    cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K.fits').format(linename, sourcename),
+                                overwrite=True)
 
-                mx.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.fits').format(linename,
-                                                                                                                       sourcename),
-                         overwrite=True)
-                m0.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.fits').format(linename,
-                                                                                                                          sourcename),
-                         overwrite=True)
+                    m0 = cubeK.moment0(axis=0)
+                    mx = cubeK.max(axis=0)
 
-                mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
-                             .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
-                mx.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
-                                                            0.02, 0.03, 0.04,
-                                                            0.05],
-                                           colors=['r']*10)
-                mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
-                mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
-                                   .format(linename, sourcename))
+                    mx.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.fits').format(linename,
+                                                                                                                           sourcename),
+                             overwrite=True)
+                    m0.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.fits').format(linename,
+                                                                                                                              sourcename),
+                             overwrite=True)
 
-                pl.figure(1).clf()
+                    mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
+                                 .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
+                    mx.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
+                                                                0.02, 0.03, 0.04,
+                                                                0.05],
+                                               colors=['r']*10)
+                    mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
+                    mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
+                                       .format(linename, sourcename))
 
-                m0.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
-                             .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
+                    pl.figure(1).clf()
 
-                m0.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
-                                                            0.02, 0.03, 0.04,
-                                                            0.05],
-                                           colors=['r']*10)
-                m0.FITSFigure.colorbar.set_axis_label_text("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
-                m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
-                                   .format(linename, sourcename))
+                    m0.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
+                                 .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})
 
-                pl.figure(1).clf()
+                    m0.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
+                                                                0.02, 0.03, 0.04,
+                                                                0.05],
+                                               colors=['r']*10)
+                    m0.FITSFigure.colorbar.set_axis_label_text("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
+                    m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.png')
+                                       .format(linename, sourcename))
+
+                    pl.figure(1).clf()

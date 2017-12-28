@@ -17,7 +17,8 @@ from constants import d_orion
 
 
 for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
-                                    ('SiOv=1_5-4', (-23, 30), (-0.2, 0.2, -0.2, 0.2)),
+                                    ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2)),
+                                    ('H2Ov2=1_5(5,0)-6(4,3)', (-20, 30), (-0.2, 0.2, -0.2, 0.2)),
                                    ):
 
     regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
