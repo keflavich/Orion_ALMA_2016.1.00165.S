@@ -17,6 +17,7 @@ from constants import d_orion
 
 
 for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
+                                    ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
                                     ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2)),
                                     ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2)),
                                    ):
@@ -170,11 +171,11 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
     assumed_vcen = 6.5*u.km/u.s
     show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={})
 
-    xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
-    ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
-             yy_thindisk + assumed_vcen,
-             'k:',
-             transform=trans)
+    # xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
+    # ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
+    #          yy_thindisk + assumed_vcen,
+    #          'k:',
+    #          transform=trans)
     xx_thindisk, yy_thindisk = thindiskcurve(mass=14*u.M_sun, rmin=30*u.au, rmax=70*u.au)
     ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
              yy_thindisk + assumed_vcen,
