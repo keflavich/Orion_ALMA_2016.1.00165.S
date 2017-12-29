@@ -46,6 +46,7 @@ def make_cont_ms():
 def makefits(myimagebase):
     impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.tt0.pbcor', fitsimage=myimagebase+'.image.tt0.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
+    exportfits(imagename=myimagebase+'.image.tt0', fitsimage=myimagebase+'.image.tt0.fits', dropdeg=True, overwrite=True)
     exportfits(imagename=myimagebase+'.image.tt1', fitsimage=myimagebase+'.image.tt1.fits', dropdeg=True, overwrite=True) # export the corrected image
     exportfits(imagename=myimagebase+'.pb.tt0', fitsimage=myimagebase+'.pb.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.model.tt0', fitsimage=myimagebase+'.model.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
@@ -53,6 +54,7 @@ def makefits(myimagebase):
     exportfits(imagename=myimagebase+'.residual.tt0', fitsimage=myimagebase+'.residual.tt0.fits', dropdeg=True, overwrite=True) # export the PB image
     exportfits(imagename=myimagebase+'.alpha', fitsimage=myimagebase+'.alpha.fits', dropdeg=True, overwrite=True)
     exportfits(imagename=myimagebase+'.alpha.error', fitsimage=myimagebase+'.alpha.error.fits', dropdeg=True, overwrite=True)
+    exportfits(imagename=myimagebase+'.psf.tt0', fitsimage=myimagebase+'.psf.tt0.fits', dropdeg=True, overwrite=True) # export the PSF image
 
 
 if __name__ == "__main__":
@@ -66,8 +68,11 @@ if __name__ == "__main__":
     for robust in (-2, 0.5, 2):
         contimagename = 'Orion_SourceI_B6_continuum_r{0}_dirty'.format(robust)
 
-        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-            rmtables(contimagename+ext)
+        for suffix in ('', '.tt0', '.tt1', '.tt2'):
+            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                if os.path.exists(todel):
+                    os.system('rm -rf {0}'.format(todel))
 
         tclean(vis=contvis,
                imagename=contimagename,
@@ -94,8 +99,11 @@ if __name__ == "__main__":
     for robust in (-2, 0.5, 2):
         contimagename = 'Orion_SourceI_B6_continuum_r{0}'.format(robust)
 
-        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-            rmtables(contimagename+ext)
+        for suffix in ('', '.tt0', '.tt1', '.tt2'):
+            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                if os.path.exists(todel):
+                    os.system('rm -rf {0}'.format(todel))
 
         tclean(vis=contvis,
                imagename=contimagename,

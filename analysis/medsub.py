@@ -28,4 +28,4 @@ for source in ('SourceI', 'BN'):
 
         medsub = cube-med
 
-        medsub.write(fn.replace(".image.pbcor.fits", "_medsub.image.pbcor.fits"), overwrite=True)
+        medsub.write(fn.replace(".image.pbcor.fits", "_medsub.image.pbcor.fits").format(source=source), overwrite=True)

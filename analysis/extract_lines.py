@@ -6,11 +6,12 @@ from spectral_cube import SpectralCube, wcs_utils, tests
 import pylab as pl
 from lines import disk_lines
 
-ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust0.5.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
+ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust0.5.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
 conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 
-for band in ('B3', 'B6'):
+for band,suffix in (('B3', 'clarkclean10000'),
+                    ('B6', 'maskedclarkclean10000')):
     for sourcename in ('SourceI', 'BN'):
         for linename, linefreq in disk_lines.items():
             if 'H30a' in linename:
@@ -21,7 +22,7 @@ for band in ('B3', 'B6'):
                 vrange = [-30,40]
 
             for spw in (0,1,2,3):
-                filename = ftemplate.format(spw, sourcename, band)
+                filename = ftemplate.format(spw, sourcename, band, suffix=suffix)
                 if os.path.exists(filename):
                     cube = SpectralCube.read(filename)
                 else:
