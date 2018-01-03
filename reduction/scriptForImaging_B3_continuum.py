@@ -103,6 +103,7 @@ if __name__ == "__main__":
                outframe='LSRK',
                veltype='radio',
                savemodel='none',
+               uvrange='50~300000m',
               )
 
         makefits(contimagename)
@@ -142,6 +143,7 @@ if __name__ == "__main__":
                outframe='LSRK',
                veltype='radio',
                savemodel='none',
+               uvrange='50~300000m',
               )
 
         makefits(contimagename)
@@ -152,15 +154,15 @@ if __name__ == "__main__":
  
     dirtyimage = 'Orion_SourceI_B3_continuum_r-2_dirty.image.tt0'
     ia.open(dirtyimage)
-    ia.calcmask(mask='"{0}" > 0.002'.format(dirtyimage), name='B3_clean_mask_2.0mJy')
+    ia.calcmask(mask='"{0}" > 0.0025'.format(dirtyimage), name='B3_clean_mask_2.5mJy')
     ia.close()
     makemask(mode='copy', inpimage=dirtyimage,
-             inpmask=dirtyimage+":B3_clean_mask_2.0mJy", output='B3_clean_2.0mJy.mask',
+             inpmask=dirtyimage+":B3_clean_mask_2.5mJy", output='B3_clean_2.5mJy.mask',
              overwrite=True)
-    exportfits('B3_clean_2.0mJy.mask', 'B3_clean_2.0mJy.mask.fits', dropdeg=True, overwrite=True)
+    exportfits('B3_clean_2.5mJy.mask', 'B3_clean_2.5mJy.mask.fits', dropdeg=True, overwrite=True)
  
     robust = -2
-    contimagename = 'Orion_SourceI_B3_continuum_r{0}.mask2mJy.clean1mJy'.format(robust)
+    contimagename = 'Orion_SourceI_B3_continuum_r{0}.mask2.5mJy.clean0.5mJy'.format(robust)
  
     imsize = params[robust]['imsize']
     cell = params[robust]['cell']
@@ -184,12 +186,13 @@ if __name__ == "__main__":
            weighting = 'briggs',
            robust = robust,
            niter = int(1e5),
-           mask='B3_clean_2.0mJy.mask',
-           threshold = '1mJy',
+           mask='B3_clean_2.5mJy.mask',
+           threshold = '0.5mJy',
            interactive = False,
            outframe='LSRK',
            veltype='radio',
            savemodel='none',
+           uvrange='50~300000m',
          )
 
     makefits(contimagename)

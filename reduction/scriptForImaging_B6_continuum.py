@@ -159,8 +159,7 @@ if __name__ == "__main__":
              overwrite=True)
     exportfits('B6_clean_5.0mJy.mask', 'B6_clean_5.0mJy.mask.fits', dropdeg=True, overwrite=True)
 
-    robust = -2
-    contimagename = 'Orion_SourceI_B6_continuum_r{0}.mask5mJy.clean4mJy'.format(robust)
+    contimagename = 'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy'
 
     for suffix in ('', '.tt0', '.tt1', '.tt2'):
         for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
@@ -179,7 +178,7 @@ if __name__ == "__main__":
            imsize = imsize,
            cell= cell,
            weighting = 'briggs',
-           robust = robust,
+           robust = -2,
            niter = int(1e5),
            mask='B6_clean_5.0mJy.mask',
            threshold = '4mJy',
@@ -187,6 +186,7 @@ if __name__ == "__main__":
            outframe='LSRK',
            veltype='radio',
            savemodel='none',
+           uvrange='50~36000m',
           )
 
     makefits(contimagename)
@@ -221,5 +221,5 @@ if __name__ == "__main__":
                outframe='LSRK',
                veltype='radio',
                savemodel='none',
-               uvrange='500~36000m',
+               uvrange='250~36000m',
               )

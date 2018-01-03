@@ -13,7 +13,9 @@ coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
 for basefn in ('Orion_SourceI_B3_continuum_r-2{suffix}',
                'Orion_SourceI_B6_continuum_r-2_longbaselines{suffix}',
                'Orion_SourceI_B3_continuum_r-2.mask2mJy.clean1mJy{suffix}',
-               'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy{suffix}'):
+               'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy{suffix}',
+               'Orion_SourceI_B3_continuum_r-2.mask2.5mJy.clean0.5mJy{suffix}',
+              ):
 
     for suffix in ('image.tt0.pbcor.fits', 'residual.tt0.fits', 'model.tt0.fits'):
 

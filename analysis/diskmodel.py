@@ -11,11 +11,13 @@ import paths
 import regions
 from astropy.nddata import Cutout2D
 from mpl_plot_templates import asinh_norm
+import latex_info
+from latex_info import strip_trailing_zeros, round_to_n
 
 import pylab as pl
 
 # fh = fits.open('/Users/adam/work/orion/alma_lb/FITS/uid_A001_X88e_X1d3_calibrated_final_cont.pbcor.fits')
-# 
+#
 # cropslice_x = slice(3510,3610)
 # cropslice_y = slice(3520,3620)
 # data = fh[0].data.squeeze()[cropslice_y, cropslice_x]
@@ -23,9 +25,11 @@ import pylab as pl
 # hdu = fits.PrimaryHDU(data=data, header=mywcs.to_header())
 # hdu.writeto(paths.dpath('OrionSourceI_continuum_cutout_for_modeling.fits'),
 #             overwrite=True)
+
+fit_results = {}
  
-for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 225*u.GHz, 'B6'),
-                       ('Orion_SourceI_B3_continuum_r-2_SourceIcutout.image.tt0.pbcor.fits', 100*u.GHz, 'B3'), # TODO: replace freq
+for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       ('Orion_SourceI_B3_continuum_r-2_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
                       ]:
 
     fh = fits.open(paths.dpath(fn))
@@ -162,7 +166,8 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
 
     ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result3.params['ptsrcx'], result3.params['ptsrcy'], 0)
     fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
-    print("Fitted point source location = {0}".format(fitted_ptsrc.to_string('hmsdms')))
+    print("Fitted point source location = {0} {1}".format(fitted_ptsrc.to_string('hmsdms'), fitted_ptsrc.frame.name))
+    print("Fitted point source amplitude: {0}".format(result3.params['ptsrcamp']))
 
     print("diskends: {0}".format(diskends))
     fitted_diskends_mod1 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result.params['x1'], result.params['x2']], [result.params['y1'], result.params['y2']], 0),
@@ -177,6 +182,39 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
                                                 unit=(u.deg, u.deg),
                                                 frame=mywcs.wcs.radesys.lower())
     print("fitted diskends (model 3): {0}".format(fitted_diskends_mod3))
+
+    posang = np.arctan2(result.params['x2']-result.params['x1'],
+                        result.params['y2']-result.params['y1'])*u.rad
+    print("posang={0}".format(posang.to(u.deg)))
+
+    fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
+                                  result2.params['kernelminor']*u.arcsec,
+                                  result2.params['kernelpa']*u.deg,)
+    # NOTE: the fitted beam *is* the source size after a revision to the model
+    # in which the input beam is convolved with the observed beam
+    #source_size = fitted_beam.deconvolve(observed_beam)
+    source_size = fitted_beam
+    print("Fitted source (disk vertical scale) size: {0}".format(fitted_beam.__repr__()))
+    print("Real source (disk vertical scale) size: {0}".format(source_size.__repr__()))
+    scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
+    print("Scale height: {0}".format(scaleheight))
+
+    length_as = (((result2.params['x2'] - result2.params['x1'])**2 +
+                  (result2.params['y2']-result2.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
+    length_au = (length_as * d_orion).to(u.au, u.dimensionless_angles())
+
+    print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g}  or radius {2:0.3g}"
+          .format(length_as, length_au, length_au/2))
+    print()
+    print()
+
+    fit_results[freq] = {
+                         'Disk Scaleheight': scaleheight,
+                         'Disk Radius': length_au/2,
+                         'Disk PA': posang,
+                         'Ptsrc Position': fitted_ptsrc,
+                         'Ptsrc Amp': result3.params['ptsrcamp'].value,
+                        }
 
 
     pl.figure(1)
@@ -247,29 +285,6 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
     pl.imshow(data_K, interpolation='none', origin='lower', cmap='viridis')
     pl.colorbar()
 
-
-    posang = np.arctan2(result.params['x2']-result.params['x1'],
-                        result.params['y2']-result.params['y1'])*u.rad
-    print("posang={0}".format(posang.to(u.deg)))
-
-    fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
-                                  result2.params['kernelminor']*u.arcsec,
-                                  result2.params['kernelpa']*u.deg,)
-    # NOTE: the fitted beam *is* the source size after a revision to the model
-    # in which the input beam is convolved with the observed beam
-    #source_size = fitted_beam.deconvolve(observed_beam)
-    source_size = fitted_beam
-    print("Fitted source size: {0}".format(fitted_beam.__repr__()))
-    print("Real source size: {0}".format(source_size.__repr__()))
-    scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
-    print("Scale height: {0}".format(scaleheight))
-
-    length_as = (((result2.params['x2'] - result2.params['x1'])**2 +
-                  (result2.params['y2']-result2.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
-    length_au = (length_as * d_orion).to(u.au, u.dimensionless_angles())
-
-    print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g}  or radius {2:0.3g}"
-          .format(length_as, length_au, length_au/2))
 
 
     # publication figures
@@ -366,3 +381,43 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
     pl.subplots_adjust(wspace=0, hspace=0.05)
 
     fig6.savefig(paths.fpath("contmodel/models_and_residuals_{0}.pdf".format(band)), bbox_inches='tight')
+
+
+def crd_or_qty(x):
+    try:
+        return u.Quantity(x)
+    except TypeError:
+        return coordinates.SkyCoord(x)
+
+freqs = list(fit_results.keys())
+resultkeys = list(fit_results[freqs[0]].keys())
+tabledata = [table.Column(data=u.Quantity(freqs), name='Frequency',)]
+tabledata += [table.Column(data=crd_or_qty([fit_results[freq][key]
+                                            for freq in freqs]),
+                           name=key)
+              for key in resultkeys]
+tbl = table.Table(tabledata)
+tbl['Ptsrc Amp'] *= 1000
+tbl['Ptsrc Amp'].unit = u.mJy
+
+
+formats = {'Ptsrc Position': lambda x: x.to_string('hmsdms'),
+           'Ptsrc Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Disk Scaleheight': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Disk Radius': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+          }
+
+
+latexdict = latex_info.latexdict.copy()
+latexdict['header_start'] = '\label{tab:continuum_fit_parameters}'
+latexdict['caption'] = 'Continuum Fit Parameters'
+latexdict['preamble'] = '\centering'
+latexdict['tablefoot'] = ('\n\par The centroid coordinate of the point source '
+                          'is specified in ICRS coordinates.')
+
+
+
+tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
+          formats=formats,
+          latexdict=latexdict, overwrite=True)

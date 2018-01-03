@@ -10,6 +10,8 @@ datapath = os.path.join(root, 'FITS/')
 regpath = os.path.join(root, 'regions/')
 figurepath = os.path.join(root, 'figures/')
 redpath = os.path.join(root, 'reduction/')
+paperpath = os.path.join(root, 'paper_sourceImass')
+paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
 
 def dpath(x, datapath=datapath):
     return os.path.join(datapath, x)
@@ -22,3 +24,9 @@ def fpath(x, figurepath=figurepath):
 
 def redpath(x, redpath=redpath):
     return os.path.join(redpath, x)
+
+def texpath(x, paperpath=paperpath):
+    return os.path.join(paperpath, x)
+
+def texfpath(x, paperfigpath=paperfigpath):
+    return os.path.join(paperfigpath, x)
