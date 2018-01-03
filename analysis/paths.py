@@ -1,6 +1,10 @@
 import os
+import socket
 
-root = os.path.expanduser('~/work/orion/alma_lb/')
+if 'nmpost' in socket.gethostname():
+    root = '/lustre/aginsbur/orion/2016.1.00165.S/'
+else:
+    root = os.path.expanduser('~/work/orion/alma_lb/')
 
 datapath = os.path.join(root, 'FITS/')
 regpath = os.path.join(root, 'regions/')

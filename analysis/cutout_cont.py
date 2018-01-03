@@ -4,21 +4,38 @@ from astropy.nddata import Cutout2D
 from astropy import wcs
 from astropy import coordinates, units as u
 import radio_beam
+from radio_beam.beam import NoBeamException
 
 coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                              unit=(u.hour, u.deg))
 
-sourceIcont = fits.open(paths.dpath('uid_A001_X88e_X1d3_calibrated_final_cont.pbcor.fits'))
+#sourceIcont = fits.open(paths.dpath('uid_A001_X88e_X1d3_calibrated_final_cont.pbcor.fits'))
+for basefn in ('Orion_SourceI_B3_continuum_r-2{suffix}',
+               'Orion_SourceI_B6_continuum_r-2_longbaselines{suffix}',
+               'Orion_SourceI_B3_continuum_r-2.mask2mJy.clean1mJy{suffix}',
+               'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy{suffix}'):
 
-co = Cutout2D(data=sourceIcont[0].data.squeeze(),
-              wcs=wcs.WCS(sourceIcont[0].header).celestial, position=coord,
-              size=1*u.arcsec)
+    for suffix in ('image.tt0.pbcor.fits', 'residual.tt0.fits', 'model.tt0.fits'):
 
-header = co.wcs.to_header()
-beam = radio_beam.Beam.from_fits_header(sourceIcont[0].header)
-header.update(beam.to_header_keywords())
+        outfilename = basefn.format(suffix="_SourceIcutout."+suffix)
+        fn = basefn.format(suffix="."+suffix)
 
-hdu = fits.PrimaryHDU(data=co.data, header=header)
+        sourceIcont = fits.open(paths.dpath(fn))
 
-hdu.writeto(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'),
-            overwrite=True)
+
+        co = Cutout2D(data=sourceIcont[0].data.squeeze(),
+                      wcs=wcs.WCS(sourceIcont[0].header).celestial, position=coord,
+                      size=1*u.arcsec)
+
+        header = co.wcs.to_header()
+        try:
+            beam = radio_beam.Beam.from_fits_header(sourceIcont[0].header)
+            print("Beam is {0} for file {1}".format(beam, fn))
+        except NoBeamException:
+            print("Assuming beam is the same as previous: {0}".format(beam))
+        header.update(beam.to_header_keywords())
+
+        hdu = fits.PrimaryHDU(data=co.data, header=header)
+
+        hdu.writeto(paths.dpath(outfilename),
+                    overwrite=True)

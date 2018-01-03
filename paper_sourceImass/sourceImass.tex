@@ -77,22 +77,24 @@ only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant 2.5 mJy residual pointlike source at
 J2000 05h35m14.5182s -05d22m30.6084s, which we measured by adding a point
-source to the model in Figure \ref{fig:contmodel_residuals}.  This additional
-source may be part of a flared or warped inner disk, a large companion, or part
-of the inner outflow.  Could it also be part of an accretion flow?  It would be
-worth monitoring this blob to see if it is in orbit or infalling or something
-else.  {\color{red} If we decide we believe this source is real, we will add
-a discussion section about it.}
+source to the model in Figure \ref{fig:contmodel_residuals}.
+This source is discussed further in Section \ref{sec:ptsrc}.
+
+% This additional
+% source may be part of a flared or warped inner disk, a large companion, or part
+% of the inner outflow.  Could it also be part of an accretion flow?  It would be
+% worth monitoring this blob to see if it is in orbit or infalling or something
+% else.  
 
 The disk has a brightness temperature ranging from 200-500 K.  These measurements
 agree well with the continuum model of \citet{Plambeck2016a}, who inferred
 the presence of an optically thick $T=500$ K surface from the SED.
 
 \FigureTwo
-{figures/OrionSourceI_data.png}
-{figures/OrionSourceI_data_stretched.png}
+{figures/OrionSourceI_data_B6.pdf}
+{figures/OrionSourceI_data_stretched_B6.pdf}
 {The continuum image of Orion Source I at 1.3 mm.  The beam is shown in the
-bottom right, with size $0.052\arcsec\times0.030\arcsec$ at PA$=103\degrees$.
+bottom right, with size $XXX\arcsec\times XXX\arcsec$ at PA$=XXX\degrees$.
 The left panel shows the full intensity range, while the right panel
 shows a narrower stretch to highlight some of the extended features
 around the disk, which may be imaging artifacts {\color{red}TODO: We might
@@ -101,10 +103,18 @@ because it could require indefinite commitment and would add little to the key
 results.}.
 Both panels have flux density and brightness temperature colorbars.
 }
-{fig:continuum_data}{1}{3.5in}
+{fig:continuum_data_B6}{1}{3.5in}
 
-\Figure{figures/models_and_residuals.png}
-{A series of plots showing the models used and their residuals.
+\FigureTwo
+{figures/OrionSourceI_data_B3.pdf}
+{figures/OrionSourceI_data_stretched_B3.pdf}
+{The continuum image of Orion Source I at 3.x mm.  The beam is shown in the
+bottom right, with size $XXX\arcsec\timesXXX\arcsec$ at PA$=XXX\degrees$.
+}
+{fig:continuum_data_B3}{1}{3.5in}
+
+\Figure{figures/models_and_residuals_B6.pdf}
+{A series of plots showing the band 6 continuum models used and their residuals.
 The top row shows the models, starting from a simple 1D linear model
 convolved with the beam (left), continuing with a disk with a 0.076\arcsec (31.5 AU)
 scale height and a 0.038\arcsec (16 AU) smoothing width (middle), and finally
@@ -113,8 +123,18 @@ J2000 05h35m14.5182s -05d22m30.6084s with amplitude 2.5 mJy (39 K).
 The second and third row show the residuals (data - model) for each of the models
 in the top row; the bottom row uses a narrow linear scale to emphasize the lower-amplitude
 residuals, while the top two use an arcsinh stretch to display the full dynamic range.
+{\color{red}TODO: the numbers don't line up any more.  Put the fit parameters
+into a table.}
 }
 {fig:contmodel_residuals}{1}{7.5in}
+
+
+\Figure{figures/models_and_residuals_B3.pdf}
+{A series of plots showing the band 3 continuum models used and their residuals.
+See the caption of Figure \ref{fig:contmodel_residuals} for details.
+{\color{red}TODO: the numbers don't line up any more.}
+}
+{fig:contmodel_residuals_B3}{1}{7.5in}
 
 % \FigureThree
 % {figures/SourceI_Disk_model.png}
@@ -133,13 +153,18 @@ excitation level to the 336 GHz vibrationally excited water line reported in
 \citet{Hirota2014a}, and it has a peak brightness temperature $\sim1000$ K, it
 is most likely a thermal line.
 
-The water line traces an X-shaped feature above and below the disk, closely
-resembling the overall distribution of SiO masers.
+The water line traces an X-shaped feature above and below the disk, 
+resembling the overall distribution of SiO masers but with a somewhat narrower
+distribution.  Since the water is not directly aligned with the continuum
+disk, it may not be a direct kinematic tracer of orbits within the disk,
+but it is at least as good a tracer as SiO.  Because the water emission is
+thermal, though, there are less extreme brightness fluctuations, allowing
+us to fit an upper-envelope velocity curve in Section \ref{sec:kinematics}.
 
-While the continuum disk truncates at r=50 AU, the lines show emission
-beyond this radius, with \water exhibiting emission out to $r\sim100$ AU
-{\color{red} This is a coarse estimate, and the water probably only goes out to
-$r>50$ AU above and below the disk}.
+% While the continuum disk truncates at r=50 AU, the lines show emission
+% beyond this radius, with \water exhibiting emission out to $r\sim100$ AU
+% {\color{red} This is a coarse estimate, and the water probably only goes out to
+% $r>50$ AU above and below the disk}.
 
 \subsection{Other lines}
 Several unidentified lines exhibit emission at the outer edge of the continuum disk.
@@ -178,8 +203,12 @@ mJy \perbeam (15, 75, 150, 300, 450 K).
 {fig:h2omom0}{1}{3in}
 
 \subsection{Kinematics: a Keplerian disk}
+\label{sec:kinematics}
 Following \citet{Seifried2016a}, we measure the outer edge of the detected
-emission to define the rotation curve surrounding Source I.
+emission to define the rotation curve surrounding Source I.  In Appendix
+\ref{appendix:centroids}, to facilitate direct comparison with previous works,
+we use the centroid-of-velocity-channel approach that \citet{Seifried2016a}
+advise against.
 
 Of the detected lines, only the \water line spans a significant range of
 velocities as a function of radius; as shown in Figures \ref{fig:h2okepler},
@@ -260,6 +289,11 @@ of the disk.
 approaches
 \end{itemize}
 
+\subsection{The point source in the disk}
+\label{sec:ptsrc}
+We have clearly detected a compact source near the center of the disk
+at both 3mm and 1mm.  This source has flux [make a table for this?]
+
 \subsection{Is this disk consistent with the dynamical ejection model?}
 \citet{Plambeck2016a} argue that both the mass of Source I and the presence of the disk
 rule out the dynamical ejection model of \citet{Bally2011a}.  We show here that
@@ -311,37 +345,66 @@ guess at the unidentified line's rest velocity.}
 {fig:U5}{1}{2.25in}
 
 \section{Methodological comparison}
+\label{appendix:centroids}
 To compare fairly with \citet{Plambeck2016a}, we also used the
 centroid-velocity method.  In this approach, we fit two-dimensional Gaussian
 profiles to each `blob' in each velocity channel in the PPV cubes of spectral
 lines.  Unlike previous works, we have had to fit multiple Gaussians in several
 channels, since we resolve the structure and see `blobs' both above and below
 the disk.
+Figures \ref{fig:velcen_U4}, \ref{fig:velcen_SiO}, and \ref{fig:velcen_H2O}
+show the results of this analysis.
 
-{\color{red} Question to coauthors: How should I implement this modeling?
-My current implementation lives at
-\url{https://github.com/keflavich/Orion_ALMA_2016.1.00165.S/blob/master/analysis/edge_on_ring_velocity_model.py},
-and effectively assumes an infinitely small beam.  A larger effective beam will
-have some effect on the observed velocity profile; I believe it will weight
-toward higher velocities, therefore steepening the slope.  I don't incorporate
-line width at all in this analysis, but I can't convince myself it should have
-any effect under the assumption that the disk is symmetric and we are measuring
-centroids.}
+% {\color{red} Question to coauthors: How should I implement this modeling?
+% My current implementation lives at
+% \url{https://github.com/keflavich/Orion_ALMA_2016.1.00165.S/blob/master/analysis/edge_on_ring_velocity_model.py},
+% and effectively assumes an infinitely small beam.  A larger effective beam will
+% have some effect on the observed velocity profile; I believe it will weight
+% toward higher velocities, therefore steepening the slope.  I don't incorporate
+% line width at all in this analysis, but I can't convince myself it should have
+% any effect under the assumption that the disk is symmetric and we are measuring
+% centroids.}
 
-Figure \ref{fig:velcen} shows the results of this analysis.  While the
-lower-mass source agrees better with the tilt of the velocity curve, it fails
-to reproduce the high observed maximum velocities.  Different inner-radius
-cutoffs have an effect on the inner velocity profile slope similar to changing
-the central mass, so it is likely that the disk parameters, rather than the
-central source mass, dominate our uncertainties in this approach. 
 
+We have modeled the velocity profile assuming an edge-on, uniform, optically
+thin disk with a sharp central hole and outer truncation.  The
+position-velocity curves derive with this approach are shown in the above
+figures for a 14 \msun, $30 < R < 70$ AU model, and in \ref{fig:massradiusdemo}
+for other masses and radii.  This model approach is the same used by
+\citet{Plambeck2016a}.
+
+We compared our data to the models adopted by \citet{Plambeck2016a},
+specifically, the 5 and 10 \msun, $20 < R < 50$ AU models.  Neither of these
+reproduce the position-velocity curves we have measured with our
+higher-resolution data.  We were able to obtain a reasonable match
+to the data with the 14 \msun, $30 < R < 70$ \msun model, but this model
+may not represent a unique solution.
+
+% While the
+% lower-mass source agrees better with the tilt of the velocity curve, it fails
+% to reproduce the high observed maximum velocities.
+
+In the edge-on disk models, different inner-radius cutoffs have an effect on
+the inner velocity profile slope similar to changing the central mass, so it is
+likely that the disk parameters, rather than the central source mass, dominate
+our uncertainties in this approach.  
 Figure \ref{fig:massradiusdemo} demonstrates this effect: the inner slope of
 a 5 \msun, $20 \mathrm{AU} < r < 50 \mathrm{AU}$ disk is indistinguishable
 from a 20 \msun , $30 \mathrm{AU} < r < 80 \mathrm{AU}$ disk, though the latter
 extends to higher velocity and radius.
 
-\Figure{figures/Unknown_4_pp_pv_plots.pdf}
-{Results of the centroid-velocity analysis.
+The most important conclusion from this modeling is that the higher-resolution
+data yield a higher mass than the original lower-resolution data, favoring
+a central star with $M>10$ \msun.  However, the centroid-based approach
+still appears consistent with a lower mass ($M\lesssim15\msun$) central star
+than the \citet{Seifried2016a} upper-envelope fitting approach.  This remaining
+ambiguity highlights the difficulty of direct mass inference from assumed
+Keplerian velocity curves and the need for more sophisticated disk radiative
+transfer models.
+
+\Figure
+{figures/Unknown_4_pp_pv_plots.pdf}
+{Results of the centroid-velocity analysis for the U232.511 line.
 The left panel shows the locations of fitted centroids of the U232.511 line in
 the position-position plane relative to the location of Source I as determined
 from the line data (5:35:14.517965 -5:22:30.633931 ICRS; note that this is
@@ -352,12 +415,31 @@ the line positions.  The circles are colored by their velocity as indicated in
 the right panel.  The right panel shows a position-velocity diagram of these
 same centroids.  The dotted external curves show Keplerian velocity profiles
 for a 5 (red), 10 (green), and 20 (blue) \msun central source.  The black
-curves show the predicted centroid velocity profile of a 5 \msun (solid) and 20
-\msun (dotted) edge-on disk with inner radius 20 AU and outer radius 50 AU.
-Both models show clear discrepancies with the data, likely indicating that
-the selected cutoff radii are incorrect.
+curve shows the predicted centroid velocity profile of a 14 \msun  edge-on disk
+with inner radius 30 AU and outer radius 70 AU.
+This model appears to fit this line's centroids reasonably well.
 }
-{fig:velcen}{1}{6in}
+{fig:velcen_U4}{1}{6in}
+
+\Figure
+{figures/SiOv=1_5-4_pp_pv_plots.pdf}
+{Results of the centroid-velocity analysis for the SiO v=1 J=5-4 line.
+See Figure \ref{fig:velcen_U4} for details.
+Note that the data are quite inconsistent with the disk model;
+the SiO emission fitted here traces the bottom of the outflow
+and possibly some components of the disk upper atmosphere.
+}
+{fig:velcen_sio}{1}{6in}
+
+\Figure
+{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots.pdf}
+{Results of the centroid-velocity analysis for the \water line.
+Note that the centroid positions do not extend as far from
+the source center as the U232.511 line; this effect is likely
+a symptom of the centroid-based approach, since the \water
+line can be seen extending at least as far as this line.
+}
+{fig:velcen_h2o}{1}{6in}
 
 \Figure{figures/radius_mass_demo.pdf}
 {Plots of the predicted centroid rotation curves for different masses

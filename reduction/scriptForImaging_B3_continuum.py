@@ -69,6 +69,7 @@ if __name__ == "__main__":
     if not os.path.exists(contvis):
         make_cont_ms()
 
+    redo = False
 
     for robust in (-2, 0.5, 2):
         contimagename = 'Orion_SourceI_B3_continuum_r{0}_dirty'.format(robust)
@@ -76,11 +77,14 @@ if __name__ == "__main__":
         imsize = params[robust]['imsize']
         cell = params[robust]['cell']
 
-        for suffix in ('', '.tt0', '.tt1', '.tt2'):
-            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
-                if os.path.exists(todel):
-                    os.system('rm -rf {0}'.format(todel))
+        if os.path.exists(contimagename+".image.tt0.pbcor") and not redo:
+            continue
+        elif redo:
+            for suffix in ('', '.tt0', '.tt1', '.tt2'):
+                for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                    todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                    if os.path.exists(todel):
+                        os.system('rm -rf {0}'.format(todel))
 
         tclean(vis=contvis,
                imagename=contimagename,
@@ -110,11 +114,15 @@ if __name__ == "__main__":
         imsize = params[robust]['imsize']
         cell = params[robust]['cell']
 
-        for suffix in ('', '.tt0', '.tt1', '.tt2'):
-            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
-                if os.path.exists(todel):
-                    os.system('rm -rf {0}'.format(todel))
+        if os.path.exists(contimagename+".image.tt0.pbcor") and not redo:
+            continue
+
+        elif redo:
+            for suffix in ('', '.tt0', '.tt1', '.tt2'):
+                for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                    todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                    if os.path.exists(todel):
+                        os.system('rm -rf {0}'.format(todel))
 
 
         tclean(vis=contvis,
@@ -137,3 +145,51 @@ if __name__ == "__main__":
               )
 
         makefits(contimagename)
+
+
+
+    # deeper clean for robust -2 data
+ 
+    dirtyimage = 'Orion_SourceI_B3_continuum_r-2_dirty.image.tt0'
+    ia.open(dirtyimage)
+    ia.calcmask(mask='"{0}" > 0.002'.format(dirtyimage), name='B3_clean_mask_2.0mJy')
+    ia.close()
+    makemask(mode='copy', inpimage=dirtyimage,
+             inpmask=dirtyimage+":B3_clean_mask_2.0mJy", output='B3_clean_2.0mJy.mask',
+             overwrite=True)
+    exportfits('B3_clean_2.0mJy.mask', 'B3_clean_2.0mJy.mask.fits', dropdeg=True, overwrite=True)
+ 
+    robust = -2
+    contimagename = 'Orion_SourceI_B3_continuum_r{0}.mask2mJy.clean1mJy'.format(robust)
+ 
+    imsize = params[robust]['imsize']
+    cell = params[robust]['cell']
+ 
+    for suffix in ('', '.tt0', '.tt1', '.tt2'):
+        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+            todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+            if os.path.exists(todel):
+                os.system('rm -rf {0}'.format(todel))
+ 
+ 
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field='Orion_BNKL_source_I',
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,4,12],
+           imsize = imsize,
+           cell= cell,
+           weighting = 'briggs',
+           robust = robust,
+           niter = int(1e5),
+           mask='B3_clean_2.0mJy.mask',
+           threshold = '1mJy',
+           interactive = False,
+           outframe='LSRK',
+           veltype='radio',
+           savemodel='none',
+         )
+
+    makefits(contimagename)

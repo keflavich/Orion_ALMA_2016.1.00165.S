@@ -6,9 +6,14 @@ from astropy import wcs
 from astropy import units as u
 from astropy import coordinates
 import pyregion
+from astropy.convolution import convolve_fft, Gaussian2DKernel
 from line_point_offset import offset_to_point
 import imp
+import edge_on_ring_velocity_model
+from constants import d_orion
 import show_pv
+
+imp.reload(edge_on_ring_velocity_model)
 imp.reload(show_pv)
 
 source = 'sourceI'
@@ -113,11 +118,36 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
     ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b',
             zorder=200, alpha=0.9)
     maxdist=150*u.au
-    show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10, 19], linestyles=[':','-'], colors=['g','r'],
-                              radii={19: (radii, ('m','m'))})
+    lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10,
+                                                                         19],
+                                      linestyles=[':','-'], colors=['g','r'],
+                                      radii={19: (radii, ('m','m'))})
     ax.set_aspect(2)
 
 
     fig.savefig(paths.fpath('pv/{0}'.format(savename)),
+                dpi=200,
+                bbox_inches='tight')
+
+    for line in ax.get_lines() + ax.collections:
+        line.set_visible(False)
+
+    xpv ,ypv, pv_19msun = edge_on_ring_velocity_model.thindiskcurve(mass=14*u.M_sun,
+                                                                    rmin=20*u.au,
+                                                                    rmax=80*u.au,
+                                                                    vgrid=np.linspace(-35,
+                                                                                      35,
+                                                                                      200)*u.km/u.s,
+                                                                    pvd=True)
+
+    #pv_19msun_c = convolve_fft(pv_19msun, Gaussian2DKernel(0.5))
+    xpv_as = (xpv / d_orion).to(u.arcsec, u.dimensionless_angles())
+    ax.contour(xpv_as, (ypv+vcen).to(u.m/u.s), pv_19msun, levels=[1, 25],
+               colors=['r','b'], transform=ax.get_transform('world')
+              )
+
+
+    EODsavename = savename.replace('Seifried', 'EdgeOnDiskPV')
+    fig.savefig(paths.fpath('pv/{0}'.format(EODsavename)),
                 dpi=200,
                 bbox_inches='tight')

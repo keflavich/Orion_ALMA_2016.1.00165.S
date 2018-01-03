@@ -122,12 +122,15 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
         ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), linestyle=linestyle,
                 color=color, linewidth=1.0, alpha=1.0, transform=trans)
 
+    lines = []
     for mass in radii:
         for radius,color in zip(*radii[mass]):
             rad_as = (radius*u.au/d_orion).to(u.arcsec, u.dimensionless_angles())
             vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(yaxis_unit)
             print("rad, vel: {0}, {1}".format(rad_as, vel))
-            ax.plot(u.Quantity([-rad_as, rad_as]),
-                    (vcen+u.Quantity([-vel, vel])).to(yaxis_unit),
-                    color=color, linestyle='--',
-                    transform=trans)
+            lines += ax.plot(u.Quantity([-rad_as, rad_as]),
+                             (vcen+u.Quantity([-vel, vel])).to(yaxis_unit),
+                             color=color, linestyle='--',
+                             transform=trans)
+
+    return lines

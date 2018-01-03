@@ -40,6 +40,12 @@ def make_cont_ms():
         flagmanager(vis=finalvis,mode='restore',
                     versionname='before_cont_flags')
 
+    concatvis = ['band6_continuum_ms{0}.ms'.format(ii) for ii in range(2)]
+    contvis = 'B6_calibrated_final_cont.ms'
+    rmtables(contvis)
+    os.system('rm -rf ' + contvis + '.flagversions')
+    concat(vis=concatvis, concatvis=contvis)
+
 
 
 
@@ -61,18 +67,27 @@ if __name__ == "__main__":
     cell='0.004arcsec' # cell size for imaging.
     imsize = [7168,7168] # size of image in pixels.
 
-    contvis = ['band6_continuum_ms{0}.ms'.format(ii) for ii in range(2)]
-    if not os.path.exists(contvis[0]):
+    #contvis = ['band6_continuum_ms{0}.ms'.format(ii) for ii in range(2)]
+    #if not os.path.exists(contvis[0]):
+    #    make_cont_ms()
+    contvis = 'B6_calibrated_final_cont.ms'
+    if not os.path.exists(contvis):
         make_cont_ms()
+
+    redo = False
+        
 
     for robust in (-2, 0.5, 2):
         contimagename = 'Orion_SourceI_B6_continuum_r{0}_dirty'.format(robust)
 
-        for suffix in ('', '.tt0', '.tt1', '.tt2'):
-            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
-                if os.path.exists(todel):
-                    os.system('rm -rf {0}'.format(todel))
+        if os.path.exists(contimagename+".image.tt0.pbcor") and not redo:
+            continue
+        elif redo:
+            for suffix in ('', '.tt0', '.tt1', '.tt2'):
+                for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                    todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                    if os.path.exists(todel):
+                        os.system('rm -rf {0}'.format(todel))
 
         tclean(vis=contvis,
                imagename=contimagename,
@@ -91,6 +106,7 @@ if __name__ == "__main__":
                outframe='LSRK',
                veltype='radio',
                savemodel='none',
+               uvrange='50~36000m',
               )
 
         makefits(contimagename)
@@ -99,11 +115,14 @@ if __name__ == "__main__":
     for robust in (-2, 0.5, 2):
         contimagename = 'Orion_SourceI_B6_continuum_r{0}'.format(robust)
 
-        for suffix in ('', '.tt0', '.tt1', '.tt2'):
-            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
-                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
-                if os.path.exists(todel):
-                    os.system('rm -rf {0}'.format(todel))
+        if os.path.exists(contimagename+".image.tt0.pbcor") and not redo:
+            continue
+        elif redo:
+            for suffix in ('', '.tt0', '.tt1', '.tt2'):
+                for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                    todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                    if os.path.exists(todel):
+                        os.system('rm -rf {0}'.format(todel))
 
         tclean(vis=contvis,
                imagename=contimagename,
@@ -122,6 +141,85 @@ if __name__ == "__main__":
                outframe='LSRK',
                veltype='radio',
                savemodel='none',
+               uvrange='50~36000m',
               )
 
         makefits(contimagename)
+
+
+
+    # deeper clean for robust -2 data
+
+    dirtyimage = 'Orion_SourceI_B6_continuum_r-2_dirty.image.tt0'
+    ia.open(dirtyimage)
+    ia.calcmask(mask='"{0}" > 0.004'.format(dirtyimage), name='B6_clean_mask_5.0mJy')
+    ia.close()
+    makemask(mode='copy', inpimage=dirtyimage,
+             inpmask=dirtyimage+":B6_clean_mask_5.0mJy", output='B6_clean_5.0mJy.mask',
+             overwrite=True)
+    exportfits('B6_clean_5.0mJy.mask', 'B6_clean_5.0mJy.mask.fits', dropdeg=True, overwrite=True)
+
+    robust = -2
+    contimagename = 'Orion_SourceI_B6_continuum_r{0}.mask5mJy.clean4mJy'.format(robust)
+
+    for suffix in ('', '.tt0', '.tt1', '.tt2'):
+        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+            todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+            if os.path.exists(todel):
+                os.system('rm -rf {0}'.format(todel))
+
+
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field='Orion_BNKL_source_I',
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,4,12],
+           imsize = imsize,
+           cell= cell,
+           weighting = 'briggs',
+           robust = robust,
+           niter = int(1e5),
+           mask='B6_clean_5.0mJy.mask',
+           threshold = '4mJy',
+           interactive = False,
+           outframe='LSRK',
+           veltype='radio',
+           savemodel='none',
+          )
+
+    makefits(contimagename)
+
+
+    # exclude all short baselines
+    # 500m ~ 0.5"
+    contimagename = 'Orion_SourceI_B6_continuum_r-2_longbaselines'
+
+    if os.path.exists(contimagename+".image.tt0.pbcor") and redo:
+        for suffix in ('', '.tt0', '.tt1', '.tt2'):
+            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                if os.path.exists(todel):
+                    os.system('rm -rf {0}'.format(todel))
+
+    if redo or not os.path.exists(contimagename+".image.tt0.pbcor"):
+        tclean(vis=contvis,
+               imagename=contimagename,
+               field='Orion_BNKL_source_I',
+               specmode='mfs',
+               deconvolver='mtmfs',
+               nterms=2,
+               scales=[0,4,12],
+               imsize = imsize,
+               cell= cell,
+               weighting = 'briggs',
+               robust = -2,
+               niter = int(1e5),
+               threshold = '5mJy',
+               interactive = False,
+               outframe='LSRK',
+               veltype='radio',
+               savemodel='none',
+               uvrange='500~36000m',
+              )
