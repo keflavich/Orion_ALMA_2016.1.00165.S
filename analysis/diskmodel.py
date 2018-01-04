@@ -27,8 +27,11 @@ import pylab as pl
 #             overwrite=True)
 
 fit_results = {}
+
+beams = {}
  
-for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       ('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        ('Orion_SourceI_B3_continuum_r-2_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
                       ]:
 
@@ -59,6 +62,7 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
     (x1,x2),(y1,y2) = diskends_pix
 
     observed_beam = radio_beam.Beam.from_fits_header(fh[0].header)
+    beams[band] = observed_beam
 
     data_K = (data*u.Jy).to(u.K, observed_beam.jtok_equiv(freq))
     jtok = observed_beam.jtok(freq)
@@ -208,12 +212,16 @@ for fn, freq, band in [('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcut
     print()
     print()
 
+    ppbeam = (observed_beam.sr/pixscale**2).decompose()
+
     fit_results[freq] = {
                          'Disk Scaleheight': scaleheight,
                          'Disk Radius': length_au/2,
                          'Disk PA': posang,
                          'Ptsrc Position': fitted_ptsrc,
                          'Ptsrc Amp': result3.params['ptsrcamp'].value,
+                         'Total Flux': bestdiskplussourcemod.sum() / ppbeam,
+                         'Ptsrc Frac': result3.params['ptsrcamp'].value / (bestdiskplussourcemod.sum() / ppbeam),
                         }
 
 
@@ -399,6 +407,8 @@ tabledata += [table.Column(data=crd_or_qty([fit_results[freq][key]
 tbl = table.Table(tabledata)
 tbl['Ptsrc Amp'] *= 1000
 tbl['Ptsrc Amp'].unit = u.mJy
+tbl['Total Flux'] *= 1000
+tbl['Total Flux'].unit = u.mJy
 
 
 formats = {'Ptsrc Position': lambda x: x.to_string('hmsdms'),
@@ -406,6 +416,8 @@ formats = {'Ptsrc Position': lambda x: x.to_string('hmsdms'),
            'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Scaleheight': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Radius': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Total Flux': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Ptsrc Frac': lambda x: strip_trailing_zeros('{0:0.5g}'.format(round_to_n(x,2))),
           }
 
 
@@ -421,3 +433,16 @@ latexdict['tablefoot'] = ('\n\par The centroid coordinate of the point source '
 tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
           formats=formats,
           latexdict=latexdict, overwrite=True)
+
+
+with open(paths.texpath('continuum_beams.tex'), 'w') as fh:
+    for band in beams:
+        bm = beams[band]
+        argdict = {'bandid': band.replace("3","three").replace("6", "six").replace("7", "seven"),
+                   'major': strip_trailing_zeros('{0:0.5g}'.format(round_to_n(bm.major.to(u.arcsec).value,2))),
+                   'minor': strip_trailing_zeros('{0:0.5g}'.format(round_to_n(bm.minor.to(u.arcsec).value,2))),
+                   'pa': strip_trailing_zeros('{0:0.5g}'.format(round_to_n(bm.pa.to(u.deg).value,3))),
+                  }
+        fh.write("\\newcommand{{\\{bandid}maj}}{{{major}}}\n".format(**argdict))
+        fh.write("\\newcommand{{\\{bandid}min}}{{{minor}}}\n".format(**argdict))
+        fh.write("\\newcommand{{\\{bandid}pa}}{{{pa}}}\n".format(**argdict))

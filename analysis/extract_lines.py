@@ -2,13 +2,20 @@ import paths
 import os
 from astropy import constants, units as u, table, stats, coordinates, wcs, log
 from astropy.io import fits
-from spectral_cube import SpectralCube, wcs_utils, tests
+from spectral_cube import SpectralCube, wcs_utils, tests, Projection
 import pylab as pl
 from lines import disk_lines
+import radio_beam
 
 ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust0.5.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
+conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits'))
+conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r0.5_SourceIcutout.image.tt0.pbcor.fits'))
 conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
+
+beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
+print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
+                             0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
 
 for band,suffix in (('B3', 'clarkclean10000'),
                     ('B6', 'maskedclarkclean10000')):
@@ -23,6 +30,7 @@ for band,suffix in (('B3', 'clarkclean10000'),
 
             for spw in (0,1,2,3):
                 filename = ftemplate.format(spw, sourcename, band, suffix=suffix)
+
                 if os.path.exists(filename):
                     cube = SpectralCube.read(filename)
                 else:
@@ -33,27 +41,37 @@ for band,suffix in (('B3', 'clarkclean10000'),
 
                 if linefreq > fmin and linefreq < fmax:
 
-                    print("Writing {0} in spw {1}".format(linename, spw))
 
-                    scube = (cube.with_spectral_unit(u.km/u.s,
-                                                     velocity_convention='radio',
-                                                     rest_value=linefreq)
-                             .spectral_slab(vrange[0]*u.km/u.s,
-                                            vrange[1]*u.km/u.s))
+                    mx_fn = paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.fits').format(linename, sourcename)
+                    m0_fn = paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.fits').format(linename, sourcename)
 
-                    cubeK = scube.to(u.K)
-                    cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K.fits').format(linename, sourcename),
-                                overwrite=True)
+                    if not os.path.exists(mx_fn):
+                        print("Writing {0} in spw {1}".format(linename, spw))
 
-                    m0 = cubeK.moment0(axis=0)
-                    mx = cubeK.max(axis=0)
+                        scube = (cube.with_spectral_unit(u.km/u.s,
+                                                         velocity_convention='radio',
+                                                         rest_value=linefreq)
+                                 .spectral_slab(vrange[0]*u.km/u.s,
+                                                vrange[1]*u.km/u.s))
 
-                    mx.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.fits').format(linename,
-                                                                                                                           sourcename),
-                             overwrite=True)
-                    m0.write(paths.dpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_moment0.fits').format(linename,
-                                                                                                                              sourcename),
-                             overwrite=True)
+                        cubeK = scube.to(u.K)
+                        cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K.fits').format(linename, sourcename),
+                                    overwrite=True)
+
+                        m0 = cubeK.moment0(axis=0)
+                        mx = cubeK.max(axis=0)
+
+                        mx.write(mx_fn,
+                                 overwrite=True)
+                        m0.write(m0_fn,
+                                 overwrite=True)
+                    else:
+
+                        # the cubes have to exist anyway...
+                        mx = Projection.from_hdu(fits.open(mx_fn)[0])
+                        m0 = Projection.from_hdu(fits.open(m0_fn)[0])
+
+                    pl.figure(1).clf()
 
                     mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust0.5.maskedclarkclean10000_medsub_K_peak.png')
                                  .format(linename, sourcename), aplpy_kwargs={'figure':pl.figure(1)})

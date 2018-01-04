@@ -1,4 +1,5 @@
 \documentclass[twocolumn]{aastex61}
+\input{continuum_beams}
 \input{preface}
 \begin{document}
 
@@ -69,18 +70,29 @@ observational structure.  We used a linear model (i.e., an infinitely thin
 perfectly edge-on disk) for the disk, with endpoints and amplitude as free parameters.
 This simple model left significant residuals, so we added a two-dimensional
 Gaussian smoothing kernel as another three free parameters to obtain a
-substantially better fit (see Figure \ref{fig:contmodel_residuals}).
+substantially better fit (see Figure \ref{fig:contmodel_residuals_B6}).
 
 We determined that the disk is resolved in both
-directions, with a scale height of 0.076\arcsec (31.5 AU) and a length of 0.223
-\arcsec (92.5 AU), resulting in a radius $r_{disk}=46.3$ AU.  These measurements
+directions, with a scale height of 20-30 AU and a length of about
+90 AU (see Table \ref{tab:continuum_fit_parameters}).  These measurements
 are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
-This simple model leaves a significant residual pointlike source at
-J2000 05h35m14.5182s -05d22m30.6084s, which we measured by adding a point
-source to the model in Figure \ref{fig:contmodel_residuals}.
+This simple model leaves a significant residual pointlike source near
+the center of the disk, which we measured by adding a point
+source to the model in Figure \ref{fig:contmodel_residuals_B6}.
 This source is discussed further in Section \ref{sec:ptsrc}.
+
+Table \ref{tab:continuum_fit_parameters} also includes measurements
+of the total integrated intensity and the ratio of the point source to
+the total.
+
+{\color{red}We recover a total intensity of 240 mJy for the Source I disk
+system when excluding baselines $<250$m, which is only $\sim70\%$ what
+\citet{Plambeck2016a} reported.  We recover a higher integrated intensity of
+420-450 mJy - higher than \citet{Plambeck2016a} - when using the robust 0.5 
+or robust 2 images.
+}
 
 \input{continuum_fit_parameters.tex}
 
@@ -93,12 +105,18 @@ This source is discussed further in Section \ref{sec:ptsrc}.
 The disk has a brightness temperature ranging from 200-500 K.  These measurements
 agree well with the continuum model of \citet{Plambeck2016a}, who inferred
 the presence of an optically thick $T=500$ K surface from the SED.
+{\color{red} The region of the surrounding hot core that is in line with the
+disk is slightly fainter than its surroundings, hinting that the disk
+is shading the core from the central source and adding circumstantial
+confirmation that the disk is optically thick and cooler than the central
+source.}
 
 \FigureTwo
 {figures/OrionSourceI_data_B6.pdf}
 {figures/OrionSourceI_data_stretched_B6.pdf}
-{The continuum image of Orion Source I at 1.3 mm.  The beam is shown in the
-bottom right, with size $XXX\arcsec\times XXX\arcsec$ at PA$=XXX\degrees$.
+{The robust -2 continuum image of Orion Source I at 1.3 mm.  The beam is shown
+in the bottom right, with size $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
+PA$=\Bsixpa\degrees$.
 The left panel shows the full intensity range, while the right panel
 shows a narrower stretch to highlight some of the extended features
 around the disk, which may be imaging artifacts (the synthesized beam
@@ -110,31 +128,29 @@ Both panels have flux density and brightness temperature colorbars.
 \FigureTwo
 {figures/OrionSourceI_data_B3.pdf}
 {figures/OrionSourceI_data_stretched_B3.pdf}
-{The continuum image of Orion Source I at 3.x mm.  The beam is shown in the
-bottom right, with size $XXX\arcsec\times XXX\arcsec$ at PA$=XXX\degrees$.
+{The robust -2 continuum image of Orion Source I at 3.3 mm.  The beam is shown
+in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
+PA$=\Bthreepa\degrees$.
 }
 {fig:continuum_data_B3}{1}{3.5in}
 
 \Figure{figures/models_and_residuals_B6.pdf}
 {A series of plots showing the band 6 continuum models used and their residuals.
-The top row shows the models, starting from a simple 1D linear model
-convolved with the beam (left), continuing with a disk with a 0.076\arcsec (31.5 AU)
-scale height and a 0.038\arcsec (16 AU) smoothing width (middle), and finally
-a version of the middle model with a point source added at 
-J2000 05h35m14.5182s -05d22m30.6084s with amplitude 2.5 mJy (39 K).
-The second and third row show the residuals (data - model) for each of the models
-in the top row; the bottom row uses a narrow linear scale to emphasize the lower-amplitude
-residuals, while the top two use an arcsinh stretch to display the full dynamic range.
-{\color{red}TODO: the numbers don't line up any more.  Put the fit parameters
-into a table.}
+The top row shows the models, starting from a simple 1D linear model convolved
+with the beam (left), continuing with a disk smoothed with a broader beam to
+account for scale height (middle), and finally a version of the middle model
+with a point source added (right).  The fit parameters are given in Table
+\ref{tab:tab:continuum_fit_parameters}.  The second and third row show the
+residuals (data - model) for each of the models in the top row; the bottom row
+uses a narrow linear scale to emphasize the lower-amplitude residuals, while
+the top two use an arcsinh stretch to display the full dynamic range.
 }
-{fig:contmodel_residuals}{1}{7.5in}
+{fig:contmodel_residuals_B6}{1}{7.5in}
 
 
 \Figure{figures/models_and_residuals_B3.pdf}
 {A series of plots showing the band 3 continuum models used and their residuals.
-See the caption of Figure \ref{fig:contmodel_residuals} for details.
-{\color{red}TODO: the numbers don't line up any more.}
+See the caption of Figure \ref{fig:contmodel_residuals_B6} for details.
 }
 {fig:contmodel_residuals_B3}{1}{7.5in}
 
@@ -294,7 +310,36 @@ approaches
 \subsection{The point source in the disk}
 \label{sec:ptsrc}
 We have clearly detected a compact source near the center of the disk
-at both 3mm and 1mm.  This source has flux [make a table for this?]
+at both 3mm and 1mm.  The sources has a flux rising from 1 mm to 3 mm -
+behavior inconsistent with a thermal source.  However, since the source
+is nearly coincident with an edge-on disk that we show is optically
+thick at 1 mm, it is likely that the source is thermal but is significantly
+attenuated at 1 mm and seen clearly at 3 mm.
+
+\citet{Reid2007a} used comparable-resolution 7 mm VLA data to infer
+the presence of a 2.2 mJy source at the center of the Source I disk.
+The pointsource-to-disk flux ratio at 7 mm was $\sim20\%$, substantially
+higher than we observe at either 1 or 3 mm.  The dominance of the central
+source at longer wavelengths and the shallow spectral index from 7 to 3 mm
+($\alpha\approx0.7$) suggest that the disk is still somewhat optically
+thick at 3 mm.
+
+The central source has a surface temperature $T\geq1250$ K, the brightness
+temperature of a 2.2 mJy source within a $41\times28$ milliarcsecond beam.  If
+the source is a 5000 K blackbody \citep[e.g.,][]{Testi2010a}, it must have a
+radius $R=7.5$ AU.  Such a gigantic star is implausible, as it would produce
+a luminosity of 1.5\ee{6} \lsun, several orders of magnitude higher than
+the total luminosity in the region.
+
+{\color{red}
+What is the emission mechanism from this central source?
+It could simply be hot, optically thick dust that is partly obscured by the
+cooler disk at higher frequencies.  The possible extension of this `source'
+along the disk direction in Figure \ref{fig:contmodel_residuals_B6}
+suggests that we may just be seeing the hot inner disk.
+As pointed out by \citet{Plambeck2016a}, it is quite unlikely to be
+free-free emission, since there are no detected recombination lines.
+}
 
 \subsection{Is this disk consistent with the dynamical ejection model?}
 \citet{Plambeck2016a} argue that both the mass of Source I and the presence of the disk
@@ -307,7 +352,7 @@ have had five dynamical times to relax into a circular disk configuration after 
 explosive event.
 
 \paragraph{Discussion related to the dynamical decay scenario}
-\citep{Farias2017a} report that, while any dynamical decay scenario
+\citet{Farias2017a} report that, while any dynamical decay scenario
 involving Sources I, X, and BN that can reproduce the observed 
 proper motions are unlikely, they favor a higher mass ($M>14$ \msun).
 

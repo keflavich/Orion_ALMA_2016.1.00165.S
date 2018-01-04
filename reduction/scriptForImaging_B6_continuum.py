@@ -194,6 +194,7 @@ if __name__ == "__main__":
 
     # exclude all short baselines
     # 500m ~ 0.5"
+    # 250m ~ 1"
     contimagename = 'Orion_SourceI_B6_continuum_r-2_longbaselines'
 
     if os.path.exists(contimagename+".image.tt0.pbcor") and redo:
@@ -223,3 +224,41 @@ if __name__ == "__main__":
                savemodel='none',
                uvrange='250~36000m',
               )
+
+    makefits(contimagename)
+
+
+
+    # try auto-multithresh
+    contimagename = 'Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy'
+
+    if os.path.exists(contimagename+".image.tt0.pbcor") and redo:
+        for suffix in ('', '.tt0', '.tt1', '.tt2'):
+            for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+                todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+                if os.path.exists(todel):
+                    os.system('rm -rf {0}'.format(todel))
+
+    if redo or not os.path.exists(contimagename+".image.tt0.pbcor"):
+        tclean(vis=contvis,
+               imagename=contimagename,
+               field='Orion_BNKL_source_I',
+               specmode='mfs',
+               deconvolver='mtmfs',
+               nterms=2,
+               scales=[0,4,12,36],
+               imsize = imsize,
+               cell= cell,
+               weighting = 'briggs',
+               robust = -2,
+               niter = int(1e5),
+               threshold = '1mJy',
+               interactive = False,
+               usemask='auto-multithresh',
+               outframe='LSRK',
+               veltype='radio',
+               savemodel='none',
+               uvrange='50~36000m',
+              )
+
+    makefits(contimagename)
