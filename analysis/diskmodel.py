@@ -31,8 +31,9 @@ fit_results = {}
 beams = {}
  
 for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B3_continuum_r-2_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
+                       #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       ('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       ('Orion_SourceI_B3_continuum_r-2.clean0.1mJy_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
                       ]:
 
     fh = fits.open(paths.dpath(fn))
@@ -126,7 +127,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('y1', value=y1)
     parameters.add('y2', value=y2)
     parameters.add('scale', value=data.max())
-    result = lmfit.minimize(residual, parameters, epsfcn=0.1)
+    result = lmfit.minimize(residual, parameters, epsfcn=0.05)
     print("Basic fit parameters (linear model):")
     print(result.params)
     print()
@@ -187,8 +188,8 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                                                 frame=mywcs.wcs.radesys.lower())
     print("fitted diskends (model 3): {0}".format(fitted_diskends_mod3))
 
-    posang = np.arctan2(result.params['x2']-result.params['x1'],
-                        result.params['y2']-result.params['y1'])*u.rad
+    posang = np.arctan2(result3.params['y2']-result3.params['y1'],
+                        result3.params['x2']-result3.params['x1'])*u.rad - 90*u.deg
     print("posang={0}".format(posang.to(u.deg)))
 
     fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
@@ -409,6 +410,8 @@ tbl['Ptsrc Amp'] *= 1000
 tbl['Ptsrc Amp'].unit = u.mJy
 tbl['Total Flux'] *= 1000
 tbl['Total Flux'].unit = u.mJy
+
+tbl['Disk PA'] = tbl['Disk PA'].to(u.deg)
 
 
 formats = {'Ptsrc Position': lambda x: x.to_string('hmsdms'),

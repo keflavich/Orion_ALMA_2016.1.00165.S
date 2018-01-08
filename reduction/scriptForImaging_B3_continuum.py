@@ -196,3 +196,80 @@ if __name__ == "__main__":
          )
 
     makefits(contimagename)
+
+
+
+    robust = -2
+    contimagename = 'Orion_SourceI_B3_continuum_r{0}.clean0.25mJy'.format(robust)
+ 
+    imsize = params[robust]['imsize']
+    cell = params[robust]['cell']
+ 
+    for suffix in ('', '.tt0', '.tt1', '.tt2'):
+        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+            todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+            if os.path.exists(todel):
+                os.system('rm -rf {0}'.format(todel))
+ 
+ 
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field='Orion_BNKL_source_I',
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,4,12,48],
+           smallscalebias=0.8,
+           imsize = imsize,
+           cell= cell,
+           weighting = 'briggs',
+           robust = robust,
+           niter = int(1e5),
+           threshold = '0.25mJy',
+           interactive = False,
+           outframe='LSRK',
+           veltype='radio',
+           savemodel='none',
+           uvrange='50~300000m',
+         )
+
+    makefits(contimagename)
+
+
+
+
+    robust = -2
+    contimagename = 'Orion_SourceI_B3_continuum_r{0}.clean0.1mJy'.format(robust)
+ 
+    imsize = params[robust]['imsize']
+    cell = params[robust]['cell']
+ 
+    for suffix in ('', '.tt0', '.tt1', '.tt2'):
+        for ext in ['.flux','.image','.mask','.model','.pbcor','.psf','.residual','.flux.pbcoverage','.pb','.wtsum']:
+            todel = '{0}{1}{2}'.format(contimagename, ext, suffix)
+            if os.path.exists(todel):
+                os.system('rm -rf {0}'.format(todel))
+ 
+ 
+    tclean(vis=contvis,
+           imagename=contimagename,
+           field='Orion_BNKL_source_I',
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           scales=[0,4,12,48],
+           smallscalebias=0.8,
+           imsize = imsize,
+           cell= cell,
+           weighting = 'briggs',
+           robust = robust,
+           niter = int(1e5),
+           threshold = '0.1mJy',
+           interactive = False,
+           outframe='LSRK',
+           veltype='radio',
+           savemodel='none',
+           uvrange='50~300000m',
+         )
+
+    makefits(contimagename)

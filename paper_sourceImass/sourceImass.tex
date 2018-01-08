@@ -54,6 +54,30 @@ At 1.3 mm in our Robust 0.5 image, the beam is $0.052\times0.030$ \arcsec at
 PA$=-77.7\degrees$ ($21.8\times12.7$ AU), resulting in a 
 conversion factor of 15000 K Jy$^{-1}$.
 
+\Figure
+{figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
+{An overview figure showing the observed region and highlighting some of
+the most prominent detected sources.
+The main image shows most of the field of view centered on Orion Source I.
+The colorbar shows the intensity of this image.
+The surrounding hot core is visible as diffuse emission along the northeast-southwest
+axis from Source I.
+The inset figures show, clockwise from top left, 
+Source I (intensity range -1 to 20 mJy \perbeam),
+Binary XX[TODO:NAME THIS] (-0.5 to 2 mJy \perbeam),
+Source BN (-1 to 100 mJy \perbeam),
+IRC 6E (-1 to 6 mJy \perbeam),
+IRC 2C (-1 to 7 mJy \perbeam),
+Source N (-1 to 5 mJy \perbeam)
+HotCoreDisk XX[TODO:NAME THIS] (-1 to 4 mJy \perbeam),
+and
+WMJ053514.797-052230.557 (-1 to 10 mJy \perbeam).
+The insets are expanded by 10$\times$ relative to the main image.
+The synthesized beam is shown at the same 10$\times$ zoom factor in the
+bottom-left; it has contours overlaid at 5, 10, 20, and 30\% of peak.
+}
+{fig:overview}{1}{7.5in}
+
 \section{Results}
 
 \subsection{Continuum}
@@ -71,6 +95,8 @@ perfectly edge-on disk) for the disk, with endpoints and amplitude as free param
 This simple model left significant residuals, so we added a two-dimensional
 Gaussian smoothing kernel as another three free parameters to obtain a
 substantially better fit (see Figure \ref{fig:contmodel_residuals_B6}).
+The optimization was performed using a Levenberg-Marquardt
+fitter \citep{Newville2014a}. %https://zenodo.org/record/11813#.WlPUoGS7_pQ
 
 We determined that the disk is resolved in both
 directions, with a scale height of 20-30 AU and a length of about
@@ -84,17 +110,24 @@ source to the model in Figure \ref{fig:contmodel_residuals_B6}.
 This source is discussed further in Section \ref{sec:ptsrc}.
 
 Table \ref{tab:continuum_fit_parameters} also includes measurements
-of the total integrated intensity and the ratio of the point source to
+of the total integrated intensity and the ratio of the pointlike source to
 the total.
 
-{\color{red}We recover a total intensity of 240 mJy for the Source I disk
-system when excluding baselines $<250$m, which is only $\sim70\%$ what
+We recover a total intensity of 290 mJy for the Source I disk
+system in our robust -2 image, which is  $\sim80\%$ what
 \citet{Plambeck2016a} reported.  We recover a higher integrated intensity of
 420-450 mJy - higher than \citet{Plambeck2016a} - when using the robust 0.5 
-or robust 2 images.
-}
+or robust 2 images.  This higher recovered flux density implies some emission
+is resolved out, implying that the Source I spectral energy distribution (SED)
+shape is significantly dependent upon interferometer array parameters.
 
 \input{continuum_fit_parameters.tex}
+
+The disk position angle points to within 2 degrees of the Becklin-Neugebauer
+object (Orion BN); the PA of the vector from Source I to Source BN is -37.6
+degrees, while the measured disk position angle is -36 to -37 degrees.
+%There is no remaining doubt that the disk is oriented NW-SE \citep[][contended
+%the disk had the opposite orientation]{Testi2010a}.
 
 % This additional
 % source may be part of a flared or warped inner disk, a large companion, or part
@@ -109,7 +142,9 @@ the presence of an optically thick $T=500$ K surface from the SED.
 disk is slightly fainter than its surroundings, hinting that the disk
 is shading the core from the central source and adding circumstantial
 confirmation that the disk is optically thick and cooler than the central
-source.}
+source.   TODO: this statement isn't particularly clear now; I'm saying
+that if you trace a line along the disk direction into the hot core, it is slightly
+fainter (at 1mm) than to either side.}
 
 \FigureTwo
 {figures/OrionSourceI_data_B6.pdf}
@@ -307,12 +342,12 @@ of the disk.
 approaches
 \end{itemize}
 
-\subsection{The point source in the disk}
+\subsection{The pointlike source in the disk}
 \label{sec:ptsrc}
-We have clearly detected a compact source near the center of the disk
-at both 3mm and 1mm.  The sources has a flux rising from 1 mm to 3 mm -
-behavior inconsistent with a thermal source.  However, since the source
-is nearly coincident with an edge-on disk that we show is optically
+We have clearly detected a compact (but marginally resolved) source near the
+center of the disk at both 3mm and 1mm.  The sources has a flux rising from 1
+mm to 3 mm - behavior inconsistent with a thermal source.  However, since the
+source is nearly coincident with an edge-on disk that we show is optically
 thick at 1 mm, it is likely that the source is thermal but is significantly
 attenuated at 1 mm and seen clearly at 3 mm.
 
@@ -334,7 +369,7 @@ the total luminosity in the region.
 {\color{red}
 What is the emission mechanism from this central source?
 It could simply be hot, optically thick dust that is partly obscured by the
-cooler disk at higher frequencies.  The possible extension of this `source'
+cooler disk at higher frequencies.  The  extension of this `source'
 along the disk direction in Figure \ref{fig:contmodel_residuals_B6}
 suggests that we may just be seeing the hot inner disk.
 As pointed out by \citet{Plambeck2016a}, it is quite unlikely to be

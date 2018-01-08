@@ -271,3 +271,110 @@ plotcal('amp_5.cal', xaxis='time', yaxis='amp', iteration='antenna',
         subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
         figfile='amp_5_vs_time.png')
 
+rmtables(['amp_5_longbaselines.cal'])
+gaincal(vis=selfcal_vis, caltable='amp_5_longbaselines.cal', solint='30s', gaintype='G',
+        uvrange='150~10000000m',
+        calmode='a')
+
+plotcal('amp_5_longbaselines.cal', xaxis='time', yaxis='amp', iteration='antenna',
+        subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
+        figfile='amp_5_longbaselines_vs_time.png')
+plotcal('amp_5_longbaselines.cal', xaxis='antenna', yaxis='amp',
+        figfile='amp_5_longbaselines_vs_antenna.png')
+
+
+applycal(vis=selfcal_vis, gaintable=["phase_5.cal", "amp_5_longbaselines.cal"],
+         interp="linear", applymode='calonly', calwt=False)
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12,48],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+
+
+
+
+
+
+rmtables(['phase_6.cal'])
+gaincal(vis=selfcal_vis, caltable='phase_6.cal', solint='int', gaintype='G',
+        calmode='p')
+
+plotcal('phase_6.cal', xaxis='time', yaxis='phase', iteration='antenna',
+        subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
+        figfile='phase_6_vs_time.png')
+
+rmtables(['amp_6.cal'])
+gaincal(vis=selfcal_vis, caltable='amp_6.cal', solint='30s', gaintype='G',
+        calmode='a')
+
+plotcal('amp_6.cal', xaxis='time', yaxis='amp', iteration='antenna',
+        subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
+        figfile='amp_6_vs_time.png')
+
+rmtables(['amp_6_longbaselines.cal'])
+gaincal(vis=selfcal_vis, caltable='amp_6_longbaselines.cal', solint='30s', gaintype='G',
+        uvrange='150~10000000m',
+        calmode='a')
+
+plotcal('amp_6_longbaselines.cal', xaxis='time', yaxis='amp', iteration='antenna',
+        subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
+        figfile='amp_6_longbaselines_vs_time.png')
+plotcal('amp_6_longbaselines.cal', xaxis='antenna', yaxis='amp',
+        figfile='amp_6_longbaselines_vs_antenna.png')
+
+applycal(vis=selfcal_vis, gaintable=["phase_6.cal", "amp_6_longbaselines.cal"],
+         interp="linear", applymode='calonly', calwt=False)
+
+
+
+
+
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.4mJy.selfcal.ampphase6'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12,48],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.4mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+

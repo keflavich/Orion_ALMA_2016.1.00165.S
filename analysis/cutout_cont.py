@@ -15,8 +15,11 @@ for basefn in ('Orion_SourceI_B3_continuum_r-2{suffix}',
                'Orion_SourceI_B3_continuum_r-2.mask2mJy.clean1mJy{suffix}',
                'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy{suffix}',
                'Orion_SourceI_B3_continuum_r-2.mask2.5mJy.clean0.5mJy{suffix}',
+               'Orion_SourceI_B3_continuum_r-2.clean0.25mJy{suffix}',
+               'Orion_SourceI_B3_continuum_r-2.clean0.1mJy{suffix}',
                'Orion_SourceI_B6_continuum_r0.5{suffix}',
                'Orion_SourceI_B6_continuum_r2{suffix}',
+               'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4{suffix}',
                'uid___A001_X88e_X1df.Orion_BNKL_source_I_sci.spw25_27_29_31.cont{suffix}',
               ):
 

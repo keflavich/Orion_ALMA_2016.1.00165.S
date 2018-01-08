@@ -109,6 +109,60 @@ zoomregions = {'SourceI':
                 'max': 0.01,
                 'zoom': 10,
                },
+               'IRC2C':
+               {'bottomleft': coordinates.SkyCoord("5:35:14.405",
+                                                   "-5:22:30.51",
+                                                   unit=(u.h, u.deg),
+                                                   frame='icrs'),
+                'topright': coordinates.SkyCoord("5:35:14.394",
+                                                 "-5:22:30.32",
+                                                 unit=(u.h, u.deg),
+                                                 frame='icrs'),
+                'inregion': 'SourceI',
+                'bbox':[0.75,0.50],
+                'loc': 2,
+                'l1':2,
+                'l2':3,
+                'min': -0.001,
+                'max': 0.01,
+                'zoom': 10,
+               },
+               'binary':
+               {'bottomleft': coordinates.SkyCoord("5:35:14.435",
+                                                   "-5:22:28.58",
+                                                   unit=(u.h, u.deg),
+                                                   frame='icrs'),
+                'topright': coordinates.SkyCoord("5:35:14.403",
+                                                 "-5:22:28.31",
+                                                 unit=(u.h, u.deg),
+                                                 frame='icrs'),
+                'inregion': 'SourceI',
+                'bbox':[0.5,0.85],
+                'loc': 2,
+                'l1':3,
+                'l2':4,
+                'min': -0.001,
+                'max': 0.01,
+                'zoom': 10,
+               },
+               'hotcoredisk':
+               {'bottomleft': coordinates.SkyCoord("5:35:14.584",
+                                                   "-5:22:31.44",
+                                                   unit=(u.h, u.deg),
+                                                   frame='icrs'),
+                'topright': coordinates.SkyCoord("5:35:14.565",
+                                                 "-5:22:31.13",
+                                                 unit=(u.h, u.deg),
+                                                 frame='icrs'),
+                'inregion': 'SourceI',
+                'bbox':[0.5,0.15],
+                'loc': 2,
+                'l1':1,
+                'l2':2,
+                'min': -0.001,
+                'max': 0.01,
+                'zoom': 10,
+               },
               }
 
 def inset_overlays(fn, zoomregions, fignum=1,
@@ -222,7 +276,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
         cax = figure.add_axes([ax.bbox._bbox.x1+0.01, ax.bbox._bbox.y0, 0.02,
                                ax.bbox._bbox.y1-ax.bbox._bbox.y0])
         cb = figure.colorbar(mappable=im, cax=cax)
-        #cb.set_label("$S_{ mm}$ [mJy beam$^{-1}$]")
+        cb.set_label("$S_{1 mm}$ [Jy beam$^{-1}$]")
 
 
     if psffn is not None:
@@ -240,7 +294,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
         inset_data = psf[0].data[cy-50:cy+50, cx-50:cx+50]
 
         axins = zoomed_inset_axes(parent_ax, zoom=10, loc=2,
-                                  bbox_to_anchor=(0.5,0.3),
+                                  bbox_to_anchor=(0.01,0.01),
                                   bbox_transform=figure.transFigure,
                                   axes_class=astropy.visualization.wcsaxes.core.WCSAxes,
                                   axes_kwargs=dict(wcs=inset_wcs),
@@ -285,21 +339,29 @@ if __name__ == "__main__":
     zoomregions['SourceN']['max'] = 0.004
     zoomregions['IRC6E']['min'] = -0.001
     zoomregions['IRC6E']['max'] = 0.004
+    zoomregions['IRC2C']['min'] = -0.001
+    zoomregions['IRC2C']['max'] = 0.004
+    zoomregions['binary']['min'] = -0.001
+    zoomregions['binary']['max'] = 0.001
+    zoomregions['hotcoredisk']['min'] = -0.001
+    zoomregions['hotcoredisk']['max'] = 0.001
 
-    for fn in ("Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
+    for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
+               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.residual.tt0.fits",
+               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.residual.tt0.fits",
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,
                                 psffn=fn.replace("residual","psf"),
@@ -317,25 +379,33 @@ if __name__ == "__main__":
     zoomregions['SourceN']['max'] = 0.005
     zoomregions['IRC6E']['min'] = -0.001
     zoomregions['IRC6E']['max'] = 0.006
+    zoomregions['IRC2C']['min'] = -0.001
+    zoomregions['IRC2C']['max'] = 0.007
+    zoomregions['binary']['min'] = -0.0005
+    zoomregions['binary']['max'] = 0.002
+    zoomregions['hotcoredisk']['min'] = -0.001
+    zoomregions['hotcoredisk']['max'] = 0.004
 
-    for fn in ("Orion_SourceI_B6_continuum_r-2_longbaselines.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r0.5.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean5mJy.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.image.tt0.pbcor.fits",
+    for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r0.5.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.image.tt0.pbcor.fits",
+               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.image.tt0.pbcor.fits",
+               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor.fits",
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,
                                 psffn=fn.replace("image.tt0.pbcor","psf.tt0"),
-                                vmin=-0.001, vmax=0.02)
+                                vmin=-0.001, vmax=0.01)
         figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
 
 
