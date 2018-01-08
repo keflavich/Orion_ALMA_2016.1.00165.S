@@ -129,11 +129,11 @@ zoomregions = {'SourceI':
                },
                'binary':
                {'bottomleft': coordinates.SkyCoord("5:35:14.435",
-                                                   "-5:22:28.58",
+                                                   "-5:22:28.55",
                                                    unit=(u.h, u.deg),
                                                    frame='icrs'),
                 'topright': coordinates.SkyCoord("5:35:14.403",
-                                                 "-5:22:28.31",
+                                                 "-5:22:28.28",
                                                  unit=(u.h, u.deg),
                                                  frame='icrs'),
                 'inregion': 'SourceI',
@@ -146,16 +146,16 @@ zoomregions = {'SourceI':
                 'zoom': 10,
                },
                'hotcoredisk':
-               {'bottomleft': coordinates.SkyCoord("5:35:14.584",
+               {'bottomleft': coordinates.SkyCoord("5:35:14.585",
                                                    "-5:22:31.44",
                                                    unit=(u.h, u.deg),
                                                    frame='icrs'),
-                'topright': coordinates.SkyCoord("5:35:14.565",
+                'topright': coordinates.SkyCoord("5:35:14.564",
                                                  "-5:22:31.13",
                                                  unit=(u.h, u.deg),
                                                  frame='icrs'),
                 'inregion': 'SourceI',
-                'bbox':[0.5,0.15],
+                'bbox':[0.5,0.25],
                 'loc': 2,
                 'l1':1,
                 'l2':2,
@@ -294,7 +294,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
         inset_data = psf[0].data[cy-50:cy+50, cx-50:cx+50]
 
         axins = zoomed_inset_axes(parent_ax, zoom=10, loc=2,
-                                  bbox_to_anchor=(0.01,0.01),
+                                  bbox_to_anchor=(0.05,0.15),
                                   bbox_transform=figure.transFigure,
                                   axes_class=astropy.visualization.wcsaxes.core.WCSAxes,
                                   axes_kwargs=dict(wcs=inset_wcs),
@@ -405,7 +405,7 @@ if __name__ == "__main__":
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,
                                 psffn=fn.replace("image.tt0.pbcor","psf.tt0"),
-                                vmin=-0.001, vmax=0.01)
+                                vmin=-0.0005, vmax=0.005)
         figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
 
 

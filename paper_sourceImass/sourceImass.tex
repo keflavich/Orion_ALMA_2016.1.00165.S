@@ -120,6 +120,13 @@ system in our robust -2 image, which is  $\sim80\%$ what
 or robust 2 images.  This higher recovered flux density implies some emission
 is resolved out, implying that the Source I spectral energy distribution (SED)
 shape is significantly dependent upon interferometer array parameters.
+{\color{red} Or, if we really trust the low-level emission, we can argue
+and fit an ``upper atmosphere'' of the Source I disk.  The elliptical
+residual in Fig \ref{fig:contmodel_residuals_B6} could be real.
+It kind of looks like a disk at inclination $\sim60$, but since it's a
+very faint residual, I wouldn't give that interpretation a second thought.
+Since it is widest near the center, it is not a flared disk.  What
+else could it be?}
 
 \input{continuum_fit_parameters.tex}
 
@@ -211,8 +218,9 @@ resembling the overall distribution of SiO masers but with a somewhat narrower
 distribution.  Since the water is not directly aligned with the continuum
 disk, it may not be a direct kinematic tracer of orbits within the disk,
 but it is at least as good a tracer as SiO.  Because the water emission is
-thermal, though, there are less extreme brightness fluctuations, allowing
-us to fit an upper-envelope velocity curve in Section \ref{sec:kinematics}.
+thermal, though, it exhibits less extreme brightness fluctuations than 
+the SiO masers, allowing us to fit an upper-envelope velocity curve in Section
+\ref{sec:kinematics}.
 
 % While the continuum disk truncates at r=50 AU, the lines show emission
 % beyond this radius, with \water exhibiting emission out to $r\sim100$ AU
@@ -274,11 +282,12 @@ match to the unknown lines that more directly trace the disk, we argue it is
 a good tracer of the disk's kinematics.
 
 We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge of
-the \water line reasonably well, and is also an acceptable match to the outer
-profiles of other lines.  A smaller mass, such as the 5-10 \msun suggested
-previously \citep{Plambeck2016a,Hirota2014a}, is inconsistent with the data:
-for such masses, emission is clearly detected outside of the Keplerian curve.
-These lower masses are therefore excluded.  
+the \water line reasonably well (Figure \ref{fig:h2okepler}), and is also an
+acceptable match to the outer profiles of other unidentified lines
+(Appendix \ref{sec:otherlines}).  A smaller mass, such as
+the 5-10 \msun suggested previously \citep{Plambeck2016a,Hirota2014a}, is
+inconsistent with the data: for such masses, emission is clearly detected
+outside of the Keplerian curve.  These lower masses are therefore excluded.  
 
 \FigureTwo
 {figures/H2O_kepler_SeifriedPlot_0.01arcsec.png}
@@ -305,13 +314,17 @@ identical data and \emph{should} be identical shapes.}
 {fig:h2okepler}{1}{3.5in}
 
 
-There are two reasons our measurements differ from those of \citet{Plambeck2016a},
-\citet{Hirota2014a}, and \citet{Matthews2010a}: first is our substantially better
-spatial resolution, and second is the method we use to infer the mass from the
-rotation curve.  Our method is motivated by the simulations of \citet{Seifried2016a},
-who show that the centroid-based method used by the other authors (which they were forced
-to use because of the lower resolution of previous data) systematically
-underestimates the central source mass.
+The main reason our measurements differ from those of \citet{Plambeck2016a},
+\citet{Hirota2014a}, and \citet{Matthews2010a} is that our spatial resolution
+is substantially better.  This improved resolution allows us to use a better
+method to infer the mass from the rotation curve.  Our method is motivated by
+the simulations of \citet{Seifried2016a}, who show that the centroid-based
+method used in previous works (which they were forced to use because of their
+lower spatial resolution) systematically underestimates the central source
+mass.  A detailed comparison of our measurements to those of
+\citet{Plambeck2016a} is given in Appendix \ref{appendix:centroids}, in which
+we conclude that, even using the deprecated method, we infer a mass $M_I \sim
+14$ \msun.
 
 {\color{red} Note to coauthors:
 What uncertainties are there in these measurements?
@@ -395,6 +408,7 @@ proper motions are unlikely, they favor a higher mass ($M>14$ \msun).
 
 \appendix
 \section{Other unidentified lines with interesting morphology}
+\label{sec:otherlines}
 In this section, we show two of the other unidentified lines that appear to trace
 the disk.  These figures (\ref{fig:U4} and \ref{fig:U5}) show that the lines
 are nearly absent from the continuum-bright disk, but are detected along the upper and
@@ -434,7 +448,7 @@ profiles to each `blob' in each velocity channel in the PPV cubes of spectral
 lines.  Unlike previous works, we have had to fit multiple Gaussians in several
 channels, since we resolve the structure and see `blobs' both above and below
 the disk.
-Figures \ref{fig:velcen_U4}, \ref{fig:velcen_SiO}, and \ref{fig:velcen_H2O}
+Figures \ref{fig:velcen_U4}, \ref{fig:velcen_sio}, and \ref{fig:velcen_h2o}
 show the results of this analysis.
 
 % {\color{red} Question to coauthors: How should I implement this modeling?
@@ -451,7 +465,7 @@ show the results of this analysis.
 We have modeled the velocity profile assuming an edge-on, uniform, optically
 thin disk with a sharp central hole and outer truncation.  The
 position-velocity curves derive with this approach are shown in the above
-figures for a 14 \msun, $30 < R < 70$ AU model, and in \ref{fig:massradiusdemo}
+figures for a 14 \msun, $30 < R < 70$ AU model, and in Figure \ref{fig:massradiusdemo}
 for other masses and radii.  This model approach is the same used by
 \citet{Plambeck2016a}.
 
@@ -459,7 +473,7 @@ We compared our data to the models adopted by \citet{Plambeck2016a},
 specifically, the 5 and 10 \msun, $20 < R < 50$ AU models.  Neither of these
 reproduce the position-velocity curves we have measured with our
 higher-resolution data.  We were able to obtain a reasonable match
-to the data with the 14 \msun, $30 < R < 70$ \msun model, but this model
+to the data with the 14 \msun, $30 < R < 70$ AU  model, but this model
 may not represent a unique solution.
 
 % While the
@@ -471,8 +485,8 @@ the inner velocity profile slope similar to changing the central mass, so it is
 likely that the disk parameters, rather than the central source mass, dominate
 our uncertainties in this approach.  
 Figure \ref{fig:massradiusdemo} demonstrates this effect: the inner slope of
-a 5 \msun, $20 \mathrm{AU} < r < 50 \mathrm{AU}$ disk is indistinguishable
-from a 20 \msun , $30 \mathrm{AU} < r < 80 \mathrm{AU}$ disk, though the latter
+a 5 \msun, $20~\mathrm{AU} < r < 50~\mathrm{AU}$ disk is indistinguishable
+from a 20 \msun , $30~\mathrm{AU} < r < 80~\mathrm{AU}$ disk, though the latter
 extends to higher velocity and radius.
 
 The most important conclusion from this modeling is that the higher-resolution
