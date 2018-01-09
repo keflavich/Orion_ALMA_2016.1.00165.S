@@ -191,9 +191,9 @@ def inset_overlays(fn, zoomregions, fignum=1,
     dec.set_ticks(exclude_overlapping=True)
 
 
-    im = ax.imshow(hdu.data.squeeze(),
+    im = ax.imshow(hdu.data.squeeze()*1e3,
                    transform=ax.get_transform(mywcs),
-                   vmin=vmin, vmax=vmax, cmap=pl.cm.gray_r,
+                   vmin=vmin*1e3, vmax=vmax*1e3, cmap=pl.cm.gray_r,
                    interpolation='nearest',
                    origin='lower', norm=asinh_norm.AsinhNorm())
 
@@ -273,10 +273,21 @@ def inset_overlays(fn, zoomregions, fignum=1,
         figure.canvas.draw()
         assert np.abs(ax.bbox._bbox.x1 - 0.95) > 1e-4
 
-        cax = figure.add_axes([ax.bbox._bbox.x1+0.01, ax.bbox._bbox.y0, 0.02,
-                               ax.bbox._bbox.y1-ax.bbox._bbox.y0])
-        cb = figure.colorbar(mappable=im, cax=cax)
-        cb.set_label("$S_{1 mm}$ [Jy beam$^{-1}$]")
+    cax = figure.add_axes([ax.bbox._bbox.x1+0.01, ax.bbox._bbox.y0, 0.02,
+                           ax.bbox._bbox.y1-ax.bbox._bbox.y0])
+    cb = figure.colorbar(mappable=im, cax=cax)
+    print("1. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    cb.set_label("$S_{1 mm}$ [mJy beam$^{-1}$]")
+    print("2. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    cb.formatter.format = "%3.1f"
+    print("3. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    cb.set_ticks(cb.formatter.locs)
+    print("4. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    cb.set_ticklabels(["{0:3.1f}".format(float(x)) for x in cb.formatter.locs])
+    print("5. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    cb.ax.set_yticklabels(["{0:3.1f}".format(float(x.get_text())) for x in cb.ax.get_yticklabels()])
+    print("6. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    
 
 
     if psffn is not None:
@@ -294,7 +305,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
         inset_data = psf[0].data[cy-50:cy+50, cx-50:cx+50]
 
         axins = zoomed_inset_axes(parent_ax, zoom=10, loc=2,
-                                  bbox_to_anchor=(0.05,0.15),
+                                  bbox_to_anchor=(0.05,0.25),
                                   bbox_transform=figure.transFigure,
                                   axes_class=astropy.visualization.wcsaxes.core.WCSAxes,
                                   axes_kwargs=dict(wcs=inset_wcs),
@@ -328,46 +339,6 @@ def inset_overlays(fn, zoomregions, fignum=1,
 
 
 if __name__ == "__main__":
-
-    zoomregions['SourceI']['min'] = -0.001
-    zoomregions['SourceI']['max'] = 0.004
-    zoomregions['BN']['min'] = -0.001
-    zoomregions['BN']['max'] = 0.004
-    zoomregions['WMJ053514.797-052230.557']['min'] = -0.001
-    zoomregions['WMJ053514.797-052230.557']['max'] = 0.004
-    zoomregions['SourceN']['min'] = -0.001
-    zoomregions['SourceN']['max'] = 0.004
-    zoomregions['IRC6E']['min'] = -0.001
-    zoomregions['IRC6E']['max'] = 0.004
-    zoomregions['IRC2C']['min'] = -0.001
-    zoomregions['IRC2C']['max'] = 0.004
-    zoomregions['binary']['min'] = -0.001
-    zoomregions['binary']['max'] = 0.001
-    zoomregions['hotcoredisk']['min'] = -0.001
-    zoomregions['hotcoredisk']['max'] = 0.001
-
-    for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
-               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.residual.tt0.fits",
-              ):
-        figure = inset_overlays(fn, zoomregions=zoomregions,
-                                psffn=fn.replace("residual","psf"),
-                                vmin=-0.0001, vmax=0.001)
-        figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
-
 
     zoomregions['SourceI']['min'] = -0.001
     zoomregions['SourceI']['max'] = 0.02
@@ -409,6 +380,46 @@ if __name__ == "__main__":
         figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
 
 
+
+
+    zoomregions['SourceI']['min'] = -0.001
+    zoomregions['SourceI']['max'] = 0.004
+    zoomregions['BN']['min'] = -0.001
+    zoomregions['BN']['max'] = 0.004
+    zoomregions['WMJ053514.797-052230.557']['min'] = -0.001
+    zoomregions['WMJ053514.797-052230.557']['max'] = 0.004
+    zoomregions['SourceN']['min'] = -0.001
+    zoomregions['SourceN']['max'] = 0.004
+    zoomregions['IRC6E']['min'] = -0.001
+    zoomregions['IRC6E']['max'] = 0.004
+    zoomregions['IRC2C']['min'] = -0.001
+    zoomregions['IRC2C']['max'] = 0.004
+    zoomregions['binary']['min'] = -0.001
+    zoomregions['binary']['max'] = 0.001
+    zoomregions['hotcoredisk']['min'] = -0.001
+    zoomregions['hotcoredisk']['max'] = 0.001
+
+    for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
+               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
+               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.residual.tt0.fits",
+               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.residual.tt0.fits",
+              ):
+        figure = inset_overlays(fn, zoomregions=zoomregions,
+                                psffn=fn.replace("residual","psf"),
+                                vmin=-0.0001, vmax=0.001)
+        figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
 
 # Orion_SourceI_B3_continuum_r0.5_dirty.image.tt0.pbcor.fits
 # Orion_SourceI_B3_continuum_r0.5.image.tt0.pbcor.fits
