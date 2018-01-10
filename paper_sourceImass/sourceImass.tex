@@ -62,6 +62,17 @@ At 1.3 mm in our Robust 0.5 image, the beam is $0.052\times0.030$ \arcsec at
 PA$=-77.7\degrees$ ($21.8\times12.7$ AU), resulting in a 
 conversion factor of 15000 K Jy$^{-1}$.
 
+Source I is directly at the phase center of our observations.  However,
+BN is quite far from the phase center, at the 70\% of peak recovery
+point in Band 6 and 95\% in Band 3.  
+{\color{red}To account for wide-field non-coplanar effects \citep{Cornwell2008a},
+we imaged the full field using CASA \texttt{tclean}'s \texttt{wproject} gridder
+with 30 \texttt{wprojplanes}.}
+
+The continuum images have dynamic range in the vicinity of Source I of about 200,
+with local noise in the range 0.1 mJy/beam and a measured peak intensity of 17-30
+mJy/beam depending on the weighting.
+
 \Figure
 {figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
 {An overview figure showing the observed region and highlighting some of
@@ -142,6 +153,8 @@ else could it be?}
 The disk position angle points to within 2 degrees of the Becklin-Neugebauer
 object (Orion BN); the PA of the vector from Source I to Source BN is -37.6
 degrees, while the measured disk position angle is -36 to -37 degrees.
+This coincidence was noted by \citet{Bally2011a} and is now much more strongly
+corroborated.
 %There is no remaining doubt that the disk is oriented NW-SE \citep[][contended
 %the disk had the opposite orientation]{Testi2010a}.
 
@@ -255,11 +268,11 @@ line with continuum overlaid
 in contours.  Continuum contours are shown in red at levels of 1, 5, 10, 20, and 30
 mJy \perbeam (15, 75, 150, 300, 450 K).
 The \water and unknown line clearly trace different physical structures, as
-they exhibit no coincident emission.
-{\color{red} Note to coauthors: there is a slight difference in position between the
-center of the continuum emission and the midpoint of the two line emission blobs.
-Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
-analysis in the Appendices.}
+they exhibit no coincident emission peaks.
+% {\color{red} Note to coauthors: there is a slight difference in position between the
+% center of the continuum emission and the midpoint of the two line emission blobs.
+% Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
+% analysis in the Appendices.}
 }
 {fig:U1peak}{1}{3in}
 
@@ -351,18 +364,12 @@ such that the linewidths are $<1 \kms$?
 
 
 \section{Discussion}
-{\color{red} Note to coauthors: the discussion is a placeholder, but highlights
-the key topics we are likely to discuss.  We'll expand on this further when
-we are confident in the measurements.}
-We measure a mass of XXX, which is higher than reported by Hirota, Matthews, etc.
+\subsection{Mass of Source I}
+We measure a mass of 19 \msun, which is higher than most measurements previously
+reported.  Our mass measurement is higher than previous works because
+our spatial resolution is high enough to allow a direct fit of the rotation
+curve to the outer envelope of an emission line in position-velocity space.
 
-Reasons:
-\begin{itemize}
-    \item1. Higher frequency (336 GHz, for example) is more optically thick, traces less
-of the disk.
-\item2. Method: Siefried showed that vel-of-highest-channel is better than centroid-based
-approaches
-\end{itemize}
 
 \subsection{The pointlike source in the disk}
 \label{sec:ptsrc}
@@ -403,10 +410,13 @@ free-free emission, since there are no detected recombination lines.
 rule out the dynamical ejection model of \citet{Bally2011a}.  We show here that
 the star is significantly more massive, but what about the disk?
 
-First, we note that the disk truncates at $R<50$ AU.  At this radius, the
-orbital timescale is $\sim100$ years, so gas at the disk's outer radius would
-have had five dynamical times to relax into a circular disk configuration after the
-explosive event.
+First, following \citet{Bally2011a}, we note that the disk truncates at $R<50$
+AU.  At this radius, the orbital timescale is $\sim100$ years, so gas at the
+disk's outer radius would have had five dynamical times to relax into a
+circular disk configuration after the explosive event.
+
+The alignment of Source I's disk with the I-BN vector is consistent with
+a dynamical interaction between these sources.
 
 \paragraph{Discussion related to the dynamical decay scenario}
 \citet{Farias2017a} report that, while any dynamical decay scenario
@@ -444,8 +454,8 @@ guess at the unidentified line's rest velocity.}
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
 The overlaid dotted curves show Keplerian velocity profiles for 5 (red), 10 (green), 20 (blue) \msun.
 The dashed magenta lines show the velocity curves at r=30 and 80 AU.
-{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
-guess at the unidentified line's rest velocity.}
+%{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
+%guess at the unidentified line's rest velocity.}
 }
 {fig:U5}{1}{2.25in}
 

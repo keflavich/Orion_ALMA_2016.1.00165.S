@@ -173,6 +173,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
                    tick_fontsize=pl.rcParams['axes.labelsize']):
 
     hdu = fits.open(fn)[0]
+    print(fn)
 
     mywcs = wcs.WCS(hdu.header).celestial
 
@@ -252,7 +253,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
 
         ax.axis([x1,x2,y1,y2])
         #axins.axis([zx1,zx2,zy1,zy2])
-        print(axins.axis())
+        #print(axins.axis())
 
         axins.set_xticklabels([])
         axins.set_yticklabels([])
@@ -276,17 +277,17 @@ def inset_overlays(fn, zoomregions, fignum=1,
     cax = figure.add_axes([ax.bbox._bbox.x1+0.01, ax.bbox._bbox.y0, 0.02,
                            ax.bbox._bbox.y1-ax.bbox._bbox.y0])
     cb = figure.colorbar(mappable=im, cax=cax)
-    print("1. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("1. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.set_label("$S_{1 mm}$ [mJy beam$^{-1}$]")
-    print("2. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("2. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.formatter.format = "%3.1f"
-    print("3. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("3. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.set_ticks(cb.formatter.locs)
-    print("4. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("4. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.set_ticklabels(["{0:3.1f}".format(float(x)) for x in cb.formatter.locs])
-    print("5. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("5. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.ax.set_yticklabels(["{0:3.1f}".format(float(x.get_text())) for x in cb.ax.get_yticklabels()])
-    print("6. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
+    #print("6. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     
 
 

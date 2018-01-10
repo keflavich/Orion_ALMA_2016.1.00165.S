@@ -33,7 +33,7 @@ beams = {}
 for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        ('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B3_continuum_r-2.clean0.1mJy_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
+                       ('Orion_SourceI_B3_continuum_r-2.clean0.25mJy_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
                       ]:
 
     fh = fits.open(paths.dpath(fn))

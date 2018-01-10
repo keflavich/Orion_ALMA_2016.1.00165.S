@@ -42,7 +42,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -80,7 +80,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -117,7 +117,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -155,7 +155,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -191,7 +191,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -238,7 +238,7 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
-       scales=[0,4,12,48],
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -294,7 +294,52 @@ tclean(vis=selfcal_vis,
        specmode='mfs',
        deconvolver='mtmfs',
        nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+# imaging experiments:
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.largescalefirst'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
        scales=[0,4,12,48],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '2.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
        smallscalebias=0.8,
        imsize = imsize,
        cell= cell,
@@ -311,6 +356,59 @@ tclean(vis=selfcal_vis,
 makefits(contimagename)
 
 
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.bias0.95'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12,48],
+       smallscalebias=0.95,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.wterms'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       gridder='wproject',
+       wprojplanes=30,
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
 
 
 
@@ -343,8 +441,8 @@ plotcal('amp_6_longbaselines.cal', xaxis='time', yaxis='amp', iteration='antenna
 plotcal('amp_6_longbaselines.cal', xaxis='antenna', yaxis='amp',
         figfile='amp_6_longbaselines_vs_antenna.png')
 
-applycal(vis=selfcal_vis, gaintable=["phase_6.cal", "amp_6_longbaselines.cal"],
-         interp="linear", applymode='calonly', calwt=False)
+#applycal(vis=selfcal_vis, gaintable=["phase_6.cal", "amp_6_longbaselines.cal"],
+#         interp="linear", applymode='calonly', calwt=False)
 
 
 
@@ -352,29 +450,28 @@ applycal(vis=selfcal_vis, gaintable=["phase_6.cal", "amp_6_longbaselines.cal"],
 
 
 
+# dramatically overcleaned
 
-contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.4mJy.selfcal.ampphase6'
-os.system('rm -rf ' + contimagename + "*")
-tclean(vis=selfcal_vis,
-       imagename=contimagename,
-       field='Orion_BNKL_source_I',
-       specmode='mfs',
-       deconvolver='mtmfs',
-       nterms=2,
-       scales=[0,4,12,48],
-       smallscalebias=0.8,
-       imsize = imsize,
-       cell= cell,
-       weighting = 'briggs',
-       robust = -2,
-       niter = int(1e5),
-       threshold = '0.4mJy',
-       interactive = False,
-       outframe='LSRK',
-       veltype='radio',
-       savemodel='modelcolumn',
-       uvrange='50~36000m',
-      )
-makefits(contimagename)
-
-
+# contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.4mJy.selfcal.ampphase6'
+# os.system('rm -rf ' + contimagename + "*")
+# tclean(vis=selfcal_vis,
+#        imagename=contimagename,
+#        field='Orion_BNKL_source_I',
+#        specmode='mfs',
+#        deconvolver='mtmfs',
+#        nterms=2,
+#        scales=[0,4,12],
+#        smallscalebias=0.8,
+#        imsize = imsize,
+#        cell= cell,
+#        weighting = 'briggs',
+#        robust = -2,
+#        niter = int(1e5),
+#        threshold = '0.4mJy',
+#        interactive = False,
+#        outframe='LSRK',
+#        veltype='radio',
+#        savemodel='modelcolumn',
+#        uvrange='50~36000m',
+#       )
+# makefits(contimagename)
