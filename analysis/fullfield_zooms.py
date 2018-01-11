@@ -268,7 +268,8 @@ def inset_overlays(fn, zoomregions, fignum=1,
         # draw a bbox of the region of the inset axes in the parent axes and
         # connecting lines between the bbox and the inset axes area
         mark_inset(parent_axes=parent_ax, inset_axes=axins,
-                   loc1=ZR['l1'], loc2=ZR['l2'], fc="none", ec="0.5")
+                   loc1=ZR['l1'], loc2=ZR['l2'], fc="none", ec="0.5",
+                   lw=0.5)
 
 
         figure.canvas.draw()
@@ -372,8 +373,8 @@ if __name__ == "__main__":
                #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.image.tt0.pbcor.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.image.tt0.pbcor.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.image.tt0.pbcor.fits",
-               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.image.tt0.pbcor.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor.fits",
+               "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor.fits",
+               "Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor.fits",
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,
                                 psffn=fn.replace("image.tt0.pbcor","psf.tt0"),
@@ -414,13 +415,14 @@ if __name__ == "__main__":
                #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
-               "Orion_SourceI_B3_continuum_r-2.clean0.1mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.residual.tt0.fits",
+               "Orion_SourceI_B3_continuum_r-2.clean0.25mJy.residual.tt0.fits",
+               "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.residual.tt0.fits",
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,
                                 psffn=fn.replace("residual","psf"),
                                 vmin=-0.0001, vmax=0.001)
-        figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
+        figure.savefig(fn.replace(".fits","_inset.pdf"), bbox_inches='tight',
+                       dpi=300)
 
 # Orion_SourceI_B3_continuum_r0.5_dirty.image.tt0.pbcor.fits
 # Orion_SourceI_B3_continuum_r0.5.image.tt0.pbcor.fits

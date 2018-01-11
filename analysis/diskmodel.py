@@ -32,7 +32,8 @@ beams = {}
  
 for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                       ('Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        ('Orion_SourceI_B3_continuum_r-2.clean0.25mJy_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
                       ]:
 
@@ -72,8 +73,6 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
               ptsrcx=None, ptsrcy=None, ptsrcamp=None, ptsrcwid=None):
         """
         The model, with a variable number of parameters....
-
-        posang is the position angle 
         """
         #if any(ii < 0 for ii in (x1,x2,y1,y2)):
         #    return 1e5
@@ -148,7 +147,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     result = lmfit.minimize(residual, parameters, epsfcn=0.05)
     print("Basic fit parameters (linear model):")
     result.params.pretty_print()
-    print("Chi^2: {0:0.3g}".format(result.chisqr))
+    print("red Chi^2: {0:0.3g}".format(result.redchi))
     print()
 
     bestdiskmod_beam = model(**result.params)
@@ -161,12 +160,12 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('kernelminor', value=0.033)
     # Fix the position angle such that one direction of the resulting kernel will
     # directly be a Gaussian scale height
-    measured_positionangle = -37
+    measured_positionangle = -38
     parameters.add('kernelpa', value=measured_positionangle+90, vary=False)
     result2 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters:")
     result2.params.pretty_print()
-    print("Chi^2: {0:0.3g}".format(result2.chisqr))
+    print("red Chi^2: {0:0.3g}".format(result2.redchi))
     print()
 
     bestdiskmod = model(**result2.params)
@@ -185,7 +184,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     result3 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters with point source:")
     result3.params.pretty_print()
-    print("Chi^2: {0:0.3g}".format(result3.chisqr))
+    print("red Chi^2: {0:0.3g}".format(result3.redchi))
     print()
 
     bestdiskplussourcemod = model(**result3.params)
@@ -194,16 +193,16 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     result4 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters with horizontally smeared point source:")
     result4.params.pretty_print()
-    print("Chi^2: {0:0.3g}".format(result4.chisqr))
+    print("red Chi^2: {0:0.3g}".format(result4.redchi))
     print()
 
     bestdiskplussmearedsourcemod = model(**result4.params)
 
 
-    ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result3.params['ptsrcx'], result3.params['ptsrcy'], 0)
+    ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result4.params['ptsrcx'], result4.params['ptsrcy'], 0)
     fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
     print("Fitted point source location = {0} {1}".format(fitted_ptsrc.to_string('hmsdms'), fitted_ptsrc.frame.name))
-    print("Fitted point source amplitude: {0}".format(result3.params['ptsrcamp']))
+    print("Fitted point source amplitude: {0}".format(result4.params['ptsrcamp']))
 
     print("diskends: {0}".format(diskends))
     fitted_diskends_mod1 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result.params['x1'], result.params['x2']], [result.params['y1'], result.params['y2']], 0),
@@ -218,13 +217,31 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                                                 unit=(u.deg, u.deg),
                                                 frame=mywcs.wcs.radesys.lower())
     print("fitted diskends (model 3): {0}".format(fitted_diskends_mod3))
+    fitted_diskends_mod4 = coordinates.SkyCoord(*mywcs.wcs_pix2world([result4.params['x1'], result4.params['x2']], [result4.params['y1'], result4.params['y2']], 0),
+                                                unit=(u.deg, u.deg),
+                                                frame=mywcs.wcs.radesys.lower())
+    print("fitted diskends (model 4): {0}".format(fitted_diskends_mod4))
+
+    disk_center_mod4 = coordinates.SkyCoord(fitted_diskends_mod4.ra.mean(),
+                                            fitted_diskends_mod4.dec.mean(),
+                                            frame=fitted_diskends_mod4.frame.name)
+    ptsrc_diskcen_sep = fitted_ptsrc.separation(disk_center_mod4).to(u.arcsec)
+    print("fitted pointsource is offset from center by {0}".format(ptsrc_diskcen_sep))
 
     posang = np.arctan2(result3.params['y2']-result3.params['y1'],
                         result3.params['x2']-result3.params['x1'])*u.rad - 90*u.deg
-    print("posang={0}".format(posang.to(u.deg)))
+    print("posang={0}".format(90*u.deg+posang.to(u.deg)))
     print("kernelpa2={0}".format(result2.params['kernelpa']))
     print("kernelpa3={0}".format(result3.params['kernelpa']))
     print("kernelpa4={0}".format(result4.params['kernelpa']))
+
+    
+    # compute offset from point source to disk center along the disk axis angle
+    assert ptsrc_diskcen_sep < 0.1*u.arcsec
+    sep_projected = ptsrc_diskcen_sep * np.abs(np.cos(posang-90*u.deg))
+    print("The source is separated from the disk center by {0} = {1}"
+          .format(sep_projected, (sep_projected*d_orion).to(u.au,
+                                                            u.dimensionless_angles())))
 
     fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
                                   result2.params['kernelminor']*u.arcsec,
@@ -253,10 +270,11 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                          'Disk Scaleheight': scaleheight,
                          'Disk Radius': length_au/2,
                          'Disk PA': posang,
-                         'Ptsrc Position': fitted_ptsrc,
-                         'Ptsrc Amp': result3.params['ptsrcamp'].value,
-                         'Total Flux': bestdiskplussourcemod.sum() / ppbeam,
-                         'Ptsrc Frac': result3.params['ptsrcamp'].value / (bestdiskplussourcemod.sum() / ppbeam),
+                         'Pt Position': fitted_ptsrc,
+                         'Pt Amp': result4.params['ptsrcamp'].value,
+                         'Pt Width': (u.Quantity(result4.params['ptsrcwid'], u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
+                         'Total Flux': bestdiskplussmearedsourcemod.sum() / ppbeam,
+                         'Pt \%': result4.params['ptsrcamp'].value / (bestdiskplussmearedsourcemod.sum() / ppbeam),
                         }
 
 
@@ -479,21 +497,23 @@ tabledata += [table.Column(data=crd_or_qty([fit_results[freq][key]
                            name=key)
               for key in resultkeys]
 tbl = table.Table(tabledata)
-tbl['Ptsrc Amp'] *= 1000
-tbl['Ptsrc Amp'].unit = u.mJy
+tbl['Pt Amp'] *= 1000
+tbl['Pt Amp'].unit = u.mJy
 tbl['Total Flux'] *= 1000
 tbl['Total Flux'].unit = u.mJy
+tbl['Pt Width'].unit = u.au
 
 tbl['Disk PA'] = tbl['Disk PA'].to(u.deg)
 
 
-formats = {'Ptsrc Position': lambda x: x.to_string('hmsdms'),
-           'Ptsrc Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+formats = {'Pt Position': lambda x: "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.dec.dms.s+30),
+           'Pt Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Pt Width': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Scaleheight': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Radius': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Total Flux': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
-           'Ptsrc Frac': lambda x: strip_trailing_zeros('{0:0.5g}'.format(round_to_n(x,2))),
+           'Pt \%': lambda x: strip_trailing_zeros('{0:0.5g}\%'.format(round_to_n(x,2)*100)),
           }
 
 
@@ -501,11 +521,13 @@ latexdict = latex_info.latexdict.copy()
 latexdict['header_start'] = '\label{tab:continuum_fit_parameters}'
 latexdict['caption'] = 'Continuum Fit Parameters'
 latexdict['preamble'] = '\centering'
-latexdict['tablefoot'] = ('\n\par The centroid coordinate of the point source '
-                          'is specified in ICRS coordinates.')
+latexdict['tablefoot'] = ('\n\par The pointlike source '
+                          'position is given as RA seconds and Dec arcseconds '
+                          'offset from ICRS 5h35m14s -5d22m30s.'
+                         )
 
 
-
+tbl = tbl['Frequency', 'Disk Scaleheight', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt \%', 'Total Flux']
 tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
           formats=formats,
           latexdict=latexdict, overwrite=True)

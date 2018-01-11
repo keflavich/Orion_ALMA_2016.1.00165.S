@@ -132,7 +132,7 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
     for line in ax.get_lines() + ax.collections:
         line.set_visible(False)
 
-    xpv ,ypv, pv_19msun = edge_on_ring_velocity_model.thindiskcurve(mass=14*u.M_sun,
+    xpv, ypv, pv_19msun = edge_on_ring_velocity_model.thindiskcurve(mass=14*u.M_sun,
                                                                     rmin=20*u.au,
                                                                     rmax=80*u.au,
                                                                     vgrid=np.linspace(-35,

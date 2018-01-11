@@ -82,7 +82,8 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
 
 
     # ax.set_aspect(4)
-    ax.set_aspect(2*data.shape[1]/data.shape[0])
+    #ax.set_aspect(2*data.shape[1]/data.shape[0])
+    ax.set_aspect(1*data.shape[1]/data.shape[0])
     #ax.set_aspect('equal')
 
     ax.coords[1].set_format_unit(u.km/u.s)

@@ -81,7 +81,8 @@ is not so obvious to me; excepting the streaks near Source I, I don't believe
 we are dynamic-range-limited.}
 
 \Figure
-{figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
+%{figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
+{figures/Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor_inset.pdf}
 {An overview figure showing the observed region and highlighting some of
 the most prominent detected sources.
 The main image shows most of the field of view centered on Orion Source I.
@@ -90,12 +91,12 @@ The surrounding hot core is visible as diffuse emission along the northeast-sout
 axis from Source I.
 The inset figures show, clockwise from top left, 
 Source I (intensity range -1 to 20 mJy \perbeam),
-Binary XX[TODO:NAME THIS] (-0.5 to 2 mJy \perbeam),
+AlmaBNKLBinary1 and AlmaBNKLBinary2 (-0.5 to 2 mJy \perbeam),
 Source BN (-1 to 100 mJy \perbeam),
 IRC 6E (-1 to 6 mJy \perbeam),
 IRC 2C (-1 to 7 mJy \perbeam),
 Source N (-1 to 5 mJy \perbeam)
-HotCoreDisk XX[TODO:NAME THIS] (-1 to 4 mJy \perbeam),
+AlmaHotCoreDisk1  (-1 to 4 mJy \perbeam),
 and
 WMJ053514.797-052230.557 (-1 to 10 mJy \perbeam).
 The insets are expanded by 10$\times$ relative to the main image.
@@ -132,8 +133,10 @@ are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant residual pointlike source near
-the center of the disk, which we measured by adding a point
-source to the model in Figure \ref{fig:contmodel_residuals_B6}.
+the center of the disk, which we measured by adding a smeared point
+source to the model in Figure \ref{fig:contmodel_residuals_B6},
+where we have allowed the source to be smeared only in the direction
+of the disk, limiting the number of free parameters.
 This source is discussed further in Section \ref{sec:ptsrc}.
 
 Table \ref{tab:continuum_fit_parameters} also includes measurements
@@ -147,13 +150,13 @@ system in our robust -2 image, which is  $\sim80\%$ what
 or robust 2 images.  This higher recovered flux density implies some emission
 is resolved out, implying that the Source I spectral energy distribution (SED)
 shape is significantly dependent upon interferometer array parameters.
-{\color{red} Or, if we really trust the low-level emission, we can argue
-and fit an ``upper atmosphere'' of the Source I disk.  The elliptical
-residual in Fig \ref{fig:contmodel_residuals_B6} could be real.
-It kind of looks like a disk at inclination $\sim60$, but since it's a
-very faint residual, I wouldn't give that interpretation a second thought.
-Since it is widest near the center, it is not a flared disk.  What
-else could it be?}
+% {\color{red} Or, if we really trust the low-level emission, we can argue
+% and fit an ``upper atmosphere'' of the Source I disk.  The elliptical
+% residual in Fig \ref{fig:contmodel_residuals_B6} could be real.
+% It kind of looks like a disk at inclination $\sim60$, but since it's a
+% very faint residual, I wouldn't give that interpretation a second thought.
+% Since it is widest near the center, it is not a flared disk.  What
+% else could it be?}
 
 \input{continuum_fit_parameters.tex}
 
@@ -210,8 +213,8 @@ PA$=\Bthreepa\degrees$.
 The top row shows the models, starting from a simple 1D linear model convolved
 with the beam (left), continuing with a disk smoothed with a broader beam to
 account for scale height (middle), and finally a version of the middle model
-with a point source added (right).  The fit parameters are given in Table
-\ref{tab:tab:continuum_fit_parameters}.  The second and third row show the
+with a smeared point source added (right).  The fit parameters are given in Table
+\ref{tab:continuum_fit_parameters}.  The second and third row show the
 residuals (data - model) for each of the models in the top row; the bottom row
 uses a narrow linear scale to emphasize the lower-amplitude residuals, while
 the top two use an arcsinh stretch to display the full dynamic range.
@@ -231,6 +234,15 @@ See the caption of Figure \ref{fig:contmodel_residuals_B6} for details.
 % {figures/SourceI_Disk_model_bigbeam_withptsrc.png}
 % {continuum modeling}
 % {fig:contmodels}{1}{3in}
+
+\subsubsection{Other sources}
+We note the detection of several other sources in the field, many of
+which are previously undetected.  These will be discussed in a future work,
+but we note the presence of an edge-on disk slightly smaller than Source I's
+disk embedded within the `hot core' shown in Figure \ref{fig:overview},
+which we name AlmaHotCoreDisk1, and a binary separated by 0.22\arcsec (93 AU)
+we label AlmaBNKLBinary1 and AlmaBNKLBinary2 ({\color{red} these names are
+placeholders}).
 
 
 \subsection{Water Line}
@@ -355,80 +367,122 @@ mass.  A detailed comparison of our measurements to those of
 we conclude that, even using the deprecated method, we infer a mass $M_I \sim
 14$ \msun.
 
-{\color{red} Note to coauthors:
-What uncertainties are there in these measurements?
-Do we need to account for turbulent line broadening?
-\citet{Flaherty2017a} suggest that there is negligible turbulence in low-mass disks,
-but what about Source I?
-
-If there's no turbulence, and we assume $T\sim1000$ K, the
-linewidth of \hh is 2.7 \kms, which is enough to lead us to overestimate the mass by a
-non-negligible amount.  Do we need to correct for this by subtracting off (2.7 / 2) \kms
-from the line extrema?  Or, do we assume that the molecules we are detecting have
-much narrower thermal broadening because they come from massive molecules, e.g., \methanol,
-such that the linewidths are $<1 \kms$?
-}
+% {\color{red} Note to coauthors:
+% What uncertainties are there in these measurements?
+% Do we need to account for turbulent line broadening?
+% \citet{Flaherty2017a} suggest that there is negligible turbulence in low-mass disks,
+% but what about Source I?
+% 
+% If there's no turbulence, and we assume $T\sim1000$ K, the
+% linewidth of \hh is 2.7 \kms, which is enough to lead us to overestimate the mass by a
+% non-negligible amount.  Do we need to correct for this by subtracting off (2.7 / 2) \kms
+% from the line extrema?  Or, do we assume that the molecules we are detecting have
+% much narrower thermal broadening because they come from massive molecules, e.g., \methanol,
+% such that the linewidths are $<1 \kms$?
+% }
 
 
 \section{Discussion}
 \subsection{Mass of Source I}
-We measure a mass of 19 \msun, which is higher than most measurements previously
-reported.  Our mass measurement is higher than previous works because
-our spatial resolution is high enough to allow a direct fit of the rotation
-curve to the outer envelope of an emission line in position-velocity space.
+We measure a mass of $M_I=19$ \msun, which is higher than most measurements
+previously reported.  Our mass measurement is higher than previous works
+because our spatial resolution is high enough to allow a direct fit of the
+rotation curve to the outer envelope of an emission line in position-velocity
+space.
+
+This mass measurement confirms that Orion is still a region with ongoing
+high-mass star formation.  If Source I were below $M<8$ \msun, Orion might
+instead have been regarded as a region of past high-mass star formation.
+
+\subsection{The dynamical decay scenario}
+{\color{red} Should this paragraph be left in the intro?}
+\citet[][and earlier authors?]{Bally2011a} suggested that the high proper
+motion of Source I, BN, and Source n, combined with the observed \hh outflow,
+implied the outflow and the runaway stars were produced in the same single
+event $\sim500$ years ago.  That event was the dynamical decay of a
+non-hierarchical multiple system, i.e., it was the interaction of multiple
+stars at the center of a mini cluster.  More recent observations by
+\citet{Luhman2017a} have shown that Source n is unlikely to have participated
+in this interaction, but instead that Source X, another star within the same
+field, has high proper motion that points back to the interaction center.
+
+\citet{Farias2017a} report that, while any dynamical decay scenario involving
+Sources I, X, and BN that can reproduce the observed proper motions are
+unlikely, those with a higher mass for source I ($M_I>14$ \msun) are the only
+ones capable of producing the observed proper motions.  Our observed higher
+mass for source I therefore keeps the dynamical interaction scenario viable.
+
+\subsection{The `flyby' scenario}
+\citet{Tan2004a} and \citet{Chatterjee2012a} described a scenario in which BN
+was ejected from the $\theta$1C system and flew through the Orion Hot Core that
+contains Source I.   Our observations provide one important constraint on this model:
+the disk position angle.
+The Source I disk position angle is  closely aligned to the proper
+motion vector of BN and the vector connecting Source I and BN,
+implying that BN played a significant role in the disk's formation.
+This role in turn implies that BN must have come very close to Source I,
+within $<100$ AU, and greatly reduces the interaction cross-section
+from a $\theta$1C ejection.
+
+
+\subsection{Is the disk consistent with the dynamical ejection model?}
+\citet{Plambeck2016a} argue that both the mass of Source I and the presence of
+the disk rule out the dynamical ejection model of \citet{Bally2011a}.  We show
+here that the star is significantly more massive, but what about the disk?
+
+Following \citet{Bally2011a}, we note that the disk truncates at $R<50$
+AU.  At this radius, the orbital timescale is $\sim100$ years, so gas at the
+disk's outer radius would have had five dynamical times to relax into a
+circular disk configuration after the explosive event.
+
+The alignment of Source I's disk with the I-BN vector is consistent with
+a dynamical interaction between these sources.  If the ejection resulted
+in Source I and BN being launched in nearly opposity directions from their
+center of mass (which must have been moving in the rest frame of the Orion
+nebula; see Bally+ in prep), any material around Source I that remained
+bound would be dragged in the direction of Source I, and would therefore
+have an angular momentum vector orthogonal to the direction of motion.
+
 
 
 \subsection{The pointlike source in the disk}
 \label{sec:ptsrc}
 We have clearly detected a compact (but marginally resolved) source near the
 center of the disk at both 3mm and 1mm.  The sources has a flux rising from 1
-mm to 3 mm - behavior inconsistent with a thermal source.  However, since the
+mm to 3 mm - behavior generally inconsistent with a thermal source.  However, since the
 source is nearly coincident with an edge-on disk that we show is optically
 thick at 1 mm, it is likely that the source is thermal but is significantly
-attenuated at 1 mm and seen clearly at 3 mm.
+attenuated by the disk at 1 mm and seen clearly at 3 mm.
 
 \citet{Reid2007a} used comparable-resolution 7 mm VLA data to infer
 the presence of a 2.2 mJy source at the center of the Source I disk.
 The pointsource-to-disk flux ratio at 7 mm was $\sim20\%$, substantially
-higher than we observe at either 1 or 3 mm.  The dominance of the central
-source at longer wavelengths and the shallow spectral index from 7 to 3 mm
-($\alpha\approx0.7$) suggest that the disk is still somewhat optically
-thick at 3 mm.
+higher than we observe at 1 mm but comparable to our
+observation at 3 mm (Table \ref{tab:continuum_fit_parameters}).  
+% -log(2.2/10) / log(7/3)
+The spectral index from 3 to 7 mm is $\alpha=1.8$, close to an optically
+thick blackbody, suggesting that the disk is nearly optically thin at 3 mm.
 
 The central source has a surface temperature $T\geq1250$ K, the brightness
-temperature of a 2.2 mJy source within a $41\times28$ milliarcsecond beam.  If
-the source is a 5000 K blackbody \citep[e.g.,][]{Testi2010a}, it must have a
-radius $R=7.5$ AU.  Such a gigantic star is implausible, as it would produce
-a luminosity of 1.5\ee{6} \lsun, several orders of magnitude higher than
-the total luminosity in the region.
+temperature of a 2.2 mJy source within a $41\times28$ milliarcsecond beam at 7
+mm.  If the source is a 5000 K blackbody \citep[e.g.,][]{Testi2010a}, it must
+have a radius $R=7.5$ AU.  Such a gigantic star is implausible, as it would
+produce a luminosity of 1.5\ee{6} \lsun, several orders of magnitude higher
+than the total luminosity in the region.
 
-{\color{red}
 What is the emission mechanism from this central source?
 It could simply be hot, optically thick dust that is partly obscured by the
 cooler disk at higher frequencies.  The  extension of this `source'
 along the disk direction in Figure \ref{fig:contmodel_residuals_B6}
-suggests that we may just be seeing the hot inner disk.
+suggests that we are seeing the hot inner disk.
 As pointed out by \citet{Plambeck2016a}, it is quite unlikely to be
 free-free emission, since there are no detected recombination lines.
-}
 
-\subsection{Is this disk consistent with the dynamical ejection model?}
-\citet{Plambeck2016a} argue that both the mass of Source I and the presence of the disk
-rule out the dynamical ejection model of \citet{Bally2011a}.  We show here that
-the star is significantly more massive, but what about the disk?
-
-First, following \citet{Bally2011a}, we note that the disk truncates at $R<50$
-AU.  At this radius, the orbital timescale is $\sim100$ years, so gas at the
-disk's outer radius would have had five dynamical times to relax into a
-circular disk configuration after the explosive event.
-
-The alignment of Source I's disk with the I-BN vector is consistent with
-a dynamical interaction between these sources.
-
-\paragraph{Discussion related to the dynamical decay scenario}
-\citet{Farias2017a} report that, while any dynamical decay scenario
-involving Sources I, X, and BN that can reproduce the observed 
-proper motions are unlikely, they favor a higher mass ($M>14$ \msun).
+The source is slightly offset from the center of the disk by 3-5 AU in
+projection.  This offset hints that it is not a single central source, but
+instead is a hot region of the inner disk.  Such an asymmetry in the disk could
+be driven either by instability in the disk or, if the central star is a
+binary, by the proximity of the more luminous companion.
 
 \input{solobib}
 
@@ -568,5 +622,6 @@ line can be seen extending at least as far as this line.
 and inner and outer radial cutoffs.}
 {fig:massradiusdemo}{1}{6in}
 
+% \section{Inset figure of the 3 mm data}
 
 \end{document}

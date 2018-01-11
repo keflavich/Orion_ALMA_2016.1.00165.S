@@ -171,7 +171,10 @@ for width in (0.1, 0.01):
                     # override that previous junk since we went through the effort of calculating it
                     ax.set_xlim(good_limits)
 
-                    show_pv.show_keplercurves(ax, origin, maxdist, vcen)
+                    show_pv.show_keplercurves(ax, origin, maxdist, vcen,
+                                              masses=[19],
+                                              linestyles='-',
+                                             )
 
                     fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +
                                             basename.replace(".fits",".png")),
