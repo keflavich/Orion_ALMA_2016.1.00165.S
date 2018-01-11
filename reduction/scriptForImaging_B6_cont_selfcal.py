@@ -311,6 +311,32 @@ tclean(vis=selfcal_vis,
 makefits(contimagename)
 
 # imaging experiments:
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+
 contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.largescalefirst'
 os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
@@ -354,6 +380,33 @@ tclean(vis=selfcal_vis,
        uvrange='50~36000m',
       )
 makefits(contimagename)
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.centeredBN'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       phasecenter='ICRS 5h35m14.108 -5d22m22.669s',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = [3000,3000],
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+
 
 
 contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.bias0.95'

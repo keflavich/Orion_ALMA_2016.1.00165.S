@@ -19,9 +19,10 @@
 \section{Introduction}
 Source I is the closest candidate forming high-mass ($M>8$ \msun) star, 
 and as such is the most important protostar for testing basic theories
-of how massive stars formed.  However, despite its relative proximity at
+of how massive stars form.  However, despite its relative proximity at
 a mere 414 pc from the sun \citep{Menten2007a}, the mass of Source I
-has been the subject of prolonged debate, with several estimates putting
+has been the subject of prolonged debate, with several estimates
+\citep[e.g.][]{Plambeck2016a} putting
 its mass below the classic 8 \msun threshold for a single star to go supernova
 \citep[][]{Heger2003}.
 % \color{red} Should this citation be qualified?
@@ -62,16 +63,22 @@ At 1.3 mm in our Robust 0.5 image, the beam is $0.052\times0.030$ \arcsec at
 PA$=-77.7\degrees$ ($21.8\times12.7$ AU), resulting in a 
 conversion factor of 15000 K Jy$^{-1}$.
 
-Source I is directly at the phase center of our observations.  However,
-BN is quite far from the phase center, at the 70\% of peak recovery
-point in Band 6 and 95\% in Band 3.  
-{\color{red}To account for wide-field non-coplanar effects \citep{Cornwell2008a},
-we imaged the full field using CASA \texttt{tclean}'s \texttt{wproject} gridder
-with 30 \texttt{wprojplanes}.}
+% Source I is directly at the phase center of our observations.  However,
+% BN is quite far from the phase center, at the 70\% of peak recovery
+% point in Band 6 and 95\% in Band 3.  
+% {\color{red}To account for wide-field non-coplanar effects \citep{Cornwell2008a},
+% we imaged the full field using CASA \texttt{tclean}'s \texttt{wproject} gridder
+% with 30 \texttt{wprojplanes}.}
 
 The continuum images have dynamic range in the vicinity of Source I of about 200,
-with local noise in the range 0.1 mJy/beam and a measured peak intensity of 17-30
+with local noise in the range 0.1 mJy \perbeam and a measured peak intensity of 17-30
 mJy/beam depending on the weighting.
+{\color{red} Our target noise level was $\sim20$ \microJy \perbeam,
+about five times better.  We received only half the data, so that goes up to $\sim30$
+\microJy \perbeam, still a factor of 3 deeper than we achieved.  It *may* be possible
+to recover some of this through self-calibration and deeper cleaning, but that
+is not so obvious to me; excepting the streaks near Source I, I don't believe
+we are dynamic-range-limited.}
 
 \Figure
 {figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}

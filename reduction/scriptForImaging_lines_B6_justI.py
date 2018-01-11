@@ -51,7 +51,7 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
                    cyclefactor=0.0001, # set very small: try to prevent major cycles
                    # clean only Source I and BN
                    #mask=['circle[[5h35m14.5184s,-5d22m30.6199s],0.222arcsec]'],
-                   phasecenter='J2000 5h35m14.5184s -5d22m30.6199s',
+                   phasecenter='ICRS 5h35m14.5184s -5d22m30.6199s',
                    imsize=[128, 128],
                    cell=['0.004arcsec'],
                    niter=niter,
@@ -91,7 +91,7 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
                    cyclefactor=0.0001, # set very small: try to prevent major cycles
                    # clean only Source I and BN
                    #mask=['circle[[5h35m14.108s,-5d22m22.669s],0.066arcsec]'],
-                   phasecenter='J2000 5h35m14.108 -5d22m22.669s',
+                   phasecenter='ICRS 5h35m14.108 -5d22m22.669s',
                    imsize=[128, 128],
                    cell=['0.004arcsec'],
                    niter=niter,

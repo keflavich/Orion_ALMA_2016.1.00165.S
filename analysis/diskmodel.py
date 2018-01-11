@@ -69,7 +69,12 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     jtok = observed_beam.jtok(freq)
 
     def model(x1, x2, y1, y2, scale, kernelmajor=None, kernelminor=None, kernelpa=None,
-              ptsrcx=None, ptsrcy=None, ptsrcamp=None):
+              ptsrcx=None, ptsrcy=None, ptsrcamp=None, ptsrcwid=None):
+        """
+        The model, with a variable number of parameters....
+
+        posang is the position angle 
+        """
         #if any(ii < 0 for ii in (x1,x2,y1,y2)):
         #    return 1e5
         #if (x1 > data.shape[1]-1) or (x2 > data.shape[1]-1) or (y1 > data.shape[0]-1) or (y2 > data.shape[0]-1):
@@ -105,7 +110,20 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
 
         diskmod = convolution.convolve_fft(disk, beam_kernel) / beam_amp
 
-        if ptsrcamp is not None:
+        if ptsrcwid is not None:
+            assert ptsrcamp is not None
+
+            posang = np.arctan2(y2 - y1, x2 - x1)*u.rad - 90*u.deg
+
+            ptsrc_wid_bm = radio_beam.Beam(ptsrcwid*u.arcsec, 0.00001*u.arcsec,
+                                           (kernelpa+90)*u.deg)
+            convbm = observed_beam.convolve(ptsrc_wid_bm)
+            assert convbm.pa.value != 0
+            ptsrc_bm = convbm.as_kernel(pixscale, x_size=data.shape[1], y_size=data.shape[0])
+            ptsrcmod = shift.shift2d(ptsrc_bm,
+                                     ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) / beam_amp * ptsrcamp
+            diskmod += ptsrcmod
+        elif ptsrcamp is not None:
             ptsrcmod = shift.shift2d(observed_beam.as_kernel(pixscale,
                                                              x_size=data.shape[1],
                                                              y_size=data.shape[0]),
@@ -115,9 +133,9 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
 
         return diskmod
 
-    def residual(pars):
+    def residual(pars, rms=0.0001):
         mod = model(**pars)
-        return (data - mod)
+        return (data - mod)/rms
 
     diskmod = model(x1,x2,y1,y2,data.max())
 
@@ -129,7 +147,8 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('scale', value=data.max())
     result = lmfit.minimize(residual, parameters, epsfcn=0.05)
     print("Basic fit parameters (linear model):")
-    print(result.params)
+    result.params.pretty_print()
+    print("Chi^2: {0:0.3g}".format(result.chisqr))
     print()
 
     bestdiskmod_beam = model(**result.params)
@@ -142,11 +161,12 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('kernelminor', value=0.033)
     # Fix the position angle such that one direction of the resulting kernel will
     # directly be a Gaussian scale height
-    measured_positionangle = 37
+    measured_positionangle = -37
     parameters.add('kernelpa', value=measured_positionangle+90, vary=False)
     result2 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters:")
-    print(result2.params)
+    result2.params.pretty_print()
+    print("Chi^2: {0:0.3g}".format(result2.chisqr))
     print()
 
     bestdiskmod = model(**result2.params)
@@ -164,10 +184,21 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('ptsrcamp', value=0.004, min=0.001, max=0.6)
     result3 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters with point source:")
-    print(result3.params)
+    result3.params.pretty_print()
+    print("Chi^2: {0:0.3g}".format(result3.chisqr))
     print()
 
     bestdiskplussourcemod = model(**result3.params)
+
+    parameters.add('ptsrcwid', value=0.04, min=0.01, max=0.1)
+    result4 = lmfit.minimize(residual, parameters, epsfcn=0.1)
+    print("Smoothed linear fit parameters with horizontally smeared point source:")
+    result4.params.pretty_print()
+    print("Chi^2: {0:0.3g}".format(result4.chisqr))
+    print()
+
+    bestdiskplussmearedsourcemod = model(**result4.params)
+
 
     ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result3.params['ptsrcx'], result3.params['ptsrcy'], 0)
     fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
@@ -191,6 +222,9 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     posang = np.arctan2(result3.params['y2']-result3.params['y1'],
                         result3.params['x2']-result3.params['x1'])*u.rad - 90*u.deg
     print("posang={0}".format(posang.to(u.deg)))
+    print("kernelpa2={0}".format(result2.params['kernelpa']))
+    print("kernelpa3={0}".format(result3.params['kernelpa']))
+    print("kernelpa4={0}".format(result4.params['kernelpa']))
 
     fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
                                   result2.params['kernelminor']*u.arcsec,
@@ -294,6 +328,45 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     pl.imshow(data_K, interpolation='none', origin='lower', cmap='viridis')
     pl.colorbar()
 
+    pl.figure(7)
+    pl.clf()
+    pl.subplot(2,2,1)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    #pl.plot(diskends_pix[0,:], diskends_pix[1,:], 'w')
+    #pl.plot(xx, yy, 'r')
+    pl.subplot(2,2,2)
+    pl.imshow(bestdiskplussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,3)
+    pl.imshow(data - bestdiskplussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,4)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    pl.contour(bestdiskplussmearedsourcemod, colors=['w']*100, levels=np.linspace(bestdiskplussmearedsourcemod.max()*0.05, bestdiskplussmearedsourcemod.max(), 5))
+
+    ptsrc_wid_bm = radio_beam.Beam(result4.params['ptsrcwid']*u.arcsec, 0.00001*u.arcsec, observed_beam.pa-90*u.deg) #result4.params['kernelpa']*u.deg)
+    ptsrc_wid_bm = radio_beam.Beam(result4.params['ptsrcwid']*u.arcsec, 0.00001*u.arcsec, 90*u.deg+result4.params['kernelpa']*u.deg)
+    ptsrc_bm = observed_beam.convolve(ptsrc_wid_bm)
+    for ax in pl.gcf().axes:
+        if band == 'B6':
+            ell_smearing_bm = ptsrc_wid_bm.ellipse_to_plot(20, 85, pixscale)
+            ell_wid_bm = ptsrc_bm.ellipse_to_plot(20, 70, pixscale)
+            ell_obs_bm = observed_beam.ellipse_to_plot(20, 100, pixscale)
+        elif band == 'B3':
+            ell_smearing_bm = ptsrc_wid_bm.ellipse_to_plot(10, 45, pixscale)
+            ell_wid_bm = ptsrc_bm.ellipse_to_plot(10, 35, pixscale)
+            ell_obs_bm = observed_beam.ellipse_to_plot(10, 55, pixscale)
+        else:
+            raise
+        for ell in (ell_smearing_bm, ell_wid_bm, ell_obs_bm):
+            ax.add_patch(ell)
+
+    axlims = pl.axis()
+    pl.plot([result2.params['x1'], result2.params['x2']],
+            [result2.params['y1'], result2.params['y2']],
+            'r')
+    pl.axis(axlims)
+
+    pl.savefig(paths.fpath("contmodel/SourceI_Disk_model_bigbeam_withsmearedptsrc_{0}.pdf".format(band)), bbox_inches='tight')
+
 
 
     # publication figures
@@ -347,7 +420,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     ax3 = fig6.add_subplot(3,3,3)
-    im = ax3.imshow(bestdiskplussourcemod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax3.imshow(bestdiskplussmearedsourcemod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     cb = fig6.colorbar(mappable=im)
@@ -362,7 +435,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     ax6 = fig6.add_subplot(3,3,6)
-    im = ax6.imshow((data - bestdiskplussourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax6.imshow((data - bestdiskplussmearedsourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     cb = fig6.colorbar(mappable=im)
@@ -377,7 +450,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     im = ax8.imshow((data - bestdiskmod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
                     vmin=vmin, vmax=vmax)
     ax9 = fig6.add_subplot(3,3,9)
-    im = ax9.imshow((data - bestdiskplussourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax9.imshow((data - bestdiskplussmearedsourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
                     vmin=vmin, vmax=vmax)
     cb = fig6.colorbar(mappable=im)
     cb.set_label("$T_B$ [K]")
