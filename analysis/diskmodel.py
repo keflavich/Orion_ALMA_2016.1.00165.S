@@ -13,6 +13,7 @@ from astropy.nddata import Cutout2D
 from mpl_plot_templates import asinh_norm
 import latex_info
 from latex_info import strip_trailing_zeros, round_to_n
+from files import b6_hires_cont, b3_hires_cont
 
 import pylab as pl
 
@@ -33,8 +34,8 @@ beams = {}
 for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                        #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       ('Orion_SourceI_B3_continuum_r-2.clean0.25mJy_SourceIcutout.image.tt0.pbcor.fits', 93.3*u.GHz, 'B3'),
+                       (b6_hires_cont, 224.0*u.GHz, 'B6'),
+                       (b3_hires_cont, 93.3*u.GHz, 'B3'),
                       ]:
 
     fh = fits.open(paths.dpath(fn))

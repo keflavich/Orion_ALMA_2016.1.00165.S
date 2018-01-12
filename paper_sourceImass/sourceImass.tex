@@ -70,6 +70,8 @@ conversion factor of 15000 K Jy$^{-1}$.
 % we imaged the full field using CASA \texttt{tclean}'s \texttt{wproject} gridder
 % with 30 \texttt{wprojplanes}.}
 
+\input{obs_metadata.tex}
+
 The continuum images have dynamic range in the vicinity of Source I of about 200,
 with local noise in the range 0.1 mJy \perbeam and a measured peak intensity of 17-30
 mJy/beam depending on the weighting.
@@ -79,6 +81,8 @@ about five times better.  We received only half the data, so that goes up to $\s
 to recover some of this through self-calibration and deeper cleaning, but that
 is not so obvious to me; excepting the streaks near Source I, I don't believe
 we are dynamic-range-limited.}
+
+\input{image_metadata.tex}
 
 \Figure
 %{figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
@@ -351,6 +355,11 @@ range, less than a beam width, and shows the best approximation of the midplane
 available.
 {\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
 identical data and \emph{should} be identical shapes.}
+{\color{blue} Possible comparison figures to reference:
+\citet{Matra2017a} Figure 4 (5 AU resolution, $r\sim150$ AU disk),
+\citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk),
+others?
+}
 }
 {fig:h2okepler}{1}{3.5in}
 
@@ -393,6 +402,16 @@ space.
 This mass measurement confirms that Orion is still a region with ongoing
 high-mass star formation.  If Source I were below $M<8$ \msun, Orion might
 instead have been regarded as a region of past high-mass star formation.
+
+\subsection{The luminosity of Source I}
+Since we observe an optically thick surface, we can infer the luminosity
+required to keep such a surface at the observed $\approx$500 K assuming
+it is heated only by radiation.  Taking the disk radius to be 50 AU,
+the required central source luminosity is 6500 \lsun.  This estimate
+should be taken as a lower limit, since the inner disk is likely to be
+optically thicker and capable of shielding the outer disk, thereby
+keeping the observed $\tau=1$ surface at 1 mm cooler than would
+be produced by radiative equilibrium.
 
 \subsection{The dynamical decay scenario}
 {\color{red} Should this paragraph be left in the intro?}

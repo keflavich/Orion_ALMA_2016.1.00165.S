@@ -44,7 +44,9 @@ for width in (0.1, 0.01):
         ('sourceI', 'sourceI', coord, (-30,40), 6.0),
        ):
 
-        for fnt in ('/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+        for fnt in (
+                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
                    ):

@@ -9,7 +9,7 @@ else:
 datapath = os.path.join(root, 'FITS/')
 regpath = os.path.join(root, 'regions/')
 figurepath = os.path.join(root, 'figures/')
-redpath = os.path.join(root, 'reduction/')
+reductionpath = os.path.join(root, 'reduction/')
 paperpath = os.path.join(root, 'paper_sourceImass')
 paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
 
@@ -22,7 +22,7 @@ def rpath(x, regpath=regpath):
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)
 
-def redpath(x, redpath=redpath):
+def redpath(x, redpath=reductionpath):
     return os.path.join(redpath, x)
 
 def texpath(x, paperpath=paperpath):

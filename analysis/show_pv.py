@@ -22,7 +22,7 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
                      slice(None,None),
                     )
 
-    fig = pl.figure(1, figsize=(12,8))
+    fig = pl.figure(1, figsize=(8,8))
     fig.clf()
     ax = fig.add_axes([0.15, 0.1, 0.8, 0.8],projection=ww)
     assert ww.wcs.cunit[1] == 'm/s' # this is BAD BAD BAD but necessary

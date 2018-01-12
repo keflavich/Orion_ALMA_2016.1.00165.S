@@ -43,6 +43,8 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
                                               'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
                                               'H2O_kepler_SeifriedPlot_0.1arcsec.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.01.fits', -0.0005, 0.048,
+                                              'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_2-1_robust-2_diskpv.fits', -0.05, 1,
                                               '29SiOv0_2-1_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_5-4_robust0.5_diskpv.fits', -0.01, 0.05,
