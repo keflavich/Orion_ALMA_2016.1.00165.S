@@ -564,16 +564,32 @@ show the results of this analysis.
 We have modeled the velocity profile assuming an edge-on, uniform, optically
 thin disk with a sharp central hole and outer truncation.  The
 position-velocity curves derive with this approach are shown in the above
-figures for a 14 \msun, $30 < R < 70$ AU model, and in Figure \ref{fig:massradiusdemo}
-for other masses and radii.  This model approach is the same used by
+figures for the best-fit model, and in Figure \ref{fig:massradiusdemo}
+for a range of masses and radii.
+This model approach is the same used by
 \citet{Plambeck2016a}.
+The fits were performed on the \emph{average} positional offset at each
+velocity, since for many velocities there were two or more Gaussian
+components fitted in the image.  The mass, inner and outer radius, and
+centroid velocity were left as free parameters.
 
-We compared our data to the models adopted by \citet{Plambeck2016a},
-specifically, the 5 and 10 \msun, $20 < R < 50$ AU models.  Neither of these
-reproduce the position-velocity curves we have measured with our
-higher-resolution data.  We were able to obtain a reasonable match
-to the data with the 14 \msun, $30 < R < 70$ AU  model, but this model
-may not represent a unique solution.
+The fits to the different lines are significantly different, and they 
+help illustrate why previous estimates of Source I's mass were low.
+Fits to both the SiO line in Figure \ref{fig:velcen_sio} and water
+in Figure \ref{fig:velcen_h2o} have lower masses than the fit to
+the U232.511 line that more closely traces the disk.
+
+The fitted centroid velocities to the SiO and water lines are slightly higher
+than the typically adopted $V_{I,LSR}=5$ \kms; it is 7.1 and 6.3 \kms for SiO
+and \water respectively.  We therefore caution that, when identifying lines, it
+would be advisable to include a $\sim2$ \kms systematic error on Source I's
+velocity.
+
+
+% We compared our data to the models adopted by \citet{Plambeck2016a},
+% specifically, the 5 and 10 \msun, $20 < R < 50$ AU models.  Neither of these
+% reproduce the position-velocity curves we have measured with our
+% higher-resolution data.  
 
 % While the
 % lower-mass source agrees better with the tilt of the velocity curve, it fails
@@ -598,7 +614,7 @@ Keplerian velocity curves and the need for more sophisticated disk radiative
 transfer models.
 
 \Figure
-{figures/Unknown_4_pp_pv_plots.pdf}
+{figures/Unknown_4_pp_pv_plots_fittedmodel_withavgs.pdf}
 {Results of the centroid-velocity analysis for the U232.511 line.
 The left panel shows the locations of fitted centroids of the U232.511 line in
 the position-position plane relative to the location of Source I as determined
@@ -610,29 +626,32 @@ the line positions.  The circles are colored by their velocity as indicated in
 the right panel.  The right panel shows a position-velocity diagram of these
 same centroids.  The dotted external curves show Keplerian velocity profiles
 for a 5 (red), 10 (green), and 20 (blue) \msun central source.  The black
-curve shows the predicted centroid velocity profile of a 14 \msun  edge-on disk
-with inner radius 30 AU and outer radius 70 AU.
-This model appears to fit this line's centroids reasonably well.
+curve shows the predicted centroid velocity profile of an edge-on disk
+with the listed parameters; it is a fit to the data averaged in each
+velocity bin as shown with black circles (i.e., the fit is to the positions,
+and where multiple positions were fit, the average was adopted).
 }
 {fig:velcen_U4}{1}{6in}
 
 \Figure
-{figures/SiOv=1_5-4_pp_pv_plots.pdf}
+{figures/SiOv=1_5-4_pp_pv_plots_fittedmodel_withavgs.pdf}
 {Results of the centroid-velocity analysis for the SiO v=1 J=5-4 line.
 See Figure \ref{fig:velcen_U4} for details.
 Note that the data are quite inconsistent with the disk model;
 the SiO emission fitted here traces the bottom of the outflow
 and possibly some components of the disk upper atmosphere.
+The average positions at each velocity are closer to a reasonable fit.
 }
 {fig:velcen_sio}{1}{6in}
 
 \Figure
-{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots.pdf}
+{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots_fittedmodel_withavgs.pdf}
 {Results of the centroid-velocity analysis for the \water line.
 Note that the centroid positions do not extend as far from
 the source center as the U232.511 line; this effect is likely
 a symptom of the centroid-based approach, since the \water
-line can be seen extending at least as far as this line.
+line's faintest emission can be seen extending to at least as great a distance
+from the central source as U232.511.
 }
 {fig:velcen_h2o}{1}{6in}
 

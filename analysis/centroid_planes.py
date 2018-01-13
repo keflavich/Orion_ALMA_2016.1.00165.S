@@ -12,9 +12,16 @@ import os
 import pylab as pl
 import shapely.geometry as geom
 from show_pv import show_keplercurves
-from edge_on_ring_velocity_model import thindiskcurve
 from constants import d_orion
+import imp
+import edge_on_ring_velocity_model
+from astropy.utils.console import ProgressBar
 
+imp.reload(edge_on_ring_velocity_model)
+from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
+
+if 'cached_gaussfit_results' not in locals():
+    cached_gaussfit_results = {}
 
 for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
                                     ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
@@ -35,7 +42,8 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
 
     velocities = np.array(sorted(guesses.keys()))*u.km/u.s
 
-    cubefn = '../FITS/cubes/OrionSourceI_{linename}_robust0.5.maskedclarkclean10000_medsub_K.fits'.format(linename=linename)
+    cubefn = paths.dpath('cubes/OrionSourceI_{linename}_robust0.5.maskedclarkclean10000_medsub_K.fits'
+                         .format(linename=linename))
     basename = os.path.splitext(os.path.basename(cubefn))[0]
     cube = SpectralCube.read(cubefn)
     vdiff = np.abs(np.diff(cube.spectral_axis).mean())
@@ -56,53 +64,65 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
 
     results = {}
 
-    for vel,vslice in zip(cube.spectral_axis, cube):
-        closest = np.argmin(np.abs(vel-velocities))
-        if np.abs(velocities[closest] - vel) > vdiff:
-            #print("Skipping velocity {0}, closest is {1} -> {2}".format(vel, closest,
-            #                                                            velocities[closest]))
-            continue
+    if linename in cached_gaussfit_results:
+        print("Loading {0} from cache".format(linename))
+        results = cached_gaussfit_results[linename]
+    else:
+        print("Fitting {0}, which is not in cache".format(linename))
+        pb = ProgressBar(cube.shape[0])
 
-        thisvel = velocities[closest].value
-        guess_regs = guesses[thisvel]
+        for vel,vslice in (zip(cube.spectral_axis, cube)):
+            closest = np.argmin(np.abs(vel-velocities))
+            if np.abs(velocities[closest] - vel) > vdiff:
+                #print("Skipping velocity {0}, closest is {1} -> {2}".format(vel, closest,
+                #                                                            velocities[closest]))
+                pb.update()
+                continue
 
-        ampguess = vslice.max().value
+            thisvel = velocities[closest].value
+            guess_regs = guesses[thisvel]
 
-        model_list = []
-        for reg in guess_regs:
+            ampguess = vslice.max().value
 
-            p_init = models.Gaussian2D(amplitude=ampguess,
-                                       x_mean=reg.center.x,
-                                       y_mean=reg.center.y,
-                                       x_stddev=bmmaj_px/STDDEV_TO_FWHM*0.75,
-                                       y_stddev=bmmin_px/STDDEV_TO_FWHM*0.75,
-                                       theta=beam.pa,
-                                       bounds={'x_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
-                                                           bmmaj_px*max_radius_in_beams/STDDEV_TO_FWHM),
-                                               'y_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
-                                                           bmmaj_px*max_radius_in_beams/STDDEV_TO_FWHM),
-                                               'x_mean':(reg.center.x-max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM,
-                                                         reg.center.x+max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM),
-                                               'y_mean':(reg.center.y-max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM,
-                                                         reg.center.y+max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM),
-                                               'amplitude':(ampguess*0.1, ampguess*2.1)
-                                              }
-                                      )
-            model_list.append(p_init)
+            model_list = []
+            for reg in guess_regs:
 
-        composite_model = model_list[0]
-        if len(model_list) > 1:
-            for mod in model_list[1:]:
-                composite_model += mod
+                p_init = models.Gaussian2D(amplitude=ampguess,
+                                           x_mean=reg.center.x,
+                                           y_mean=reg.center.y,
+                                           x_stddev=bmmaj_px/STDDEV_TO_FWHM*0.75,
+                                           y_stddev=bmmin_px/STDDEV_TO_FWHM*0.75,
+                                           theta=beam.pa,
+                                           bounds={'x_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
+                                                               bmmaj_px*max_radius_in_beams/STDDEV_TO_FWHM),
+                                                   'y_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
+                                                               bmmaj_px*max_radius_in_beams/STDDEV_TO_FWHM),
+                                                   'x_mean':(reg.center.x-max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM,
+                                                             reg.center.x+max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM),
+                                                   'y_mean':(reg.center.y-max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM,
+                                                             reg.center.y+max_offset_in_beams*bmmaj_px/STDDEV_TO_FWHM),
+                                                   'amplitude':(ampguess*0.1, ampguess*2.1)
+                                                  }
+                                          )
+                model_list.append(p_init)
 
-        fit_result = gaussfit_image(vslice.value, composite_model,
-                                    weights=weights, plot=True)
-        results[thisvel] = fit_result
+            composite_model = model_list[0]
+            if len(model_list) > 1:
+                for mod in model_list[1:]:
+                    composite_model += mod
 
-        if not os.path.exists(paths.fpath('velcentroid/diagnostics/{0}/'.format(basename))):
-            os.mkdir(paths.fpath('velcentroid/diagnostics/{0}/').format(basename))
-        pl.savefig(paths.fpath('velcentroid/diagnostics/{0}/{1}.png')
-                   .format(basename, thisvel))
+            fit_result = gaussfit_image(vslice.value, composite_model,
+                                        weights=weights, plot=True)
+            results[thisvel] = fit_result
+
+            if not os.path.exists(paths.fpath('velcentroid/diagnostics/{0}/'.format(basename))):
+                os.mkdir(paths.fpath('velcentroid/diagnostics/{0}/').format(basename))
+            pl.savefig(paths.fpath('velcentroid/diagnostics/{0}/{1}.png')
+                       .format(basename, thisvel))
+
+            pb.update()
+
+        cached_gaussfit_results[linename] = results
 
 
     diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
@@ -143,14 +163,19 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
     cmap = pl.cm.spectral
     norm = pl.matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
-    for vel in results:
+    offset_fits_arcsec = []
+    vels = np.sort(np.array([v for v in results]))
+
+    for vel in vels:
         fit_result = results[vel]
         fitted = fit_result[0]
         n_submodels = fitted.n_submodels()
         color = cmap(norm(vel))
         if n_submodels > 1:
+            offsets_ = []
             for ii in range(n_submodels):
-                xcen, ycen = getattr(fitted, 'x_mean_{0}'.format(ii)), getattr(fitted, 'y_mean_{0}'.format(ii))
+                xcen, ycen = (getattr(fitted, 'x_mean_{0}'.format(ii)),
+                              getattr(fitted, 'y_mean_{0}'.format(ii)))
                 ax1.plot((xcen-ref_cen_x)*pixscale.to(u.arcsec),
                          (ycen-ref_cen_y)*pixscale.to(u.arcsec),
                          color=color,
@@ -159,6 +184,8 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
                 offset = offset_to_point(ra, dec)
                 ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
                          transform=trans)
+                offsets_.append((offset-ref_offset)*3600)
+            offset_fits_arcsec.append(np.mean(offsets_))
         else:
             xcen, ycen = fitted.x_mean, fitted.y_mean
             ax1.plot((xcen-ref_cen_x)*pixscale.to(u.arcsec),
@@ -167,8 +194,10 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
             offset = offset_to_point(ra, dec)
             ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
                      transform=trans)
+            offset_fits_arcsec.append((offset-ref_offset)*3600)
 
-    assumed_vcen = 6.5*u.km/u.s
+
+    assumed_vcen = 6.0*u.km/u.s
     show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={})
 
     # xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
@@ -176,11 +205,10 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
     #          yy_thindisk + assumed_vcen,
     #          'k:',
     #          transform=trans)
-    xx_thindisk, yy_thindisk = thindiskcurve(mass=14*u.M_sun, rmin=30*u.au, rmax=70*u.au)
-    ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
-             yy_thindisk + assumed_vcen,
-             'k-',
-             transform=trans)
+    xx_thindisk, yy_thindisk = thindiskcurve(mass=14*u.M_sun, rmin=35*u.au, rmax=50*u.au)
+    thindiskline = ax2.plot((xx_thindisk / d_orion).to(u.arcsec,
+                                                       u.dimensionless_angles()),
+                            yy_thindisk + assumed_vcen, 'k-', transform=trans)
 
     xlim, ylim = pvwcs.wcs_world2pix([-0.2,0.2], [vmin-3, vmax+3], 0)
     ax2.set_ylim(*ylim)
@@ -195,4 +223,49 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
     ax1.axis(limits)
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
+               bbox_inches='tight')
+
+    # previously had an 
+    #if 'Unknown' in linename:
+    # statement here because these are the only ones that represent disks,
+    # but since we're using the *average* offset position, maybe this is OK?
+
+    offsets_au = (u.Quantity(offset_fits_arcsec, u.arcsec) *
+                  d_orion).to(u.au, u.dimensionless_angles())
+    fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au),
+                                     velo=vels,
+                                    )
+
+    for line in thindiskline:
+        line.set_visible(False)
+
+    xx_thindisk, yy_thindisk = thindiskcurve(mass=fitresult.params['mass']*u.M_sun,
+                                             rmin=fitresult.params['rinner']*u.au,
+                                             rmax=fitresult.params['router']*u.au,
+                                            )
+    lines = ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
+                     yy_thindisk + assumed_vcen,
+                     'k-',
+                     transform=trans,
+                     label=('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
+                            .format(fitresult.params['mass'].value,
+                                    int(fitresult.params['rinner'].value),
+                                    int(fitresult.params['router'].value),
+                                   )
+                           )
+                    )
+
+    pl.legend(loc='upper left', fontsize=12, handlelength=1.0)
+
+
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel.pdf'.format(linename=linename)),
+               bbox_inches='tight')
+
+    # show the average fitted positions
+    ax2.plot(offset_fits_arcsec, vels, marker='o', markersize=5,
+             linestyle='none', markerfacecolor='k', alpha=0.5,
+             markeredgecolor='w',
+             transform=trans)
+
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_withavgs.pdf'.format(linename=linename)),
                bbox_inches='tight')

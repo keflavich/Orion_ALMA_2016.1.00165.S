@@ -1,14 +1,29 @@
 import numpy as np
 from astropy import constants
 from astropy import units as u
+import lmfit
 
 
 def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
                   rmin=20*u.au, rmax=50*u.au,
                   vgrid=np.arange(-50,50,1)*u.km/u.s,
                   npix=1500, pvd=False):
+    """
+    Parameters
+    ----------
+    pvd : bool
+        Return a position-velocity diagram?
+    """
 
-    vstep = np.diff(vgrid).mean()
+    mass = u.Quantity(mass, u.M_sun)
+    rmin = u.Quantity(rmin, u.au)
+    rmax = u.Quantity(rmax, u.au)
+
+    if rmin >= rmax:
+        return
+
+    vsteps = np.diff(vgrid)
+    vsteps = u.Quantity(np.concatenate([vsteps.value, [vsteps[-1].value]]), vgrid.unit)
 
     yy,xx = np.indices([npix,npix]) * maxdist * 2 / npix
     rr = ((yy-maxdist)**2 + (xx-maxdist)**2)**0.5
@@ -26,8 +41,8 @@ def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
 
     if pvd:
         xim = []
-        for vv in vgrid:
-            mask = (v_los > vv) & (v_los < vv+vstep) & np.isfinite(mask1)
+        for vv,vstep in zip(vgrid, vsteps):
+            mask = (v_los > vv-vstep/2) & (v_los < vv+vstep/2) & np.isfinite(mask1)
             if np.any(mask):
                 xim_ = ((mask).sum(axis=0))
                 xim.append(xim_)
@@ -38,10 +53,14 @@ def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
 
     else:
         xpos = []
-        for vv in vgrid:
-            mask = (v_los > vv) & (v_los < vv+vstep) & np.isfinite(mask1)
+        for vv,vstep in zip(vgrid, vsteps):
+            mask = (v_los > vv-vstep/2) & (v_los < vv+vstep/2) & np.isfinite(mask1)
             if np.any(mask):
-                xxv = (v_los[mask] * x_plt[mask]).sum() / v_los[mask].sum()
+                if v_los[mask].sum() > 0.1*u.km/u.s:
+                    xxv = (v_los[mask] * x_plt[mask]).sum() / v_los[mask].sum()
+                else:
+                    # around v=0, the velocity-weighted mean is infinite-ish
+                    xxv = x_plt[mask].mean()
                 xpos.append(xxv)
             else:
                 xpos.append(u.Quantity(np.nan, maxdist.unit))
@@ -52,6 +71,51 @@ def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
     # of mean position at each velocity
     return (u.Quantity(x_plt, u.au),
             u.Quantity(np.nanmean((v_los * mask1), axis=0), yaxis_unit))
+
+def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
+
+    mass, rinner, delta, router, vcen = parameters.values()
+
+    result = thindiskcurve(mass=mass,
+                           rmin=rinner,
+                           rmax=router,
+                           vgrid=velo-u.Quantity(vcen.value, u.km/u.s),
+                           **kwargs)
+    if result is None:
+        return np.ones_like(xsep) * 1e10
+
+    model_xsep, model_v = result
+
+    resid = (xsep-model_xsep).value
+
+    if error is None:
+        error = np.ones_like(resid)
+
+    #error[np.isnan(resid)] = 1e10
+    # we want significant, but hopefully not dominant, residuals when the model
+    # predicts no data but there are data
+    resid[np.isnan(resid)] = 10
+
+    return resid/error
+
+def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
+                         rinner=20*u.au, router=50*u.au):
+
+    parameters = lmfit.Parameters()
+    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=5, max=25)
+    parameters.add('rinner', value=u.Quantity(rinner, u.au).value, min=3, max=50)
+    parameters.add('delta', value=20, min=10, max=50)
+    parameters.add('router', value=u.Quantity(router, u.au).value, min=20, max=100,
+                   expr='rinner+delta')
+    parameters.add('vcen', value=6.0, min=4.5, max=7.5)
+    result = lmfit.minimize(thindiskcurve_residual, parameters, epsfcn=0.05,
+                            kws={'xsep': u.Quantity(xsep, u.au),
+                                 'velo': u.Quantity(velo, u.km/u.s),
+                                 'error': error})
+
+    result.params.pretty_print()
+
+    return result
 
 if __name__ == "__main__":
 
