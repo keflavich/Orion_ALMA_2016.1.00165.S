@@ -45,6 +45,8 @@ for width in (0.1, 0.01):
        ):
 
         for fnt in (
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
@@ -152,7 +154,7 @@ for width in (0.1, 0.01):
                     vmin,vmax = (np.nanmin(extracted.data[plotted_slice]),
                                  np.nanmax(extracted.data[plotted_slice]))
                     vmin = -0.0025
-                    if vmax < 0.5:
+                    if vmax < 0.5 and 'B7' not in fnt:
                         vmax = np.min([0.02, vmax])
                     if 'H2O' in linename and width > 0.05:
                         vmax = 0.1
