@@ -312,6 +312,29 @@ makefits(contimagename)
 
 # imaging experiments:
 contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+
 os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
        imagename=contimagename,

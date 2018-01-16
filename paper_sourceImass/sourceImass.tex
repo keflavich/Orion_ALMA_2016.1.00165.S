@@ -3,7 +3,7 @@
 \input{preface}
 \begin{document}
 
-\title{The Mass of Orion's Source I}
+\title{A Keplerian disk around Orion Source I, a 19 \msun YSO}
 \begin{abstract}
    We resolve the disk around source I and measure the rotation curve.  Because
    of the higher resolution of these observations, we were able to measure the
@@ -52,7 +52,8 @@ Source I's mass is also closely tied to the origin of the Orion Outflow.
 Several authors argue that Source I, BN, and Source N \citep[or, alternatively,
 source X][]{Luhman2017a} were part of a single non-hierarchical multiple system
 that underwent dynamical decay, and this decay somehow triggered the outflow
-\citep{Bally2005a,Rodriguez2005a,Goddi2010a,Bally2011a,Bally2015a,Bally2017a}.  However, others have
+\citep{Bally2005a,Rodriguez2005a,Goddi2010a,Bally2011a,Bally2015a,Bally2017a}.
+However, others have
 noted that the lower masses inferred for Source I above are incompatible with
 this scenario \citep{Chatterjee2012a,Farias2017a,Plambeck2016a}, which requires
 a mass $M_{I} \gtrsim 15$ \msun.
@@ -84,31 +85,6 @@ we are dynamic-range-limited.}
 
 \input{image_metadata.tex}
 
-\Figure
-%{figures/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.ampphase5.image.tt0.pbcor_inset.pdf}
-{figures/Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor_inset.pdf}
-{An overview figure showing the observed region and highlighting some of
-the most prominent detected sources.
-The main image shows most of the field of view centered on Orion Source I.
-The colorbar shows the intensity of this image.
-The surrounding hot core is visible as diffuse emission along the northeast-southwest
-axis from Source I.
-The inset figures show, clockwise from top left, 
-Source I (intensity range -1 to 20 mJy \perbeam),
-AlmaBNKLBinary1 and AlmaBNKLBinary2 (-0.5 to 2 mJy \perbeam),
-Source BN (-1 to 100 mJy \perbeam),
-IRC 6E (-1 to 6 mJy \perbeam),
-IRC 2C (-1 to 7 mJy \perbeam),
-Source N (-1 to 5 mJy \perbeam)
-AlmaHotCoreDisk1  (-1 to 4 mJy \perbeam),
-and
-WMJ053514.797-052230.557 (-1 to 10 mJy \perbeam).
-The insets are expanded by 10$\times$ relative to the main image.
-The synthesized beam is shown at the same 10$\times$ zoom factor in the
-bottom-left; it has contours overlaid at 5, 10, 20, and 30\% of peak
-in purple, blue, green, and yellow respectively.
-}
-{fig:overview}{1}{7.5in}
 
 \section{Results}
 
@@ -119,6 +95,21 @@ mm (Figure \ref{fig:continuum_data_B6} shows the 1 mm continuum).  The nondetect
 lines in the disk midplane is a strong indication that the continuum is
 optically thick, as has previously been noted
 \citep[e.g.][]{Plambeck2016a}.
+
+\FigureTwo
+{figures/Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor_inset.pdf}
+{figures/Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor_inset.pdf}
+{Overfiew figure showing Source I and the surrounding hot core at 3 mm
+(left) and 1 mm (right).  The inset zoom figure shows Source I with a wider
+flux range, from -1 to 25 mJy \perbeam.
+The insets are expanded by 3$\times$ relative to the main image.
+The synthesized beam is shown at the same 3$\times$ zoom factor in the
+bottom-left; it has contours overlaid at 5, 10, 20, and 30\% of peak
+in purple, blue, green, and yellow respectively.
+The surface brightness conversion factors are 5\ee{4} K Jy$^{-1}$ at 3 mm and 3\ee{4}
+K Jy$^{-1}$ at 1 mm.
+}
+{fig:overview}{1}{3.5in}
 
 We fit the highest-resolution 1.3 mm and 3.2 mm continuum image with a simple
 model to determine the basic
@@ -239,14 +230,6 @@ See the caption of Figure \ref{fig:contmodel_residuals_B6} for details.
 % {continuum modeling}
 % {fig:contmodels}{1}{3in}
 
-\subsubsection{Other sources}
-We note the detection of several other sources in the field, many of
-which are previously undetected.  These will be discussed in a future work,
-but we note the presence of an edge-on disk slightly smaller than Source I's
-disk embedded within the `hot core' shown in Figure \ref{fig:overview},
-which we name AlmaHotCoreDisk1, and a binary separated by 0.22\arcsec (93 AU)
-we label AlmaBNKLBinary1 and AlmaBNKLBinary2 ({\color{red} these names are
-placeholders}).
 
 
 \subsection{Water Line}
@@ -266,6 +249,13 @@ but it is at least as good a tracer as SiO.  Because the water emission is
 thermal, though, it exhibits less extreme brightness fluctuations than 
 the SiO masers, allowing us to fit an upper-envelope velocity curve in Section
 \ref{sec:kinematics}.
+
+{\color{red} To make the above more explicit: a 100 Jy maser will have an
+apparent `envelope' larger than any thermal emission simply because of observational
+effects (convolution with the beam), while for the thermal lines, simply going out
+to a few-sigma threshold is still quite likely to be `line core' emission rather
+than purely beam effects.  We should probably still be deconvolving the beam from
+the envelope-fit estimates, and therefore revise the mass slightly downward.}
 
 % While the continuum disk truncates at r=50 AU, the lines show emission
 % beyond this radius, with \water exhibiting emission out to $r\sim100$ AU
