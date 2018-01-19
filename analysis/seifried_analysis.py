@@ -37,26 +37,26 @@ origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
                          extraction_path)*u.deg
 
-for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
-                                              'H2O_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.01.fits', -0.0005, 0.048,
-                                              'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
-                                              'H2O_kepler_SeifriedPlot_0.1arcsec.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.01.fits', -0.0005, 0.048,
-                                              'H2O_kepler_SeifriedPlot_0.01arcsec.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_29SiOv=0_2-1_robust-2_diskpv.fits', -0.05, 1,
-                                              '29SiOv0_2-1_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_29SiOv=0_5-4_robust0.5_diskpv.fits', -0.01, 0.05,
-                                              '29SiOv0_5-4_kepler_SeifriedPlot.png', 2*u.mJy, [10,100]),
-                                             ('pv/sourceI_SiS_12-11_robust0.5_diskpv.fits', -0.01, 0.05,
-                                              'SiS_12-11_kepler_SeifriedPlot.png', 1*u.mJy, [30,200]),
-                                             ('pv/sourceI_Unknown_1_robust0.5_diskpv.fits', -0.005, 0.02,
-                                              'Unknown_1_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
-                                             ('pv/sourceI_Unknown_4_robust0.5_diskpv.fits', -0.005, 0.02,
-                                              'Unknown_4_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
-                                             ('pv/sourceI_Unknown_5_robust0.5_diskpv.fits', -0.005, 0.02,
-                                              'Unknown_5_kepler_SeifriedPlot.png', 0.5*u.mJy, [30,80]),
+for fn, vmin, vmax, savename, rms, radii in [#('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv.fits', -0.0005, 0.055,
+                                             # 'H2O_kepler_SeifriedPlot.png', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust0.5_diskpv_0.01.fits', -0.0005, 0.048,
+                                              'H2O_kepler_SeifriedPlot_0.01arcsec.pdf', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
+                                              'H2O_kepler_SeifriedPlot_0.1arcsec.pdf', 1*u.mJy, [10,100]),
+                                             #('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.01.fits', -0.0005, 0.048,
+                                             # 'H2O_kepler_SeifriedPlot_0.01arcsec.pdf', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_29SiOv=0_2-1_B3_robust-2_diskpv_0.01.fits', -0.05, 1,
+                                              '29SiOv0_2-1_kepler_SeifriedPlot.pdf', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_29SiOv=0_5-4_B6_robust0.5_diskpv_0.01.fits', -0.01, 0.05,
+                                              '29SiOv0_5-4_kepler_SeifriedPlot.pdf', 2*u.mJy, [10,100]),
+                                             ('pv/sourceI_SiS_12-11_B6_robust0.5_diskpv_0.01.fits', -0.01, 0.05,
+                                              'SiS_12-11_kepler_SeifriedPlot.pdf', 1*u.mJy, [30,200]),
+                                             ('pv/sourceI_Unknown_1_B6_robust0.5_diskpv_0.01.fits', -0.005, 0.02,
+                                              'Unknown_1_kepler_SeifriedPlot.pdf', 0.5*u.mJy, [30,80]),
+                                             ('pv/sourceI_Unknown_4_B6_robust0.5_diskpv_0.01.fits', -0.005, 0.02,
+                                              'Unknown_4_kepler_SeifriedPlot.pdf', 0.5*u.mJy, [30,80]),
+                                             ('pv/sourceI_Unknown_5_B6_robust0.5_diskpv_0.01.fits', -0.005, 0.02,
+                                              'Unknown_5_kepler_SeifriedPlot.pdf', 0.5*u.mJy, [30,80]),
                                             ]:
     print(fn, vmin, vmax, savename, rms)
     fh = fits.open(paths.dpath(fn))
@@ -120,7 +120,7 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
     ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b',
             zorder=200, alpha=0.9)
     maxdist=150*u.au
-    lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[10,
+    lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[15,
                                                                          19],
                                       linestyles=[':','-'], colors=['g','r'],
                                       radii={19: (radii, ('m','m'))})
@@ -134,17 +134,17 @@ for fn, vmin, vmax, savename, rms, radii in [('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_
     for line in ax.get_lines() + ax.collections:
         line.set_visible(False)
 
-    xpv, ypv, pv_19msun = edge_on_ring_velocity_model.thindiskcurve(mass=14*u.M_sun,
+    xpv, ypv, pv_15msun = edge_on_ring_velocity_model.thindiskcurve(mass=15*u.M_sun,
                                                                     rmin=20*u.au,
-                                                                    rmax=80*u.au,
+                                                                    rmax=70*u.au,
                                                                     vgrid=np.linspace(-35,
                                                                                       35,
                                                                                       200)*u.km/u.s,
                                                                     pvd=True)
 
-    #pv_19msun_c = convolve_fft(pv_19msun, Gaussian2DKernel(0.5))
+    #pv_15msun_c = convolve_fft(pv_15msun, Gaussian2DKernel(0.5))
     xpv_as = (xpv / d_orion).to(u.arcsec, u.dimensionless_angles())
-    ax.contour(xpv_as, (ypv+vcen).to(u.m/u.s), pv_19msun, levels=[1, 25],
+    ax.contour(xpv_as, (ypv+vcen).to(u.m/u.s), pv_15msun, levels=[1, 25],
                colors=['r','b'], transform=ax.get_transform('world')
               )
 

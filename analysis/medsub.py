@@ -3,6 +3,10 @@ from astropy import units as u
 from astropy import log
 
 files = [
+'/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw0.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw1.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw2.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw3.maskedclarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/Orion{source}_only.B3.robust-2.spw0.clarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/Orion{source}_only.B3.robust-2.spw1.clarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/Orion{source}_only.B3.robust-2.spw2.clarkclean10000.image.pbcor.fits',
@@ -15,6 +19,10 @@ files = [
 '/Volumes/external/orion/Orion{source}_only.B6.robust0.5.spw1.maskedclarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/Orion{source}_only.B6.robust0.5.spw2.maskedclarkclean10000.image.pbcor.fits',
 '/Volumes/external/orion/Orion{source}_only.B6.robust0.5.spw3.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw0.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw1.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw2.maskedclarkclean10000.image.pbcor.fits',
+'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw3.maskedclarkclean10000.image.pbcor.fits',
 ]
 
 for source in ('SourceI', 'BN'):

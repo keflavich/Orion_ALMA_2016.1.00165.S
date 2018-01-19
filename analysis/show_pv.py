@@ -105,8 +105,8 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
     trans = ax.get_transform('world')
 
     # Since we reset the CRVAL to be the origin, we don't need to
-    # add origin as an offset any more Rather than remove it, I'm
-    # just resetting it to zero...
+    # add origin as an offset any more
+    # Rather than remove it, I'm just resetting it to zero...
     origin = 0*u.arcsec
 
     # overlay a Keplerian velocity curve

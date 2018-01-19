@@ -100,6 +100,23 @@ def get_total_time(fn):
         time = timeline.split()[-2]
     return time
 
+def get_calibrators(fn):
+    calibrators = {}
+    with open(fn, 'r') as fh:
+        lines = fh.readlines()
+        for line in lines:
+            if 'CALIBRATE_PHASE' in line:
+                phaseline = line
+                calibrators['phase'] = phaseline.split()[5]
+            elif 'CALIBRATE_FLUX' in line:
+                fluxline = line
+                calibrators['flux'] = fluxline.split()[5]
+            elif 'CALIBRATE_BANDPASS' in line:
+                bpline = line
+                calibrators['bandpass'] = bpline.split()[5]
+
+    return calibrators
+
 def get_metadata_line(fn, DEBUG=False):
     ants,size = get_ant_pos(fn)
     start_date, end_date = get_date(fn)
@@ -107,6 +124,7 @@ def get_metadata_line(fn, DEBUG=False):
     longestbl = max(baselines.values())
     shortestbl = min(baselines.values())
     integrationtime = get_total_time(fn)
+    calibrators = get_calibrators(fn)
 
     frqtbl = get_freqtable(fn)
     # http://www.eso.org/public/usa/teles-instr/alma/receiver-bands/
@@ -130,20 +148,29 @@ def get_metadata_line(fn, DEBUG=False):
 
     if start_date != end_date:
         # skip because we don't want to include the merged, only the original, MS metadata
+        print("Skipping {0}".format(fn))
         return None
+    else:
+        print("Including {0}".format(fn))
     
-    line = ("{0} & {6} & {1}m & {2} & {3}-{4} & {5}\\\\"
+    line = ("{0} & {6} & {1}m & {2} & {3}-{4} & {5} & {7} & {8} \\\\"
             .format(start_date, int(round(float(size))),
                     int(round(float(integrationtime))),
                     int(round(shortestbl)),
                     int(round(longestbl)),
                     len(ants),
                     band,
+                    calibrators.get('flux'),
+                    calibrators.get('phase'),
                    )
            )
     if DEBUG:
         print(line)
-    return line, (start_date, size, integrationtime, shortestbl, longestbl, len(ants))
+
+    if calibrators.get('flux') is None:
+        return
+
+    return line, (start_date, size, integrationtime, shortestbl, longestbl, len(ants), calibrators)
 
 def make_meta_tables(listobspath=os.path.join(paths.reductionpath, 'listobs'), DEBUG=False):
     listfiles=glob.glob(os.path.join(listobspath, '*.listobs'))
@@ -155,7 +182,7 @@ def make_meta_tables(listobspath=os.path.join(paths.reductionpath, 'listobs'), D
 
     dct = {}
     dct1 = {}
-    for prtline,(date, size, integrationtime, shortestbl, longestbl, nants) in lines:
+    for prtline,(date, size, integrationtime, shortestbl, longestbl, nants, calibrators) in lines:
         if date in dct:
             if DEBUG:
                 print("old integration time for {0} = {1}".format(date, integrationtime))
@@ -185,6 +212,7 @@ if __name__ == "__main__":
     formatted, data = zip(*make_meta_tables(DEBUG=False))
     dates = [datetime.datetime.strptime(x[0], '%d-%b-%Y') for x in data]
 
+
     lines = "\n".join([x for _,x in sorted(set(zip(dates,formatted)))])
     print()
     print(lines)
@@ -193,10 +221,10 @@ if __name__ == "__main__":
 \begin{table*}[htp]
 \centering
 \caption{Observation Summary}
-\begin{tabular}{llllll}
+\begin{tabular}{llllllll}
 \label{tab:observations}
-Date & Band & Array & Observation Duration &  Baseline Length Range  & \# of antennae\\
-     &      &       & seconds              & meters                    & \\
+Date & Band & Array & Observation Duration &  Baseline Length Range  & \# of antennae & FluxCal & PhaseCal\\
+     &      &       & seconds              & meters                    &              &         &         \\
 \hline
 DATA
 \hline

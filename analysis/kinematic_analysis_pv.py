@@ -3,6 +3,7 @@ import pvextractor
 import os
 import glob
 import paths
+from astropy.io import fits
 from astropy import units as u
 from astropy import constants
 from astropy import coordinates
@@ -16,6 +17,7 @@ import show_pv; imp.reload(show_pv)
 import re
 
 robustnumre = re.compile('robust(0.5|-2|2)')
+bandre = re.compile("\.B([367])\.")
 
 # use outflow_meta b/c higher precision than ds9 reg
 from line_point_offset import offset_to_point
@@ -39,21 +41,25 @@ diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
                                    frame='fk5')
 diskycoorddict[source] = diskycoords
 
-for width in (0.1, 0.01):
+for width in (0.1, 0.01, 0.2, 0.4):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), 6.0),
        ):
 
         for fnt in (
-                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.longbaselines.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                    ):
 
             for spw in (0,1,2,3):
+
+                if 'longbaselines' in name:
+                    name = name+"_longbaselines"
 
                 fn = fnt.format(spw)
 
@@ -85,30 +91,39 @@ for width in (0.1, 0.01):
 
                     diskycoords = diskycoorddict[name]
 
-                    subcube = (medsub.with_spectral_unit(u.km/u.s,
-                                                         velocity_convention='radio',
-                                                         rest_value=linefreq)
-                               .spectral_slab(-50*u.km/u.s, 60*u.km/u.s))
-
-                    if subcube.shape[0] < 5:
-                        log.warn("Skipping line {0} in {1} because it's empty".format(linename, fn))
-                        continue
+                    band = 'B'+bandre.search(fnt).groups()[0]
 
                     if 'robust' in fn:
                         robustnum = robustnumre.search(fn).groups()[0]
-                        basename = "{0}_{1}_robust{2}_diskpv_{3}.fits".format(name,
-                                                                              linename,
-                                                                              robustnum,
-                                                                              width)
+                        basename = ("{0}_{1}_{4}_robust{2}_diskpv_{3}.fits"
+                                    .format(name, linename, robustnum, width, band)
+                                   )
+                        robustnum = float(robustnum)
                     else:
-                        basename = "{0}_{1}_diskpv_{2}.fits".format(name, linename, width)
+                        robustnum = 999
+                        basename = ("{0}_{1}_{3}_diskpv_{2}.fits"
+                                    .format(name, linename, width, band))
                     outfn = paths.dpath(os.path.join("pv/", basename))
 
                     extraction_path = pvextractor.Path(diskycoords, width*u.arcsec)
-                    log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
-                    extracted = pvextractor.extract_pv_slice(subcube, extraction_path)
-                    log.info("Writing to {0}".format(outfn))
-                    extracted.writeto(outfn, overwrite=True)
+
+                    if os.path.exists(outfn):
+                        extracted = fits.open(outfn)[0]
+                    else:
+                        subcube = (medsub.with_spectral_unit(u.km/u.s,
+                                                             velocity_convention='radio',
+                                                             rest_value=linefreq)
+                                   .spectral_slab(-50*u.km/u.s, 60*u.km/u.s))
+
+                        if subcube.shape[0] < 5:
+                            log.warn("Skipping line {0} in {1} because it's empty".format(linename, fn))
+                            continue
+
+
+                        log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
+                        extracted = pvextractor.extract_pv_slice(subcube, extraction_path)
+                        log.info("Writing to {0}".format(outfn))
+                        extracted.writeto(outfn, overwrite=True)
 
                     origin = offset_to_point(source.ra.deg,
                                              source.dec.deg,
@@ -156,7 +171,7 @@ for width in (0.1, 0.01):
                     vmin = -0.0025
                     if vmax < 0.5 and 'B7' not in fnt:
                         vmax = np.min([0.02, vmax])
-                    if 'H2O' in linename and width > 0.05:
+                    if 'H2O' in linename and width > 0.05 and robustnum > -2:
                         vmax = 0.1
 
                     fig,ax = show_pv.show_pv(extracted.data, ww,
@@ -167,7 +182,7 @@ for width in (0.1, 0.01):
                     ax.set_xlim(good_limits)
 
                     fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
-                                            basename.replace(".fits",".png")),
+                                            basename.replace(".fits",".pdf")),
                                 dpi=200,
                                 bbox_inches='tight')
 
@@ -177,10 +192,94 @@ for width in (0.1, 0.01):
 
                     show_pv.show_keplercurves(ax, origin, maxdist, vcen,
                                               masses=[19],
+                                              radii={19: ([30, 80], ['m', 'm'])},
                                               linestyles='-',
                                              )
 
                     fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +
-                                            basename.replace(".fits",".png")),
+                                            basename.replace(".fits",".pdf")),
                                 dpi=200,
                                 bbox_inches='tight')
+
+
+for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.4,0.2)):
+    for name, cutoutname, source, vrange, vcen in (
+        ('sourceI', 'sourceI', coord, (-30,40), 6.0),
+       ):
+        for robustnum in (0.5, -2):
+            for linename, linefreq in disk_lines.items():
+
+                inner_fn = "{0}_{1}_B6_robust{2}_diskpv_{3}.fits".format(name,
+                                                                         linename,
+                                                                         robustnum,
+                                                                         iwidth)
+                outer_fn = "{0}_{1}_B6_robust{2}_diskpv_{3}.fits".format(name,
+                                                                         linename,
+                                                                         robustnum,
+                                                                         owidth)
+                try:
+                    outerfh = fits.open(paths.dpath(os.path.join("pv/", outer_fn)))
+                    innerfh = fits.open(paths.dpath(os.path.join("pv/", inner_fn)))
+                except:
+                    print("Skipping {0}".format(outer_fn))
+                    continue
+
+                pixscale = innerfh[0].header['CDELT1']*u.deg
+
+                outerarea = pixscale * u.Quantity(owidth, u.arcsec)
+                innerarea = pixscale * u.Quantity(iwidth, u.arcsec)
+
+                diff = ((outerfh[0].data * outerarea -
+                         innerfh[0].data * innerarea) /
+                        (outerarea-innerarea)).decompose().value
+
+                outfn = "{0}_{1}_robust{2}_diskpv_{3}-{4}.fits".format(name,
+                                                                       linename,
+                                                                       robustnum,
+                                                                       owidth,
+                                                                       iwidth)
+
+                outerfh[0].data = diff
+                outerfh.writeto(outfn, overwrite=True)
+
+                ww = wcs.WCS(outerfh[0].header)
+                ww.wcs.cdelt[1] /= 1000.0
+                ww.wcs.crval[1] /= 1000.0
+                ww.wcs.cunit[1] = u.km/u.s
+                ww.wcs.cdelt[0] *= 3600
+                ww.wcs.cunit[0] = u.arcsec
+
+                # #!@#$!@#$@!%@#${^(@#$)%#$(
+                ww.wcs.set()
+
+                if ww.wcs.cunit[1] == 'm/s':
+                    scalefactor = 1000.0
+                else:
+                    scalefactor = 1.0
+
+                #origin_ = ww.sub([1]).all_pix2world([outerfh[0].data.shape[1]/2], 0)[0][0]*u.arcsec
+                ww.wcs.crval[0] = 0
+                ww.wcs.crpix[0] = outerfh[0].data.shape[1]/2+1
+                origin = 0*u.arcsec
+
+                vmin,vmax = (np.nanmin(diff),
+                             np.nanmax(diff))
+                vmin = -0.0025
+                if vmax < 0.5 and 'B7' not in outfn:
+                    vmax = np.min([0.02, vmax])
+                if 'H2O' in linename and width > 0.05 and robustnum > -2:
+                    vmax = 0.1
+
+                fig,ax = show_pv.show_pv(diff, ww,
+                                         origin, vrange=vrange, vcen=vcen*u.km/u.s,
+                                         imvmin=vmin, imvmax=vmax)
+
+                show_pv.show_keplercurves(ax, origin, 150*u.au, vcen*u.km/u.s,
+                                          masses=[19],
+                                          linestyles='-',
+                                         )
+
+                fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +
+                                        outfn.replace(".fits",".pdf")),
+                            dpi=200,
+                            bbox_inches='tight')

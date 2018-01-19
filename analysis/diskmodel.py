@@ -268,7 +268,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     ppbeam = (observed_beam.sr/pixscale**2).decompose()
 
     fit_results[freq] = {
-                         'Disk Scaleheight': scaleheight,
+                         'Disk FWHM': scaleheight*(8*np.log(2))**0.5,
                          'Disk Radius': length_au/2,
                          'Disk PA': posang,
                          'Pt Position': fitted_ptsrc,
@@ -511,7 +511,7 @@ formats = {'Pt Position': lambda x: "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.de
            'Pt Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Pt Width': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
-           'Disk Scaleheight': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Disk FWHM': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Radius': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Total Flux': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Pt \%': lambda x: strip_trailing_zeros('{0:0.5g}\%'.format(round_to_n(x,2)*100)),
@@ -528,7 +528,7 @@ latexdict['tablefoot'] = ('\n\par The pointlike source '
                          )
 
 
-tbl = tbl['Frequency', 'Disk Scaleheight', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt \%', 'Total Flux']
+tbl = tbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt \%', 'Total Flux']
 tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
           formats=formats,
           latexdict=latexdict, overwrite=True)

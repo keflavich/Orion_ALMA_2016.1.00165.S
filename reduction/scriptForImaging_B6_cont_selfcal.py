@@ -68,6 +68,8 @@ plotcal('phase_0.cal', xaxis='time', yaxis='phase', iteration='antenna',
         subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
         figfile='phase_0_vs_time.png')
 
+clearcal(vis=selfcal_vis)
+
 applycal(vis=selfcal_vis, gaintable=["phase_0.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
@@ -104,6 +106,8 @@ gaincal(vis=selfcal_vis, caltable='phase_1.cal', solint='int', gaintype='G',
 plotcal('phase_1.cal', xaxis='time', yaxis='phase', iteration='antenna',
         subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
         figfile='phase_1_vs_time.png')
+
+clearcal(vis=selfcal_vis)
 
 applycal(vis=selfcal_vis, gaintable=["phase_1.cal"],
          interp="linear", applymode='calonly', calwt=False)
@@ -143,6 +147,8 @@ plotcal('phase_2.cal', xaxis='time', yaxis='phase', iteration='antenna',
         subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
         figfile='phase_2_vs_time.png')
 
+clearcal(vis=selfcal_vis)
+
 applycal(vis=selfcal_vis, gaintable=["phase_2.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
@@ -179,6 +185,8 @@ gaincal(vis=selfcal_vis, caltable='phase_3.cal', solint='int', gaintype='G',
 plotcal('phase_3.cal', xaxis='time', yaxis='phase', iteration='antenna',
         subplot=331, timerange='2017/09/19/12:00:00~2017/09/20/12:00:00',
         figfile='phase_3_vs_time.png')
+
+clearcal(vis=selfcal_vis)
 
 applycal(vis=selfcal_vis, gaintable=["phase_3.cal"],
          interp="linear", applymode='calonly', calwt=False)
@@ -226,11 +234,66 @@ plotcal('amp_4.cal', xaxis='time', yaxis='amp', iteration='antenna',
         figfile='amp_4_vs_time.png')
 
 
+clearcal(vis=selfcal_vis)
 
 applycal(vis=selfcal_vis, gaintable=["phase_4.cal"],
          interp="linear", applymode='calonly', calwt=False)
 
-contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4'
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.phase4.deepmask.allbaselines'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+makefits(contimagename)
+
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.phase4.deepmask'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
 os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
        imagename=contimagename,
@@ -252,7 +315,32 @@ tclean(vis=selfcal_vis,
        savemodel='modelcolumn',
        uvrange='50~36000m',
       )
+
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
 makefits(contimagename)
+
+
 
 
 rmtables(['phase_5.cal'])
@@ -282,6 +370,7 @@ plotcal('amp_5_longbaselines.cal', xaxis='time', yaxis='amp', iteration='antenna
 plotcal('amp_5_longbaselines.cal', xaxis='antenna', yaxis='amp',
         figfile='amp_5_longbaselines_vs_antenna.png')
 
+clearcal(vis=selfcal_vis)
 
 applycal(vis=selfcal_vis, gaintable=["phase_5.cal", "amp_5_longbaselines.cal"],
          interp="linear", applymode='calonly', calwt=False)
@@ -335,9 +424,9 @@ tclean(vis=selfcal_vis,
        uvrange='50~36000m',
       )
 
-os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
        imagename=contimagename,
+       startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
        field='Orion_BNKL_source_I',
        specmode='mfs',
        deconvolver='mtmfs',

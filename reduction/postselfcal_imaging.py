@@ -19,16 +19,20 @@ imsize = [7168,7168] # size of image in pixels.
 #contvis = ['band6_continuum_ms{0}.ms'.format(ii) for ii in range(2)]
 #if not os.path.exists(contvis[0]):
 #    make_cont_ms()
-contvis = 'B6_calibrated_final_cont.ms'
+#contvis = 'B6_calibrated_final_cont.ms'
 
 selfcal_vis = 'B6_selfcal.ms'
 
-# imaging experiments:
-contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask'
+clearcal(vis=selfcal_vis)
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.deepmask'
 # First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
 os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
        imagename=contimagename,
+       datacolumn='data',
        field='Orion_BNKL_source_I',
        specmode='mfs',
        deconvolver='mtmfs',
@@ -48,9 +52,11 @@ tclean(vis=selfcal_vis,
        uvrange='50~36000m',
       )
 
-os.system('rm -rf ' + contimagename + "*")
 tclean(vis=selfcal_vis,
        imagename=contimagename,
+       datacolumn='data',
+       #startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       startmodel='', # this means start from existing data
        field='Orion_BNKL_source_I',
        specmode='mfs',
        deconvolver='mtmfs',
@@ -71,4 +77,170 @@ tclean(vis=selfcal_vis,
        uvrange='50~36000m',
       )
 makefits(contimagename)
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.deepmask.allbaselines'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='data',
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='data',
+       #startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       startmodel='', # this means start from existing data
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+makefits(contimagename)
+
+
+
+
+
+applycal(vis=selfcal_vis, gaintable=["phase_4.cal"],
+         interp="linear", applymode='calonly', calwt=False)
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.phase4.deepmask'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='corrected',
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='corrected',
+       #startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       startmodel='', # this means start from existing data
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='50~36000m',
+      )
+makefits(contimagename)
+
+
+
+contimagename = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.phase4.deepmask.allbaselines'
+# First, clean everything to 0.5 mJy/beam, then clean just the specified regions deeper
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='corrected',
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='corrected',
+       #startmodel=[contimagename+'.model.tt0', contimagename+'.model.tt1'],
+       startmodel='', # this means start from existing data
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       mask=['deepcleanregions.crtf'],
+       nterms=2,
+       scales=[0,4,12],
+       smallscalebias=0.8,
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = -2,
+       niter = int(1e5),
+       threshold = '0.1mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+      )
+makefits(contimagename)
+
 
