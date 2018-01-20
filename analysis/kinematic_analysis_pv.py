@@ -10,7 +10,7 @@ from astropy import coordinates
 from astropy import wcs
 from astropy import log
 from spectral_cube import SpectralCube
-import pyregion
+import regions
 import imp; import lines; imp.reload(lines)
 from lines import disk_lines
 import show_pv; imp.reload(show_pv)
@@ -26,25 +26,35 @@ import pylab as pl
 
 pl.close(1)
 
+
+# just do water (goes faster)
+disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
+
 diskycoorddict = {}
 source = "sourceI"
 coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                              unit=(u.hour, u.deg))
-diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
-                                            .format(source)))[0].coord_list
-diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
-                                                     diskycoord_list[jj+1])
-                                    for jj in range(0,
-                                                    len(diskycoord_list),
-                                                    2)], unit=(u.deg,
-                                                               u.deg),
-                                   frame='fk5')
-diskycoorddict[source] = diskycoords
+#diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
+#                                            .format(source)))[0].coord_list
+#diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
+#                                                     diskycoord_list[jj+1])
+#                                    for jj in range(0,
+#                                                    len(diskycoord_list),
+#                                                    2)], unit=(u.deg,
+#                                                               u.deg),
+#                                   frame='icrs')
+#diskycoorddict[source] = diskycoords
+diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
+                                               .format(source)))
+diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
+                                               diskycoord_list[0].end])
 
-for width in (0.1, 0.01, 0.2, 0.4):
+for width in (0.1, 0.01, 0.2, 0.3):
     for name, cutoutname, source, vrange, vcen in (
-        ('sourceI', 'sourceI', coord, (-30,40), 6.0),
+        ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):
+
+        diskycoords = diskycoorddict[name]
 
         for fnt in (
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
@@ -67,29 +77,40 @@ for width in (0.1, 0.01, 0.2, 0.4):
 
                 #fn = '/Volumes/external/orion/full_OrionSourceI_B6_spw0_lines_cutout.fits'
 
-                #cube = (SpectralCube.read(fn)[:,515:721,550:714].mask_out_bad_beams(5))
-                cube = (SpectralCube.read(fn).mask_out_bad_beams(5))
-                # cube.allow_huge_operations=True
-                cube.beam_threshold = 5000
-                log.info("Calculating 25th percentile")
-                med = cube.percentile(25,axis=0)
-                medsub = cube - med
+                medsubfn = fn.replace(".fits","_medsub.fits")
 
-                # width = 0.05 arcsec encompasses the disk; however, most
-                # of the actual line emission comes from just above/below...
-                #extraction_path = pvextractor.Path(diskycoords, width=0.05*u.arcsec)
-                extraction_path = pvextractor.Path(diskycoords, width=width*u.arcsec)
-                log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
-                extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
+                if os.path.exists(medsubfn):
+                    medsub = SpectralCube.read(medsubfn)
+                    medsub.beam_threshold = 5000
+
+                else:
+                    #cube = (SpectralCube.read(fn)[:,515:721,550:714].mask_out_bad_beams(5))
+                    cube = (SpectralCube.read(fn).mask_out_bad_beams(5))
+                    # cube.allow_huge_operations=True
+                    cube.beam_threshold = 5000
+                    log.info("Calculating 25th percentile")
+                    med = cube.percentile(25,axis=0)
+                    medsub = cube - med
+                    medsub.write(medsubfn)
+
+
+                # create full-scale PV diagram (all freqs)
                 outfn = paths.dpath(os.path.join('pv',
                                                  os.path.split(fn.replace(".image.pbcor.fits",
                                                                           "_medsub_diskpv_{0}.fits".format(width)))[-1]))
-                log.info("Writing to {0}".format(outfn))
-                extracted.writeto(outfn, overwrite=True)
+                if not os.path.exists(outfn):
+                    # width = 0.05 arcsec encompasses the disk; however, most
+                    # of the actual line emission comes from just above/below...
+                    #extraction_path = pvextractor.Path(diskycoords, width=0.05*u.arcsec)
+                    extraction_path = pvextractor.Path(diskycoords, width=width*u.arcsec)
+                    log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
+                    extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
+                    log.info("Writing to {0}".format(outfn))
+                    extracted.writeto(outfn, overwrite=True)
+
 
                 for linename, linefreq in disk_lines.items():
 
-                    diskycoords = diskycoorddict[name]
 
                     band = 'B'+bandre.search(fnt).groups()[0]
 
@@ -202,9 +223,9 @@ for width in (0.1, 0.01, 0.2, 0.4):
                                 bbox_inches='tight')
 
 
-for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.4,0.2)):
+for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2)):
     for name, cutoutname, source, vrange, vcen in (
-        ('sourceI', 'sourceI', coord, (-30,40), 6.0),
+        ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):
         for robustnum in (0.5, -2):
             for linename, linefreq in disk_lines.items():

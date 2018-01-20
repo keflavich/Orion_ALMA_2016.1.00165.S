@@ -1,4 +1,7 @@
 # Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
-fk5
-line(5:35:14.543,-5:22:31.087,5:35:14.495,-5:22:30.183) # line=0 0
+icrs
+line(83.81055468582213,-5.37525628868922,83.81041765030159,-5.375080878392712) # color=red width=2 text={Fitted midpoint extended by 0.4"}
+line(83.81058539,-5.375299899,83.81039372,-5.375048788) # line=0 0 text={Hand-drawn}
+line(83.81050704,-5.37519584,83.8104653,-5.37514133) # line=0 0 color=blue text={Fitted endpoints (copied by hand)}
+line(83.81050704003927,-5.375195836336247,83.81046529608444,-5.375141330745685) # color=orange width=3 text={Fitted endpoints}

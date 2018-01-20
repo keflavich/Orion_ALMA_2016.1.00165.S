@@ -5,7 +5,7 @@ from astropy.io import fits
 from astropy import wcs
 from astropy import units as u
 from astropy import coordinates
-import pyregion
+import regions
 from astropy.convolution import convolve_fft, Gaussian2DKernel
 from line_point_offset import offset_to_point
 import imp
@@ -17,21 +17,28 @@ imp.reload(edge_on_ring_velocity_model)
 imp.reload(show_pv)
 
 source = 'sourceI'
-diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
-                                            .format(source)))[0].coord_list
-diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
-                                                     diskycoord_list[jj+1])
-                                    for jj in range(0,
-                                                    len(diskycoord_list),
-                                                    2)], unit=(u.deg,
-                                                               u.deg),
-                                   frame='fk5')
+#diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
+#                                            .format(source)))[0].coord_list
+#diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
+#                                                     diskycoord_list[jj+1])
+#                                    for jj in range(0,
+#                                                    len(diskycoord_list),
+#                                                    2)], unit=(u.deg,
+#                                                               u.deg),
+#                                   frame='fk5')
+diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
+                                               .format(source)))
+diskycoords = coordinates.SkyCoord([diskycoord_list[0].start,
+                                    diskycoord_list[0].end])
 
 # I prefer 6 km/s to the 5 km/s used by other groups
 vcen = 6.0*u.km/u.s
+vcen = 5.5*u.km/u.s
 
-source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
-                              unit=(u.hour, u.deg))
+#source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
+#                             unit=(u.hour, u.deg))
+# fitted *disk* center from diskmodel
+source = coordinates.SkyCoord(83.81048617*u.deg, -5.37516858*u.deg, frame='icrs')
 extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
 origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
@@ -43,6 +50,10 @@ for fn, vmin, vmax, savename, rms, radii in [#('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)
                                               'H2O_kepler_SeifriedPlot_0.01arcsec.pdf', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust0.5_diskpv_0.1.fits', -0.0005, 0.055,
                                               'H2O_kepler_SeifriedPlot_0.1arcsec.pdf', 1*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1.fits', -0.0005, 0.03,
+                                              'H2O_kepler_SeifriedPlot_0.1arcsec_robust-2.pdf', 0.7*u.mJy, [10,100]),
+                                             ('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.2.fits', -0.0005, 0.03,
+                                              'H2O_kepler_SeifriedPlot_0.2arcsec_robust-2.pdf', 0.7*u.mJy, [10,100]),
                                              #('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.01.fits', -0.0005, 0.048,
                                              # 'H2O_kepler_SeifriedPlot_0.01arcsec.pdf', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_2-1_B3_robust-2_diskpv_0.01.fits', -0.05, 1,
@@ -125,6 +136,10 @@ for fn, vmin, vmax, savename, rms, radii in [#('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)
                                       linestyles=[':','-'], colors=['g','r'],
                                       radii={19: (radii, ('m','m'))})
     ax.set_aspect(2)
+
+    x1,x2 = ww.sub([1]).wcs_world2pix([-0.30,0.30],0)[0]
+    y1,y2 = ww.sub([2]).wcs_world2pix([-45*scalefactor,55*scalefactor],0)[0]
+    ax.axis([x1,x2,y1,y2])
 
 
     fig.savefig(paths.fpath('pv/{0}'.format(savename)),

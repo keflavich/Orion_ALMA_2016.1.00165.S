@@ -443,8 +443,8 @@ A substantially smaller mass, such as the 5-10 \msun suggested previously
 masses, emission is clearly detected outside of the Keplerian curve.  
 
 \FigureTwo
-{figures/H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {figures/H2O_kepler_SeifriedPlot_0.1arcsec.pdf}
+{figures/H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {Position-velocity diagram of \water $5_{5,0}-6_{4,3}$.
 The blue dotted curve is the outer envelope of the velocity curve
 determined using the method of \citet{Seifried2016a}.
@@ -452,17 +452,17 @@ Red curves show the Keplerian velocity profile surrounding a 19 \msun
 central source; green dotted curves show a Keplerian profile for a 10 \msun
 source.
 White dashed lines indicate the adopted source central position
-J2000 5:35:14.519 -5:22:30.633 (FK5) and central velocity (6 \kms).
+05h35m14.5167s -05d22m30.6069s (ICRS) and central velocity (5.5 \kms).
 The purple dashed lines show the full orbital path for radii of
 10 and 100 AU, and indicate the approximate limits of the disk.
-The left version is extracted from a range $\pm0.05\arcsec$ (50 AU)
-around the fitted centerline of the continuum emission [actually, it's from
-a drawn line right now], so it includes significant amounts of `superdisk'
-emission.  The right version is extracted from a narrower $\pm0.01\arcsec$
-range, less than a beam width, and shows the best approximation of the midplane
-available.
-{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
-identical data and \emph{should} be identical shapes.}
+The left version is extracted from a range $\pm0.05\arcsec$ (20 AU)
+around the fitted centerline of the continuum emission, so it includes
+significant amounts of emission from above and below the disk (but
+see Appendix \ref{sec:waterlinerevisited}).  The right
+version is extracted from a narrower $\pm0.01\arcsec$
+range, less than a beam width, and shows the best approximation of the midplane.
+%{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
+%identical data and \emph{should} be identical shapes.}
 {\color{blue} Possible comparison figures to reference:
 \citet{Matra2017a} Figure 4 (5 AU resolution, $r\sim150$ AU disk),
 \citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk),
@@ -762,5 +762,87 @@ and inner and outer radial cutoffs.}
 {fig:massradiusdemo}{1}{6in}
 
 % \section{Inset figure of the 3 mm data}
+
+\section{A deeper examination of the water line: Evidence that it traces the disk kinematics}
+\label{sec:waterlinerevisited}
+The \water-derived mass presented in Section \ref{sec:kinematics} relies on the
+\water line tracing the disk kinematics.  Since the \water clearly \emph{also}
+traces the outflow, showing the same X-shaped morphology as the SiO, it does
+not \emph{uniquely} trace the disk.
+
+Nonetheless, the midplane position-velocity slice of the \water line does
+appear to genuinely trace disk kinematics.  Qualitatively, the PV diagram
+appears exactly as expected for a disk with an inner and out radial cutoff.
+
+To assess possible contamination from the outflow, we perform additional
+position velocity slices.  In Figure \ref{fig:waterpvheights}, we show
+position-velocity diagrams from different vertical regions around the disk.
+The velocity profile of the selected line.  The middle panel is likely
+dominated by outflow emission, since it shows material 0.05-0.1\arcsec (20-40
+AU) above the disk, i.e., just outside the 1-$\sigma$ height of the continuum
+disk.  It exhibits narrower velocity ranges at all but the closest separations.
+While the outflow continues to show some motion similar to that of the disk, it
+lacks the characteristic convex shape of a Keplerian orbit at higher velocities
+and separation.
+
+Figure \ref{fig:waterpvheights} also characterizes some of the `forbidden' velocity
+components, i.e., those seen in quadrants 2 and 4.  These components get stronger
+at higher vertical positions on the disk, implying that they come from the outflow,
+not the disk.  {\color{red} Any ideas why the redshifted side is brighter and
+`more extended' (in pv space) than the blueshifted?}
+
+\FigureThree
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.2-0.1.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.3-0.2.pdf}
+{Position-velocity slices of the \water $5_{5,0}-6_{4,3}$ line at different
+heights above the disk plane from the robust -2 data cube.  The left panel
+shows the inner 0.1\arcsec (i.e., near the midplane, $|h| < 0.05\arcsec$,
+$|h|<20$ AU), the middle shows the range $0.05\arcsec < |h| < 0.1$\arcsec, and
+the right shows the range $0.1\arcsec < |h| < 0.15\arcsec$.  All three panels
+show averages over the specified range, with the colorbar showing intensity in
+mJy \perbeam.  The red solid lines show the Keplerian profile for a 19 \msun
+central source and the purple dashed lines show the orbital track for a
+particle at 30 and 80 AU fro such a source; these are included primarily
+to guide the eye.  The middle and right panel are dominated by the outflow,
+while the left panel is dominated by the Keplerian orbital profile.
+}
+{fig:waterpvheights}{1}{2.2in}
+
+\FigureThree
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust0.5_diskpv_0.1.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.2-0.1.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5_diskpv_0.3-0.2.pdf}
+{{\color{blue} Same as Figure \ref{fig:waterpvheights}, but
+for robust 0.5.  This is included only for coauthors to have a look at;
+I'll remove it from the final paper.  It shows that some of the features 
+we're looking at really demand the highest resolution.}  Position-velocity
+slices of the \water
+$5_{5,0}-6_{4,3}$ line at different heights above the disk plane from the
+robust 0.5 data cube.  The left panel shows the inner 0.1\arcsec (i.e., near
+the midplane, $|h| < 0.05\arcsec$, $|h|<20$ AU), the middle shows the range
+$0.05\arcsec < |h| < 0.1$\arcsec, and the right shows the range $0.1\arcsec <
+|h| < 0.15\arcsec$.  All three panels show averages over the specified range,
+with the colorbar showing intensity in
+mJy \perbeam.  The red solid lines show the Keplerian profile for a 19 \msun
+central source and the purple dashed lines show the orbital track for a
+particle at 30 and 80 AU fro such a source; these are included primarily
+to guide the eye.  The middle and right panel are dominated by the outflow,
+while the left panel is dominated by the Keplerian orbital profile.
+}
+{fig:waterpvheightsr05}{1}{2.2in}
+
+\FigureTwo
+{figures/H2O_kepler_SeifriedPlot_0.1arcsec_robust-2.pdf}
+{figures/H2O_kepler_SeifriedPlot_0.2arcsec_robust-2.pdf}
+{
+Duplicate of Figure \ref{fig:h2okepler} for robust -2 data.
+Left is $\pm0.05\arcsec$, right is $\pm0.1\arcsec$ (so
+wider than in the other figure, because there is no
+emission detected directly in the midplane at robust -2).
+Curiously, these higher-resolution diagrams seem to prefer a velocity
+slightly lower, $v\sim4-5$ \kms.
+}
+{fig:h2okepler_rm2}{1}{3.5in}
 
 \end{document}

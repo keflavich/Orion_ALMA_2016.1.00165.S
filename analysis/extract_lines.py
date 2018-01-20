@@ -12,7 +12,6 @@ import radio_beam
 #conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
 
-
 for robust in (-2, 0.5):
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
@@ -60,8 +59,9 @@ for robust in (-2, 0.5):
 
                             scube.beam_threshold = 0.1
                             cubeK = scube.to(u.K)
-                            cubeK.write(paths.dpath('cubes/Orion{1}_{0}_robust{robust}maskedclarkclean10000_medsub_K.fits').format(linename, sourcename, robust=robust),
-                                        overwrite=True)
+                            linecubepath = paths.dpath('cubes/Orion{1}_{0}_robust{robust}maskedclarkclean10000_medsub_K.fits').format(linename, sourcename, robust=robust)
+                            log.info("Writing {0}".format(linecubepath))
+                            cubeK.write(linecubepath, overwrite=True)
 
                             m0 = cubeK.moment0(axis=0)
                             mx = cubeK.max(axis=0)

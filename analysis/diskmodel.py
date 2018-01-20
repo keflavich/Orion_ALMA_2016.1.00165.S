@@ -226,6 +226,7 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     disk_center_mod4 = coordinates.SkyCoord(fitted_diskends_mod4.ra.mean(),
                                             fitted_diskends_mod4.dec.mean(),
                                             frame=fitted_diskends_mod4.frame.name)
+
     ptsrc_diskcen_sep = fitted_ptsrc.separation(disk_center_mod4).to(u.arcsec)
     print("fitted pointsource is offset from center by {0}".format(ptsrc_diskcen_sep))
 
@@ -236,6 +237,24 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     print("kernelpa3={0}".format(result3.params['kernelpa']))
     print("kernelpa4={0}".format(result4.params['kernelpa']))
 
+    print()
+    print("Disk center is {0} in model 4".format(disk_center_mod4))
+    ll_0p4 = coordinates.SkyCoord(disk_center_mod4.ra - 0.4*u.arcsec/np.cos(disk_center_mod4.dec) * np.sin(posang),
+                                  disk_center_mod4.dec - 0.4*u.arcsec * np.cos(posang),
+                                  frame=fitted_diskends_mod4.frame.name)
+    ur_0p4 = coordinates.SkyCoord(disk_center_mod4.ra + 0.4*u.arcsec/np.cos(disk_center_mod4.dec) * np.sin(posang),
+                                  disk_center_mod4.dec + 0.4*u.arcsec * np.cos(posang),
+                                  frame=fitted_diskends_mod4.frame.name)
+    print("lower left, upper right corners are: {0}, {1}".format(ll_0p4.icrs, ur_0p4.icrs))
+    print("line({0},{1},{2},{3})".format(ll_0p4.icrs.ra.deg,
+                                         ll_0p4.icrs.dec.deg,
+                                         ur_0p4.icrs.ra.deg,
+                                         ur_0p4.icrs.dec.deg))
+    print("line({0},{1},{2},{3})".format(fitted_diskends_mod4.icrs.ra.deg[0],
+                                         fitted_diskends_mod4.icrs.dec.deg[0],
+                                         fitted_diskends_mod4.icrs.ra.deg[1],
+                                         fitted_diskends_mod4.icrs.dec.deg[1],))
+    break
     
     # compute offset from point source to disk center along the disk axis angle
     assert ptsrc_diskcen_sep < 0.1*u.arcsec
