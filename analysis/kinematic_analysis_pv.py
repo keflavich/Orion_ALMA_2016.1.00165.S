@@ -28,7 +28,7 @@ pl.close(1)
 
 
 # just do water (goes faster)
-disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
+#disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
 
 diskycoorddict = {}
 source = "sourceI"
