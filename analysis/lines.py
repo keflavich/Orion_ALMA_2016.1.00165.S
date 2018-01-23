@@ -5,9 +5,9 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'Unknown_2':230.780241*u.GHz,
               'Unknown_3':229.2474253*u.GHz, # maybe acetone?
               'H2Ov2=1_5(5,0)-6(4,3)': 232.6867*u.GHz,
-              'Unknown_4': 232.511*u.GHz,
+              'Unknown_4': 232.5105*u.GHz,
+              'Unknown_5': 217.9795*u.GHz,
               'SiS_12-11': 217.817644*u.GHz,
-              'Unknown_5': 217.980*u.GHz,
               'Unknown_6': 217.6660212*u.GHz,
               'Unknown_7': 217.5473*u.GHz, # deuterated formic acid?
               'HC3N_24-23': 218.324788*u.GHz,

@@ -77,6 +77,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='50~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -105,6 +106,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='10~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -132,6 +134,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='10~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -166,6 +169,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='50~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -193,6 +197,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='50~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -221,6 +226,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='10~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -248,6 +254,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='10~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -275,6 +282,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='150~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -302,6 +310,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='150~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -329,6 +338,7 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='150~36000m',
+       parallel=True,
       )
 makefits(contimagename)
 
@@ -356,5 +366,33 @@ tclean(vis=selfcal_vis,
        veltype='radio',
        savemodel='modelcolumn',
        uvrange='150~36000m',
+       parallel=True,
+      )
+makefits(contimagename)
+
+prevcontimage = 'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.phase4.deepmask.150mplus'
+contimagename = 'Orion_SourceI_B6_continuum_r2.clean0.5mJy.selfcal.phase4.allbaselines.highresstartmodel'
+os.system('rm -rf ' + contimagename + "*")
+tclean(vis=selfcal_vis,
+       imagename=contimagename,
+       datacolumn='corrected',
+       startmodel=[prevcontimage+'.model.tt0', prevcontimage+'.model.tt1'],
+       field='Orion_BNKL_source_I',
+       specmode='mfs',
+       deconvolver='mtmfs',
+       nterms=2,
+       scales=[0,4,12,36],
+       imsize = imsize,
+       cell= cell,
+       weighting = 'briggs',
+       robust = 2,
+       niter = int(1e5),
+       threshold = '0.5mJy',
+       interactive = False,
+       outframe='LSRK',
+       veltype='radio',
+       savemodel='modelcolumn',
+       uvrange='10~36000m',
+       parallel=True,
       )
 makefits(contimagename)

@@ -29,6 +29,7 @@ pl.close(1)
 
 # just do water (goes faster)
 #disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
+disk_lines = {x:y for x,y in disk_lines.items() if 'Unknown_4' in x or 'Unknown_5' in x}
 
 diskycoorddict = {}
 source = "sourceI"
@@ -165,6 +166,10 @@ for width in (0.1, 0.01, 0.2, 0.3):
                         scalefactor = 1000.0
                     else:
                         scalefactor = 1.0
+
+                    ww.wcs.crval[0] = 0
+                    ww.wcs.crpix[0] = extracted.data.shape[1]/2+1
+                    origin = 0*u.arcsec
 
                     good_limits = (np.array((np.argmax(np.isfinite(extracted.data.max(axis=0))),
                                              extracted.data.shape[1] -

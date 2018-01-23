@@ -37,7 +37,7 @@ rotation curve of various molecular lines:
         with $0.40\arcsec\times0.34\arcsec$ resolution and made
         \textit{velocity centroid maps} of the position of peak intensity
         as a function of velocity to measure the rotationally supported
-        mass in Source I.  They obtained a mass estimate of $5-7\msun$.
+        mass in Source I.  They obtained a mass estimate of $5-7$ \msun.
     \item \citet{Plambeck2016a} measured both the continuum SED and the rotation
         curve of gas around Source I.  They used a centroiding approach
         similar to \citet{Hirota2014a} to measure the rotation curve of
@@ -104,6 +104,12 @@ we are dynamic-range-limited.}
 \input{image_metadata.tex}
 {\color{magenta} TODO: expand image metadata table with robust 0.5 continuum image
 and line cube properties.}
+
+Line cubes were produced covering the complete data set to identify lines
+associated with the disk.  Cubes were produced centered on Source I with robust
+0.5 and -2 weightings.  Continuum-subtracted cubes were produced by subtracting
+the median across the 1.8 GHz bandwidth.  All cube analysis was performed using
+\texttt{spectral-cube} (\url{https://spectral-cube.readthedocs.io/en/latest/}).
 
 
 \section{Results}
@@ -295,7 +301,7 @@ The peak signal from these lines appears around the $T_B\sim150$ K continuum con
 %within the $T_B\gtrsim75$ K contour
 (Figure \ref{fig:U1peak}).
 There is also emission detected directly above and below the disk at all projected
-radii, though it is weaker.  The lines are never detected directly toward the disk
+radii, though it is weaker.  No line emission is detected directly toward the disk
 center.
 
 The best explanation for these lines is that they trace the outer surface of
@@ -305,7 +311,7 @@ of order 0.1-1.  Directly toward the disk continuum emission peak, since
 the excitation temperature is the same as the background continuum temperature,
 $T_{ex}=T_{bg}$, no emission (or absorption) is observed.  Just above and below
 the disk continuum peak, the dust column (and therefore optical depth) drops
-rapidly, but the molecular column drops more slowly, so some emission is still
+rapidly, but the molecular optical depth drops more slowly, so some emission is still
 observed ($T_{ex}\sim200-500$ K, but $\tau_{line}\sim0.1-0.5$, resulting in 
 the $T_{B,max} \sim 100$ K observed).  At the disk edges, the column density
 of molecular material just outside the dust is increased, resulting in increased
@@ -318,13 +324,76 @@ are the best direct tracers of the disk's kinematics.
 {\color{blue} This paragraph follows from discussion with John.  It might
 be too much detail for a Letter.}
 The lines' kinematic structure suggests they are emitting only from $30 < r < 70$ AU,
-AU.  There are several plausible explanations for why we do not see gas
+AU.  There are several plausible explanations for the lack of gas
 emission at $r<30-40$ AU: (1) there is no gas at these radii except in the
 optically-thick dust disk, i.e., the gas and dust are well-mixed (2) the gas is
 heated enough to drop the optical depth in the observed lines by expanding the
 available levels in the partition function (3) the molecular line abundance is
 lower closer to the center (e.g., the molecule we observe is dissociated).
 
+
+% Their lack of association with the inner disk suggests that they trace the outer
+% surface of a mostly optically thick disk.
+
+
+
+
+% If a molecule is at a similar temperature to the dust, but its line approaches
+% an optical depth near unity at a lower column density of \hh than the dust,
+% it should appear in emission.  These lines therefore appear to trace the disk
+% directly and provide the best direct tools for measuring the disk kinematics.
+
+We have not identified any of the carrier species of these lines.
+However, to measure their velocities precisely, we performed a stacking
+analysis in which we adopt the velocity field of the U232.511 line,
+shift all spectra across the disk to the same velocity frame, and average them.
+We then fit the lines with Gaussians to determine their centroid frequency.
+We searched within a narrow range of velocities ($v_{LSR}=3-8$ \kms)
+for known lines in the Splatalogue collection of line catalogs using
+\texttt{astroquery}.
+While many of the lines have plausible carriers within 1-2 \kms, such as
+highly-excited CH$_3$OCHO or variants of SO$_2$, there is no consistent pattern
+to the detected lines and no individual species can explain more than a few of
+the observed lines.
+
+\FigureThree
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak}.pdf}
+{Peak intensity map of an unknown line (U230.322; left) and the \water
+line (middle, right) with continuum overlaid
+in contours.
+Continuum contours are shown in red at levels of 
+% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
+1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
+The \water and unknown line clearly trace different physical structures, as
+they exhibit no coincident emission peaks.  The water line does
+not exhibit emission directly along the disk midplane.
+The left two figures are robust 0.5 weighted images, while the right
+is a robust -2 weighted image with higher resolution and poorer
+sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
+% {\color{red} Note to coauthors: there is a slight difference in position between the
+% center of the continuum emission and the midpoint of the two line emission blobs.
+% Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
+% analysis in the Appendices.}
+}
+{fig:U1peak}{1}{2.2in}
+
+\FigureThree
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{Moment-0 (integrated intensity) map of the U230.322 (left) and \water (middle,
+right) line with continuum overlaid in contours.  Continuum contours
+from the robust -2 map are shown
+in red at levels of 
+% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
+1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
+The left two figures are robust 0.5 weighted images, while the right
+is a robust -2 weighted image with higher resolution and poorer
+sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
+}
+{fig:h2omom0}{1}{2.2in}
 
 \FigureThree
 {{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
@@ -353,64 +422,6 @@ The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 {fig:U5}{1}{2.25in}
 
 
-% Their lack of association with the inner disk suggests that they trace the outer
-% surface of a mostly optically thick disk.
-
-
-
-
-% If a molecule is at a similar temperature to the dust, but its line approaches
-% an optical depth near unity at a lower column density of \hh than the dust,
-% it should appear in emission.  These lines therefore appear to trace the disk
-% directly and provide the best direct tools for measuring the disk kinematics.
-
-We have not identified any of the carrier species of these lines.
-However, to measure their velocities precisely, we performed a stacking
-analysis in which we adopt the velocity field of the U232.511 line,
-shift all spectra across the disk to the same velocity frame, and average them.
-We then fit the lines with Gaussians to determine their centroid frequency.
-We searched within a narrow range of velocities ($v_{LSR}=3-8$ \kms)
-for known lines in the Splatalogue collection of line catalogs using
-\texttt{astroquery}.
-While many of the lines have plausible carriers, such as highly-excited
-CH$_3$OCHO or variants of SO$_2$, there is no consistent pattern to the detected
-lines and no individual species can explain more than a few of the observed
-lines.
-
-\FigureTwo
-{{figures/OrionSourceI_Unknown_1_robust-2.maskedclarkclean10000_medsub_K_peak}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak}.pdf}
-{Peak intensity map of an unknown line (U230.321535; left) and the \water
-line with continuum overlaid
-in contours.
-Continuum contours are shown in red at levels of 
-% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
-1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
-The \water and unknown line clearly trace different physical structures, as
-they exhibit no coincident emission peaks.
-{\color{red} While these are "robust -2" images, they currently (Jan 17)
-suffer from a bug where robust weighting fails in the presence of autocorrelation
-data.  Reimaging is underway.}
-% {\color{red} Note to coauthors: there is a slight difference in position between the
-% center of the continuum emission and the midpoint of the two line emission blobs.
-% Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
-% analysis in the Appendices.}
-}
-{fig:U1peak}{1}{3in}
-
-\FigureTwo
-{{figures/OrionSourceI_Unknown_1_robust-2.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{Moment-0 (integrated intensity) map of the U230.321535 and \water line with continuum overlaid
-in contours.
-Continuum contours are shown in red at levels of 
-% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
-1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
-{\color{red} While these are "robust -2" images, they currently (Jan 17)
-suffer from a bug where robust weighting fails in the presence of autocorrelation
-data.  Reimaging is underway.}
-}
-{fig:h2omom0}{1}{3in}
 
 \subsection{Kinematics: a Keplerian disk}
 \label{sec:kinematics}
@@ -463,10 +474,13 @@ version is extracted from a narrower $\pm0.01\arcsec$
 range, less than a beam width, and shows the best approximation of the midplane.
 %{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
 %identical data and \emph{should} be identical shapes.}
-{\color{blue} Possible comparison figures to reference:
+{\color{blue} TO COAUTHORS: I've identified a few possible comparison figures
+to reference:
 \citet{Matra2017a} Figure 4 (5 AU resolution, $r\sim150$ AU disk),
-\citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk),
-others?
+\citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk).
+These are PV diagrams of edge-on disks that look somewhat similar to our own.
+I don't plan on including them in the submitted publication, but they may be
+worth glancing at to assuage any skepticism about the measurement technique.
 }
 }
 {fig:h2okepler}{1}{3.5in}
@@ -507,16 +521,17 @@ others?
 
 
 \section{Discussion}
-\subsection{Mass of Source I}
-We measure a mass of $M_I=15-19$ \msun, which is higher than most measurements
-previously reported.  Our mass measurement is higher than previous works
-in part because our spatial resolution is high enough to allow a direct fit of
-the rotation curve to the outer envelope of an emission line in
-position-velocity space.
+\subsection{The mass of Source I}
+We measure a mass for the object at the center of the disk of $M_I=15-19$
+\msun, which is higher than most measurements previously reported.  Our mass
+measurement is higher than previous works in part because our spatial
+resolution is high enough to allow a direct fit of the rotation curve to the
+outer envelope of an emission line in position-velocity space.
 
-This mass measurement confirms that Orion is still a region with ongoing
-high-mass star formation.  If Source I were below $M<8$ \msun, Orion might
-instead have been regarded as a region of past high-mass star formation.
+Even if Source I consists of an equal-mass binary, this mass measurement
+confirms that Orion is still a region with ongoing high-mass star formation.
+If Source I were below $M<8$ \msun, Orion might instead have been regarded as a
+region of past high-mass star formation.
 % ref to Goddi2011b?
 
 \subsection{The luminosity of Source I}
@@ -528,6 +543,13 @@ should be taken as a lower limit, since the inner disk is likely to be
 optically thicker and capable of shielding the outer disk, thereby
 keeping the observed $\tau=1$ surface at 1 mm cooler than would
 be produced by radiative equilibrium.
+
+\subsection{Properties of the disk}
+Our observations yield disk properties nearly identical to those in
+\citet{Plambeck2016a}, so we do not revisit their disk mass or density
+estimates.  We note, however, that we now resolve important inhomogeneities in
+the disk, i.e., its low density exterior, that will be important for
+identifying the molecular lines in those regions.
 
 \subsection{The dynamical decay scenario}
 Several authors \citep[][]{Gomez2008a,Goddi2011b,Bally2011a} suggested that
@@ -576,22 +598,30 @@ circular disk configuration after the explosive event.
 
 The alignment of Source I's disk with the I-BN vector is consistent with a
 dynamical interaction between these sources.  If the ejection resulted in
-Source I and BN being launched in nearly opposity directions from their center
+Source I and BN being launched in nearly opposite directions from their center
 of mass (which must have been moving in the rest frame of the Orion nebula; see
 Bally et al. in prep), any material around Source I that remained bound would
-be dragged in the direction of Source I, and would therefore have an angular
-momentum vector orthogonal to the direction of motion.  Any material with
+be dragged in the direction of Source I, and would therefore have a resulting
+angular momentum vector orthogonal to the direction of motion.  Any material
+with
 velocity relative to source I 
 $$v < v_{esc} = 23 \kms (M/15\msun)^{1/2}  (r/50~\mathrm{AU})^{-1/2}$$
-would remain bound, and with source I's present motion of 17 \kms on the sky,
-that implies all mass within the currently observed disk radius would have
-remained with it.
+Assuming source I's present-day proper motion of 17 \kms reflects its velocity
+at the time of ejection, less than half of the original disk mass would
+have been lost, while the rest would remain bound (material moving in the
+direction directly opposite source I's ejection direction would have net
+velocity relative to source I high enough to escape; the greatest mass
+loss would occur if the disk was already in the direction of source I's eventual
+launch).
+%would remain bound, and with source I's present motion of 17 \kms on the sky,
+%that implies all mass within the currently observed disk radius would have
+%remained with it.
 
 
 \subsection{The compact source in the disk}
 \label{sec:ptsrc}
-We have clearly detected a compact (but marginally resolved) source near the
-center of the disk at both 3 mm and 1 mm.  The sources has a flux rising from 1
+We have detected a compact (but marginally resolved) source near the
+center of the disk at both 3 mm and 1 mm.  The source has a flux rising from 1
 mm to 3 mm - behavior generally inconsistent with a thermal source.  However, since the
 source is nearly coincident with an edge-on disk that we show is optically
 thick at 1 mm, it is likely that the source is thermal but is significantly
@@ -628,6 +658,33 @@ projection.  This offset hints that it is not a single central source, but
 instead is a hot region of the inner disk.  Such an asymmetry in the disk could
 be driven either by instability in the disk or, if the central star is a
 binary, by the proximity of the more luminous companion.
+
+\section{Conclusions}
+We report observations that resolve source I's disk in both continuum
+and line emission.  We measure the mass of source I by fitting the 
+rotation curve with a Keplerian disk model, finding the following:
+
+\begin{enumerate}
+    \item The central source has mass $M=15-19$ \msun, where the range
+        accounts for different masses recovered using different mass
+        measurement methods.
+    \item The \water $5_{5,0}-6_{4,3}$ line is thermal and kinematically
+        traces both the upper envelope of the disk and the lower portion of
+        the outflow.
+    \item Several lines that remain unidentified trace the disk kinematics
+        directly.  These lines are visible only toward the outskirts of the
+        disk, but are morphologically distinct from both the \water and SiO
+        lines that follow the outflow.
+    \item The central emission source in the approximate center of the disk
+        is resolved at 1 mm, and it is slightly off-center.  It therefore is
+        most likely a hot region of the inner disk.
+\end{enumerate}
+
+The mass we have measured is higher than in several recent publications both
+because of our improved resolution and sensivity, which allowed us to identify
+and measure lines that trace the disk kinematics.  This higher measured mass
+implies that the dynamical decay scenario for the Source I - BN - Source X
+system is viable.
 
 \input{solobib}
 

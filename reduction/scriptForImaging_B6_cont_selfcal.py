@@ -62,6 +62,7 @@ makefits(contimagename)
 
 rmtables(['phase_0.cal'])
 gaincal(vis=selfcal_vis, caltable='phase_0.cal', solint='int', gaintype='G',
+        uvrange='150~10000000m',
         calmode='p')
 
 plotcal('phase_0.cal', xaxis='time', yaxis='phase', iteration='antenna',
@@ -101,6 +102,7 @@ makefits(contimagename)
 
 rmtables(['phase_1.cal'])
 gaincal(vis=selfcal_vis, caltable='phase_1.cal', solint='int', gaintype='G',
+        uvrange='150~10000000m',
         calmode='p')
 
 plotcal('phase_1.cal', xaxis='time', yaxis='phase', iteration='antenna',
@@ -141,6 +143,7 @@ makefits(contimagename)
 
 rmtables(['phase_2.cal'])
 gaincal(vis=selfcal_vis, caltable='phase_2.cal', solint='int', gaintype='G',
+        uvrange='150~10000000m',
         calmode='p')
 
 plotcal('phase_2.cal', xaxis='time', yaxis='phase', iteration='antenna',
@@ -180,6 +183,7 @@ makefits(contimagename)
 
 rmtables(['phase_3.cal'])
 gaincal(vis=selfcal_vis, caltable='phase_3.cal', solint='int', gaintype='G',
+        uvrange='150~10000000m',
         calmode='p')
 
 plotcal('phase_3.cal', xaxis='time', yaxis='phase', iteration='antenna',
@@ -216,8 +220,16 @@ tclean(vis=selfcal_vis,
 makefits(contimagename)
 
 
+# can restore this model iteration with this command
+# ft(vis=selfcal_vis,
+#    model=['Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.model.tt0',
+#           'Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.model.tt1',],
+#    nterms=2,
+#    usescratch=True)
+
 rmtables(['phase_4.cal'])
 gaincal(vis=selfcal_vis, caltable='phase_4.cal', solint='int', gaintype='G',
+        uvrange='150~10000000m',
         calmode='p')
 
 plotcal('phase_4.cal', xaxis='time', yaxis='phase', iteration='antenna',
