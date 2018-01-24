@@ -21,6 +21,8 @@ for basefn in ('Orion_SourceI_B3_continuum_r-2{suffix}',
                'Orion_SourceI_B6_continuum_r2{suffix}',
                'Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4{suffix}',
                'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask{suffix}',
+               'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.150mplus.deepmask{suffix}',
+               'Orion_SourceI_B6_continuum_r-2.clean0.1mJy.50mplus.deepmask{suffix}',
                'uid___A001_X88e_X1df.Orion_BNKL_source_I_sci.spw25_27_29_31.cont{suffix}',
               ):
 
