@@ -27,6 +27,8 @@ import pylab as pl
 # hdu.writeto(paths.dpath('OrionSourceI_continuum_cutout_for_modeling.fits'),
 #             overwrite=True)
 
+epsfcn = 1e-3
+
 fit_results = {}
 
 parhist = {}
@@ -162,9 +164,13 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
         parhist[band][len(pars)].append(pars.valuesdict())
 
         if baddata is None:
-            return (data - mod)/rms
+            # added abs val just to make extra sure...
+            resid = ((data - mod)/rms)
         else:
-            return (data[~baddata] - mod[~baddata])/rms
+            resid = ((data[~baddata] - mod[~baddata])/rms)
+
+        assert (resid**2).sum() == (np.abs(resid)**2).sum()
+        return resid
 
     diskmod = model(x1,x2,y1,y2,data.max())
     print("Initial disk model max: {0} data max: {1}".format(diskmod.max(), data.max()))
@@ -176,7 +182,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     parameters.add('y2', value=y2)
     parameters.add('scale', value=data.max())
     parhist[band][len(parameters)] = []
-    result = lmfit.minimize(residual, parameters, epsfcn=0.05)
+    result = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
     print("Basic fit parameters (linear model):")
     result.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result.chisqr / (ndata - result.nvarys)))
@@ -196,7 +202,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     measured_positionangle = -38
     parameters.add('kernelpa', value=measured_positionangle+90, vary=False)
     parhist[band][len(parameters)] = []
-    result2 = lmfit.minimize(residual, parameters, epsfcn=0.1)
+    result2 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
     print("Smoothed linear fit parameters:")
     result2.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result2.chisqr / (ndata - result2.nvarys)))
@@ -217,7 +223,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     parameters.add('ptsrcy', value=ptsrcy, min=ptsrcy-5, max=ptsrcy+5)
     parameters.add('ptsrcamp', value=0.004, min=0.001, max=0.6)
     parhist[band][len(parameters)] = []
-    result3 = lmfit.minimize(residual, parameters, epsfcn=0.1)
+    result3 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
     print("Smoothed linear fit parameters with point source:")
     result3.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result3.chisqr / (ndata - result3.nvarys)))
@@ -228,7 +234,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     parameters.add('ptsrcwid', value=0.04, min=0.01, max=0.1)
     parhist[band][len(parameters)] = []
-    result4 = lmfit.minimize(residual, parameters, epsfcn=0.1)
+    result4 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
     print("Smoothed linear fit parameters with horizontally smeared point source:")
     result4.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result4.chisqr / (ndata - result4.nvarys)))
