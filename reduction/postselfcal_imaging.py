@@ -1,3 +1,4 @@
+raise ValueError("Use parallel version instead.")
 
 def makefits(myimagebase):
     impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
@@ -48,7 +49,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='50~36000m',
       )
 makefits(contimagename)
@@ -75,7 +76,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='50~36000m',
       )
 makefits(contimagename)
@@ -103,7 +104,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='10~36000m',
       )
 makefits(contimagename)
@@ -130,7 +131,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='10~36000m',
       )
 makefits(contimagename)
@@ -164,7 +165,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='50~36000m',
       )
 makefits(contimagename)
@@ -191,7 +192,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='50~36000m',
       )
 makefits(contimagename)
@@ -219,7 +220,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='10~36000m',
       )
 makefits(contimagename)
@@ -246,7 +247,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='10~36000m',
       )
 makefits(contimagename)
@@ -273,7 +274,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='150~36000m',
       )
 makefits(contimagename)
@@ -300,7 +301,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='150~36000m',
       )
 makefits(contimagename)
@@ -327,7 +328,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='150~36000m',
       )
 makefits(contimagename)
@@ -354,7 +355,7 @@ tclean(vis=selfcal_vis,
        interactive = False,
        outframe='LSRK',
        veltype='radio',
-       savemodel='modelcolumn',
+       savemodel='none',
        uvrange='150~36000m',
       )
 makefits(contimagename)

@@ -9,12 +9,14 @@ from astropy import constants
 from astropy import coordinates
 from astropy import wcs
 from astropy import log
+from astropy.table import Table
 from spectral_cube import SpectralCube
 import regions
 import imp; import lines; imp.reload(lines)
 from lines import disk_lines
 import show_pv; imp.reload(show_pv)
 import re
+from mpl_plot_templates import adaptive_param_plot
 
 robustnumre = re.compile('robust(0.5|-2|2)')
 bandre = re.compile("\.B([367])\.")
@@ -29,7 +31,8 @@ pl.close(1)
 
 # just do water (goes faster)
 #disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
-disk_lines = {x:y for x,y in disk_lines.items() if 'Unknown_4' in x or 'Unknown_5' in x}
+#disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x or 'SiO' in x}
+#disk_lines = {x:y for x,y in disk_lines.items() if 'Unknown_4' in x or 'Unknown_5' in x}
 
 diskycoorddict = {}
 source = "sourceI"
@@ -50,7 +53,8 @@ diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
 diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
                                                diskycoord_list[0].end])
 
-for width in (0.1, 0.01, 0.2, 0.3):
+
+for width in (0.05, 0.1, 0.01, 0.2, 0.3):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):
@@ -227,8 +231,27 @@ for width in (0.1, 0.01, 0.2, 0.3):
                                 dpi=200,
                                 bbox_inches='tight')
 
+diskycoords = diskycoorddict['sourceI']
+extraction_path = pvextractor.Path(diskycoords)
 
-for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2)):
+masers_3mm = Table.read(paths.rpath('3mm_maser_velocity_table.fits'))
+masers_7mm = Table.read(paths.rpath('7mm_maser_velocity_table.fits'))
+
+
+maser_center_reg = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0]
+maser_center = maser_center_reg.center[0]
+
+xpoints_3mm = u.Quantity(list(map(lambda x,y:
+                                  offset_to_point(x,y,extraction_path),
+                                  masers_3mm['RA'], masers_3mm['Dec'])), u.deg)
+xpoints_7mm = u.Quantity(list(map(lambda x,y:
+                                  offset_to_point(x,y,extraction_path),
+                                  masers_7mm['RA'], masers_7mm['Dec'])), u.deg)
+maser_center_3mm = (xpoints_3mm.max() + xpoints_3mm.min())/2.
+maser_center_7mm = xpoints_7mm.mean()
+
+
+for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05)):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):
@@ -293,19 +316,58 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2)):
                 vmin = -0.0025
                 if vmax < 0.5 and 'B7' not in outfn:
                     vmax = np.min([0.02, vmax])
-                if 'H2O' in linename and width > 0.05 and robustnum > -2:
+                if 'H2O' in linename and owidth > 0.05 and robustnum > -2:
                     vmax = 0.1
 
                 fig,ax = show_pv.show_pv(diff, ww,
                                          origin, vrange=vrange, vcen=vcen*u.km/u.s,
                                          imvmin=vmin, imvmax=vmax)
 
-                show_pv.show_keplercurves(ax, origin, 150*u.au, vcen*u.km/u.s,
-                                          masses=[19],
-                                          linestyles='-',
-                                         )
+                kc = show_pv.show_keplercurves(ax, origin, 150*u.au, vcen*u.km/u.s,
+                                               masses=[19],
+                                               linestyles='-',
+                                              )
 
                 fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +
                                         outfn.replace(".fits",".pdf")),
                             dpi=200,
                             bbox_inches='tight')
+
+                if not ('SiO' in linename or 'H2O' in linename):
+                    continue
+
+                for line in kc:
+                    line.set_visible(False)
+
+
+                trans = ax.get_transform('world')
+                m3m = ax.plot((xpoints_3mm-maser_center_3mm).to(u.arcsec),
+                              u.Quantity(masers_3mm['VLSR'], u.m/u.s), 'r,',
+                              transform=trans)
+                fig.savefig(paths.fpath('pv/{0}/vlba_3mm_maseroverlay_'.format(name) +
+                                        outfn.replace(".fits",".pdf")),
+                            dpi=200,
+                            bbox_inches='tight')
+
+                for line in m3m:
+                    line.set_visible(False)
+
+                trans = ax.get_transform('world')
+                #m7m = ax.contour((xpoints_7mm-maser_center_7mm).to(u.arcsec),
+                #                 u.Quantity(masers_7mm['VLSR'], u.m/u.s),
+                #                 levels=[5,10,50],
+                #                 transform=trans)
+                m7m = adaptive_param_plot((xpoints_7mm-maser_center_7mm).to(u.arcsec).value,
+                                          u.Quantity(masers_7mm['VLSR'], u.m/u.s).value,
+                                          axis=ax,
+                                          bins=100,
+                                          marker=',',
+                                          marker_color='r',
+                                          transform=trans)
+
+
+                fig.savefig(paths.fpath('pv/{0}/vlba_7mm_maseroverlay_'.format(name) +
+                                        outfn.replace(".fits",".pdf")),
+                            dpi=200,
+                            bbox_inches='tight')
+
