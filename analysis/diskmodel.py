@@ -29,14 +29,17 @@ import pylab as pl
 
 fit_results = {}
 
+parhist = {}
+
 beams = {}
  
-for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
-                       (b6_hires_cont, 224.0*u.GHz, 'B6'),
-                       (b3_hires_cont, 93.3*u.GHz, 'B3'),
-                      ]:
+for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                               #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                               #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                               (b6_hires_cont, 224.0*u.GHz, 'B6', 2*u.mJy),
+                               (b3_hires_cont, 93.3*u.GHz, 'B3', None),
+                              ]:
+    parhist[band] = {}
 
     fh = fits.open(paths.dpath(fn))
 
@@ -52,6 +55,12 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     new_header = cutout.wcs.to_header()
     mywcs = cutout.wcs
 
+    fits.PrimaryHDU(data=data,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_fitted_data.fits'
+                            .format(band)),
+                        overwrite=True)
 
     pixscale = wcs.utils.proj_plane_pixel_area(mywcs)**0.5 * u.deg
 
@@ -69,6 +78,17 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
 
     data_K = (data*u.Jy).to(u.K, observed_beam.jtok_equiv(freq))
     jtok = observed_beam.jtok(freq)
+    
+    if thresh is not None:
+        # mask out low pixels: see what happens if we only fit the stuff we
+        # *really* believe.
+        baddata = u.Quantity(data, u.Jy) < thresh
+        ndata = (~baddata).sum()
+    else:
+        baddata = None
+        ndata = data.size
+
+    print("Threshold: {0} ndata: {1}".format(thresh, ndata))
 
     def model(x1, x2, y1, y2, scale, kernelmajor=None, kernelminor=None, kernelpa=None,
               ptsrcx=None, ptsrcy=None, ptsrcamp=None, ptsrcwid=None):
@@ -105,29 +125,32 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
             beam = radio_beam.Beam(kernelmajor*u.arcsec, kernelminor*u.arcsec,
                                    kernelpa*u.deg).convolve(observed_beam)
 
-        beam_kernel = beam.as_kernel(pixscale)
-        beam_amp = beam_kernel.array.max()
+        beam_kernel = beam.as_kernel(pixscale).array
+        # want a peak-normalized kernel
+        beam_amp = beam_kernel.max()
 
         diskmod = convolution.convolve_fft(disk, beam_kernel) / beam_amp
 
         if ptsrcwid is not None:
             assert ptsrcamp is not None
 
-            posang = np.arctan2(y2 - y1, x2 - x1)*u.rad - 90*u.deg
+            #posang = np.arctan2(y2 - y1, x2 - x1)*u.rad - 90*u.deg
 
             ptsrc_wid_bm = radio_beam.Beam(ptsrcwid*u.arcsec, 0.00001*u.arcsec,
                                            (kernelpa+90)*u.deg)
             convbm = observed_beam.convolve(ptsrc_wid_bm)
             assert convbm.pa.value != 0
             ptsrc_bm = convbm.as_kernel(pixscale, x_size=data.shape[1], y_size=data.shape[0])
-            ptsrcmod = shift.shift2d(ptsrc_bm,
-                                     ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) / beam_amp * ptsrcamp
+            ptsrcmod = (shift.shift2d(ptsrc_bm,
+                                      ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) /
+                        beam_amp * ptsrcamp)
             diskmod += ptsrcmod
         elif ptsrcamp is not None:
-            ptsrcmod = shift.shift2d(observed_beam.as_kernel(pixscale,
-                                                             x_size=data.shape[1],
-                                                             y_size=data.shape[0]),
-                                     ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) / beam_amp * ptsrcamp
+            ptsrcmod = (shift.shift2d(observed_beam.as_kernel(pixscale,
+                                                              x_size=data.shape[1],
+                                                              y_size=data.shape[0]),
+                                      ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) /
+                        beam_amp * ptsrcamp)
             diskmod += ptsrcmod
 
 
@@ -135,9 +158,16 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
 
     def residual(pars, rms=0.0001):
         mod = model(**pars)
-        return (data - mod)/rms
+
+        parhist[band][len(pars)].append(pars.valuesdict())
+
+        if baddata is None:
+            return (data - mod)/rms
+        else:
+            return (data[~baddata] - mod[~baddata])/rms
 
     diskmod = model(x1,x2,y1,y2,data.max())
+    print("Initial disk model max: {0} data max: {1}".format(diskmod.max(), data.max()))
 
     parameters = lmfit.Parameters()
     parameters.add('x1', value=x1)
@@ -145,9 +175,11 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('y1', value=y1)
     parameters.add('y2', value=y2)
     parameters.add('scale', value=data.max())
+    parhist[band][len(parameters)] = []
     result = lmfit.minimize(residual, parameters, epsfcn=0.05)
     print("Basic fit parameters (linear model):")
     result.params.pretty_print()
+    #print("red Chi^2: {0:0.3g}".format(result.chisqr / (ndata - result.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result.redchi))
     print()
 
@@ -163,9 +195,11 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     # directly be a Gaussian scale height
     measured_positionangle = -38
     parameters.add('kernelpa', value=measured_positionangle+90, vary=False)
+    parhist[band][len(parameters)] = []
     result2 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters:")
     result2.params.pretty_print()
+    #print("red Chi^2: {0:0.3g}".format(result2.chisqr / (ndata - result2.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result2.redchi))
     print()
 
@@ -182,22 +216,51 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
     parameters.add('ptsrcx', value=ptsrcx, min=ptsrcx-5, max=ptsrcx+5)
     parameters.add('ptsrcy', value=ptsrcy, min=ptsrcy-5, max=ptsrcy+5)
     parameters.add('ptsrcamp', value=0.004, min=0.001, max=0.6)
+    parhist[band][len(parameters)] = []
     result3 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters with point source:")
     result3.params.pretty_print()
+    #print("red Chi^2: {0:0.3g}".format(result3.chisqr / (ndata - result3.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result3.redchi))
     print()
 
     bestdiskplussourcemod = model(**result3.params)
 
     parameters.add('ptsrcwid', value=0.04, min=0.01, max=0.1)
+    parhist[band][len(parameters)] = []
     result4 = lmfit.minimize(residual, parameters, epsfcn=0.1)
     print("Smoothed linear fit parameters with horizontally smeared point source:")
     result4.params.pretty_print()
+    #print("red Chi^2: {0:0.3g}".format(result4.chisqr / (ndata - result4.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result4.redchi))
     print()
 
     bestdiskplussmearedsourcemod = model(**result4.params)
+
+    fits.PrimaryHDU(data=bestdiskplussmearedsourcemod,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_bestdiskplussmearedsourcemodel.fits'
+                            .format(band)),
+                        overwrite=True)
+    fits.PrimaryHDU(data=bestdiskplussourcemod,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_bestdiskplussourcemodel.fits'
+                            .format(band)),
+                        overwrite=True)
+    fits.PrimaryHDU(data=bestdiskmod,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_bestdiskmodel.fits'
+                            .format(band)),
+                        overwrite=True)
+    fits.PrimaryHDU(data=bestdiskmod_beam,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_bestdiskmod_beamel.fits'
+                            .format(band)),
+                        overwrite=True)
 
 
     ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result4.params['ptsrcx'], result4.params['ptsrcy'], 0)
