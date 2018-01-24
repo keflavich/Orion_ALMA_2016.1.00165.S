@@ -142,7 +142,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                                            (kernelpa+90)*u.deg)
             convbm = observed_beam.convolve(ptsrc_wid_bm)
             assert convbm.pa.value != 0
-            ptsrc_bm = convbm.as_kernel(pixscale, x_size=data.shape[1], y_size=data.shape[0])
+            ptsrc_bm = convbm.as_kernel(pixscale,
+                                        x_size=data.shape[1],
+                                        y_size=data.shape[0])
             ptsrcmod = (shift.shift2d(ptsrc_bm,
                                       ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) /
                         beam_amp * ptsrcamp)
@@ -195,8 +197,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     # to be convolved with the observed beam
     # old versions for QA2 cutout parameters.add('kernelmajor', value=0.064)
     # old versions for QA2 cutout parameters.add('kernelminor', value=0.043)
-    parameters.add('kernelmajor', value=0.054)
-    parameters.add('kernelminor', value=0.033)
+    parameters.add('kernelmajor', value=0.054, min=0.01, max=0.3)
+    parameters.add('kernelminor', value=0.033, min=0.01, max=0.3)
     # Fix the position angle such that one direction of the resulting kernel will
     # directly be a Gaussian scale height
     measured_positionangle = -38
@@ -331,6 +333,16 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
           .format(sep_projected, (sep_projected*d_orion).to(u.au,
                                                             u.dimensionless_angles())))
 
+    pointmodel_image = model(0,1,0,1,scale=0,
+                             kernelmajor=result4.params['kernelmajor'],
+                             kernelminor=result4.params['kernelminor'],
+                             kernelpa=result4.params['kernelpa'],
+                             ptsrcx=result4.params['ptsrcx'],
+                             ptsrcy=result4.params['ptsrcy'],
+                             ptsrcamp=result4.params['ptsrcamp'],
+                             ptsrcwid=result4.params['ptsrcwid'],
+                            )
+
     fitted_beam = radio_beam.Beam(result2.params['kernelmajor']*u.arcsec,
                                   result2.params['kernelminor']*u.arcsec,
                                   result2.params['kernelpa']*u.deg,)
@@ -354,6 +366,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     ppbeam = (observed_beam.sr/pixscale**2).decompose()
 
+    print("pointmodel_image_sum/ppbeam = {0}  ptsrcamp = {1}".format(pointmodel_image.sum()/ppbeam,
+                                                                     result4.params['ptsrcamp'].value))
+
     fit_results[freq] = {
                          'Disk FWHM': scaleheight*(8*np.log(2))**0.5,
                          'Disk Radius': length_au/2,
@@ -361,8 +376,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                          'Pt Position': fitted_ptsrc,
                          'Pt Amp': result4.params['ptsrcamp'].value,
                          'Pt Width': (u.Quantity(result4.params['ptsrcwid'], u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
+                         'Pt Flux': pointmodel_image.sum() / ppbeam,
                          'Total Flux': bestdiskplussmearedsourcemod.sum() / ppbeam,
-                         'Pt \%': result4.params['ptsrcamp'].value / (bestdiskplussmearedsourcemod.sum() / ppbeam),
+                         'Pt \%': pointmodel_image.sum() / bestdiskplussmearedsourcemod.sum(),
                         }
 
 
@@ -590,6 +606,8 @@ tbl['Pt Amp'].unit = u.mJy
 tbl['Total Flux'] *= 1000
 tbl['Total Flux'].unit = u.mJy
 tbl['Pt Width'].unit = u.au
+tbl['Pt Flux'] *= 1000
+tbl['Pt Flux'].unit = u.mJy
 
 tbl['Disk PA'] = tbl['Disk PA'].to(u.deg)
 
@@ -601,6 +619,7 @@ formats = {'Pt Position': lambda x: "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.de
            'Disk FWHM': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk Radius': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Total Flux': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Pt Flux': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Pt \%': lambda x: strip_trailing_zeros('{0:0.5g}\%'.format(round_to_n(x,2)*100)),
           }
 
@@ -611,11 +630,13 @@ latexdict['caption'] = 'Continuum Fit Parameters'
 latexdict['preamble'] = '\centering'
 latexdict['tablefoot'] = ('\n\par The pointlike source '
                           'position is given as RA seconds and Dec arcseconds '
-                          'offset from ICRS 5h35m14s -5d22m30s.'
+                          'offset from ICRS 5h35m14s -5d22m30s.   The disk FWHM'
+                          ' is the vertical full-width half-maximum of the '
+                          'fitted Gaussian profile.'
                          )
 
 
-tbl = tbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt \%', 'Total Flux']
+tbl = tbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt Flux', 'Total Flux', 'Pt \%', ]
 tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
           formats=formats,
           latexdict=latexdict, overwrite=True)

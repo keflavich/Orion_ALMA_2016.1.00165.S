@@ -54,7 +54,7 @@ diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
                                                diskycoord_list[0].end])
 
 
-for width in (0.05, 0.1, 0.01, 0.2, 0.3):
+for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):
@@ -251,7 +251,7 @@ maser_center_3mm = (xpoints_3mm.max() + xpoints_3mm.min())/2.
 maser_center_7mm = xpoints_7mm.mean()
 
 
-for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05)):
+for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), 5.5),
        ):

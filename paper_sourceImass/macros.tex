@@ -327,12 +327,27 @@
 \end{figure*}
 }
 
-\def\FigureFour#1#2#3#4#5#6{
+\def\FigureFour#1#2#3#4#5#6#7#8{
 \begin{figure*}[!htp]
-\subfigure[]{ \includegraphics[width=0.5\textwidth]{#1} }
-\subfigure[]{ \includegraphics[width=0.5\textwidth]{#2} }
-\subfigure[]{ \includegraphics[width=0.5\textwidth]{#3} }
-\subfigure[]{ \includegraphics[width=0.5\textwidth]{#4} }
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#1} }
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#2} }
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#3} }
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#4} }
+\caption{#5}
+\label{#6}
+\end{figure*}
+}
+
+\def\FigureFourVertical#1#2#3#4#5#6#7#8{
+\begin{figure*}[!htp]
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#1} }
+\vspace{0.001mm} \\
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#2} }
+\vspace{0.001mm} \\
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#3} }
+\vspace{0.001mm} \\
+\subfigure[]{ \includegraphics[scale=#7,width=#8]{#4} }
+\vspace{0.001mm}
 \caption{#5}
 \label{#6}
 \end{figure*}

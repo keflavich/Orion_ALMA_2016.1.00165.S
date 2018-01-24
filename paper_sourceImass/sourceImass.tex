@@ -70,11 +70,26 @@ The flux and phase calibrators are listed in Table \ref{tab:observations}.
 Continuum images were produced with several weighting parameters to emphasize
 different scales, though most of the discussion here will be limited to the
 robust -2 weighted images with the highest resolution.  The calibrated data
-delivered from the ALMA QA2 process were processed through four iterations of
-phase-only self-calibration using progressively deeper cleans on robust -2
-weighted images, calibrating only baselines longer than 50m because large-scale
-structure was poorly recovered in the models and short baselines had less
-phase noise originally.
+delivered from the ALMA QA2 process were imaged directly, since we found
+that self-calibration was ineffective.
+{\color{red} The phase self-calibrated data shows a significant shift in
+the centroid of Source I and some of the material around it; I am suspicious
+of that sort of motion.  However, the peak intensity increases by $\sim10\%$,
+so maybe it is better to use the self-cal version?}
+
+To emphasize the disk scales, we imaged only baselines $>150$ m (angular scales
+$<1.8$\arcsec) in the robust -2 images used for disk fitting and modeling.
+{\color{red} NOTE TO COAUTHORS: I believe it will be necessary to present
+other images with different weights.  For now, though, the emphasis is on
+the long-baseline stuff.  When including baselines $<100m$ or so, large-scale
+ripples parallel to the ISF affect the image and result in a background that
+shifts source I's centroid a little.}
+
+% processed through four iterations of
+% phase-only self-calibration using progressively deeper cleans on robust -2
+% weighted images, calibrating only baselines longer than 50m because large-scale
+% structure was poorly recovered in the models and short baselines had less
+% phase noise originally.
 
 %The phase calibrator J0541-0541 is part of the ICRS and has 
 
@@ -91,26 +106,38 @@ phase noise originally.
 
 \input{obs_metadata.tex}
 
-The continuum images have dynamic range in the vicinity of Source I of about 200,
-with local noise in the range 0.1 mJy \perbeam and a measured peak intensity of 17-30
-mJy/beam depending on the weighting.
-{\color{red} Our target noise level was $\sim20$ \microJy \perbeam,
-about five times better.  We received only half the data, so that goes up to $\sim30$
-\microJy \perbeam, still a factor of 3 deeper than we achieved.  It *may* be possible
-to recover some of this through self-calibration and deeper cleaning, but that
-is not so obvious to me; excepting the streaks near Source I, I don't believe
-we are dynamic-range-limited.}
+The continuum images have dynamic range in the vicinity of Source I of about 200-400.
+These values are reported in Table \ref{tab:image_metadata} and are measured by
+taking the ratio of the peak intensity in source I to the standard deviation
+within a neighboring, apparently signal-free region.
+%with local noise in the range 0.1 mJy \perbeam and a measured peak intensity of 17-30
+%mJy/beam depending on the weighting.
+%{\color{red} Our target noise level was $\sim20$ \microJy \perbeam,
+%about five times better.  We received only half the data, so that goes up to $\sim30$
+%\microJy \perbeam, still a factor of 3 deeper than we achieved.
+%%It *may* be possible
+%%to recover some of this through self-calibration and deeper cleaning, but that
+%%is not so obvious to me; excepting the streaks near Source I, I don't believe
+%%we are dynamic-range-limited.
+%}
 
 \input{image_metadata.tex}
-{\color{magenta} TODO: expand image metadata table with robust 0.5 continuum image
-and line cube properties.}
+% {\color{magenta} TODO: expand image metadata table with robust 0.5 continuum image
+% and line cube properties.  This is \emph{still} a todo item after a week because
+% I spent forever re-imaging the robust -2 data...}
 
 Line cubes were produced covering the complete data set to identify lines
 associated with the disk.  Cubes were produced centered on Source I with robust
-0.5 and -2 weightings.  Continuum-subtracted cubes were produced by subtracting
-the median across the 1.8 GHz bandwidth.  All cube analysis was performed using
+0.5 and -2 weightings.  These cubes were only cleaned in the
+$0.5\arcsec\times0.5$\arcsec region immediately surrounding source I, therefore lines with
+significant emission from the surrounding medium may be significantly affected
+by sidelobes.  Continuum-subtracted cubes were produced by subtracting
+the median across the 1.8 GHz bandwidth. 
+Relevant parameters of the cubes are described in Table \ref{tab:cube_metadata}.
+All cube analysis was performed using
 \texttt{spectral-cube} (\url{https://spectral-cube.readthedocs.io/en/latest/}).
 
+\input{cube_metadata.tex}
 
 \section{Results}
 
@@ -143,34 +170,35 @@ observational structure.  We used a linear model (i.e., an infinitely thin
 perfectly edge-on disk) for the disk, with endpoints and amplitude as free parameters.
 This simple model left significant residuals, so we added a two-dimensional
 Gaussian smoothing kernel as another three free parameters to obtain a
-substantially better fit (see Figure \ref{fig:contmodel_residuals_B6}).
+substantially better fit (Figure \ref{fig:contmodel_residuals_B6}).
 The optimization was performed using a Levenberg-Marquardt
 fitter \citep{Newville2014a}. %https://zenodo.org/record/11813#.WlPUoGS7_pQ
 
 We determined that the disk is resolved in both
 directions, with a vertical FWMH height of about 35 AU and a length of about
-90 AU (see Table \ref{tab:continuum_fit_parameters}).  These measurements
+90 AU (Table \ref{tab:continuum_fit_parameters}).  These measurements
 are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant residual compact source near
 the center of the disk, which we measured by adding a smeared point
-source to the model in Figure \ref{fig:contmodel_residuals_B6},
-where we have allowed the source to be smeared only in the direction
-of the disk, limiting the number of free parameters.
+source to the model in Figure \ref{fig:contmodel_residuals_B6}.
+We have allowed the source to be smeared only in the direction
+of the disk, requiring only two additional free parameters.
 This source is discussed further in Section \ref{sec:ptsrc}.
 
 Table \ref{tab:continuum_fit_parameters} also includes measurements of the
-total integrated intensity and the ratio of the compact central source to
-the total.
+total integrated intensity recovered in the model and the ratio of the compact
+central source to the total.
 
-We recover a total intensity of 290 mJy for the Source I disk
-system in our robust -2 image, which is  $\sim80\%$ what
-\citet{Plambeck2016a} reported.  We recover a higher integrated intensity of
-420-450 mJy - higher than \citet{Plambeck2016a} - when using the robust 0.5 
-or robust 2 images.  This higher recovered flux density implies some emission
-is resolved out, implying that the Source I spectral energy distribution (SED)
-shape is significantly dependent upon interferometer array parameters.
+% TODO: investigate flux recovery.  Is it just background emission?
+% We recover a total intensity of 280 mJy for the Source I disk
+% system in our robust -2 image, which is  $\sim80\%$ what
+% \citet{Plambeck2016a} reported.  We recover a higher integrated intensity of
+% 420-450 mJy - higher than \citet{Plambeck2016a} - when using the robust 0.5 
+% or robust 2 images.  This higher recovered flux density implies some emission
+% is resolved out, implying that the Source I spectral energy distribution (SED)
+% shape is significantly dependent upon interferometer array parameters.
 % {\color{red} Or, if we really trust the low-level emission, we can argue
 % and fit an ``upper atmosphere'' of the Source I disk.  The elliptical
 % residual in Fig \ref{fig:contmodel_residuals_B6} could be real.
@@ -196,7 +224,7 @@ corroborated.
 % else.  
 
 The disk has a brightness temperature ranging from 200-500 K.  These measurements
-agree well with the continuum model of \citet{Plambeck2016a}, who inferred
+agree with the continuum model of \citet{Plambeck2016a}, who inferred
 the presence of an optically thick $T=500$ K surface from the SED.
 % relies on overview figure {\color{red} The region of the surrounding hot core that is in line with the
 % relies on overview figure disk is slightly fainter than its surroundings, hinting that the disk
@@ -268,16 +296,18 @@ excitation level to the 336 GHz vibrationally excited water line reported in
 is most likely a thermal line.
 
 The water line traces an X-shaped feature above and below the disk, resembling
-the overall distribution of SiO masers but with a somewhat narrower
-distribution.  The water is not directly aligned with the continuum disk
-(Figures \ref{fig:U1peak} and \ref{fig:h2omom0}), but it does exhibit
-emission directly along the disk axis.  The velocity profile of \water
-is much better fit by a Keplerian profile than the SiO thermal or maser
-emission (figure XXXX): the SiO is absent from intermediate velocities
-at intermediate separation and is detected at higher velocities and lower
-separations than \water.
+the overall distribution of SiO masers.  The water is not directly aligned with
+the continuum disk (Figures \ref{fig:U1peak} and \ref{fig:h2omom0}), but it
+does exhibit emission parallel to the disk at small ($<20$ AU) separation.  The velocity profile of
+\water is much better fit by a Keplerian profile than the SiO thermal or maser
+emission (see Appendix \ref{sec:siopv}), though
+this may be because the SiO is brighter in the outflow than in the disk.
 
-Because the water emission is thermal, though, it exhibits less extreme
+%the SiO is absent from intermediate velocities at
+%intermediate separation and is detected at higher velocities and lower
+%separations than \water.
+
+Because the water emission is thermal, it exhibits less extreme
 brightness fluctuations across the image than the SiO masers, allowing us to
 fit an upper-envelope velocity curve in Section \ref{sec:kinematics}.
 
@@ -298,38 +328,45 @@ fit an upper-envelope velocity curve in Section \ref{sec:kinematics}.
 Several unidentified lines exhibit emission at the outer edge of the continuum disk.
 They all share a common morphology, though they vary in strength.
 The peak signal from these lines appears around the $T_B\sim150$ K continuum contour
+in the robust -2 images
 %within the $T_B\gtrsim75$ K contour
 (Figure \ref{fig:U1peak}).
 There is also emission detected directly above and below the disk at all projected
-radii, though it is weaker.  No line emission is detected directly toward the disk
-center.
+radii, though it is weaker.  No line emission is detected where the continuum is
+brightest, $T_B\gtrsim150$ K.
 
-The best explanation for these lines is that they trace the outer surface of
-a mostly optically thick disk.  They must have an excitation temperature
-similar to the brightness temperature of the disk, but have optical depths
-of order 0.1-1.  Directly toward the disk continuum emission peak, since
-the excitation temperature is the same as the background continuum temperature,
+The best explanation for these lines is that they trace the outer surface of a
+mostly optically thick (in the continuum) disk.  In this scenario,
+the lines have an excitation temperature similar to the brightness temperature
+of the disk, but have optical depths of order 0.1-1.  
+Directly toward the disk
+continuum emission peak, since
+the line excitation temperature is the same as the background continuum temperature,
 $T_{ex}=T_{bg}$, no emission (or absorption) is observed.  Just above and below
-the disk continuum peak, the dust column (and therefore optical depth) drops
+the disk continuum peak, the dust column density (and therefore optical depth) drops
 rapidly, but the molecular optical depth drops more slowly, so some emission is still
 observed ($T_{ex}\sim200-500$ K, but $\tau_{line}\sim0.1-0.5$, resulting in 
-the $T_{B,max} \sim 100$ K observed).  At the disk edges, the column density
-of molecular material just outside the dust is increased, resulting in increased
-optical depth and therefore brightness.
+the $T_{B,max} \sim 100$ K observed).  At the disk edges, the column density of
+molecular material is higher because we are looking along the tangent of the
+disk, so the line optical depth and therefore brightness are greater.
 
 Since these lines only appear immediately around the disk, and in particular
 because they peak just outside of the dust emission along the disk axis, they
-are the best direct tracers of the disk's kinematics.
+are the most direct tracers of the disk's kinematics.
 
 {\color{blue} This paragraph follows from discussion with John.  It might
 be too much detail for a Letter.}
-The lines' kinematic structure suggests they are emitting only from $30 < r < 70$ AU,
-AU.  There are several plausible explanations for the lack of gas
+The lines' kinematic structure suggests they are emitting only from $30~\mathrm{AU}< r <
+70$ AU.  There are several plausible explanations for the lack of gas
 emission at $r<30-40$ AU: (1) there is no gas at these radii except in the
-optically-thick dust disk, i.e., the gas and dust are well-mixed (2) the gas is
-heated enough to drop the optical depth in the observed lines by expanding the
-available levels in the partition function (3) the molecular line abundance is
+optically-thick dust disk, i.e., the gas and dust are well-mixed and the dust
+hides the gas emission (2) the gas is
+heated enough to drop the optical depth in the observed lines by increasing the
+number of available levels in the partition function, decreasing the intensity
+of any given line (3) the molecular line abundance is
 lower closer to the center (e.g., the molecule we observe is dissociated).
+The first explanation is perhaps the simplest, but all three are 
+plausible.
 
 
 % Their lack of association with the inner disk suggests that they trace the outer
@@ -354,7 +391,8 @@ for known lines in the Splatalogue collection of line catalogs using
 While many of the lines have plausible carriers within 1-2 \kms, such as
 highly-excited CH$_3$OCHO or variants of SO$_2$, there is no consistent pattern
 to the detected lines and no individual species can explain more than a few of
-the observed lines.
+the observed lines.  The stacked spectra are shown, with labels,
+in Appendix \ref{sec:stackedspectra}.
 
 \FigureThree
 {{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
@@ -434,7 +472,7 @@ Following \citet{Seifried2016a}, we measure the outer edge of the detected
 \water emission to define the rotation curve surrounding Source I.  In Appendix
 \ref{appendix:centroids}, to facilitate direct comparison with previous works,
 we use the centroid-of-velocity-channel approach that \citet{Seifried2016a}
-advise against.
+warn may underestimate the central mass.
 
 Of the detected lines, only the \water line spans a significant range of
 velocities as a function of radius; as shown in Figures \ref{fig:h2okepler},
@@ -442,12 +480,12 @@ there is \water emission spanning at least from radius 10 to 100 AU.  Many
 other molecules, most of
 which we have not been able to identify, span a range of 30-80 AU, while SiS
 spans 30 AU to an unconstrained outer radius.   The SiO lines span varying radii,
-but they are predominantly detected outside of the disk midplane.  
+but they are predominantly detected far from the disk midplane.
 
 We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge of
 the \water line reasonably well (Figure \ref{fig:h2okepler}), and is also an
-acceptable match to the outer profiles of other unidentified lines
-(Section \ref{sec:otherlines}).  A 15 \msun central source is consistent
+acceptable match to the outer profiles of the unidentified lines
+described in Section \ref{sec:otherlines}.  A 15 \msun central source is consistent
 with the \water data only if we allow for line broadening of about 1.5-2 \kms,
 which could be produced by turbulence within the emitting regions or
 by thermal broadening if the gas temperature is $\sim5000$ K. {\color{red}
@@ -611,6 +649,7 @@ angular momentum vector orthogonal to the direction of motion.  Any material
 with
 velocity relative to source I 
 $$v < v_{esc} = 23 \kms (M/15\msun)^{1/2}  (r/50~\mathrm{AU})^{-1/2}$$
+would remain bound.
 Assuming source I's present-day proper motion of 17 \kms reflects its velocity
 at the time of ejection, less than half of the original disk mass would
 have been lost, while the rest would remain bound (material moving in the
@@ -618,6 +657,7 @@ direction directly opposite source I's ejection direction would have net
 velocity relative to source I high enough to escape; the greatest mass
 loss would occur if the disk was already in the direction of source I's eventual
 launch).
+Material outside $R\gtrsim90$ AU would likely all have become unbound.
 %would remain bound, and with source I's present motion of 17 \kms on the sky,
 %that implies all mass within the currently observed disk radius would have
 %remained with it.
@@ -625,23 +665,26 @@ launch).
 
 \subsection{The compact source in the disk}
 \label{sec:ptsrc}
-We have detected a compact (but marginally resolved) source near the
-center of the disk at both 3 mm and 1 mm.  The source has a flux rising from 1
-mm to 3 mm - behavior generally inconsistent with a thermal source.  However, since the
-source is nearly coincident with an edge-on disk that we show is optically
-thick at 1 mm, it is likely that the source is thermal but is significantly
-attenuated by the disk at 1 mm and seen with less
-attenuation at 3 mm.
+We have detected a compact (but marginally resolved) source near the center of
+the disk at both 3 mm and 1 mm.  The source has a spectral energy distribution
+that is approximately flat from 1 mm to 3 mm.  Since the source is nearly
+coincident with an edge-on disk that we show is optically thick at 1 mm, it is
+likely that the source is thermal but is significantly attenuated by the disk
+at 1 mm and seen with less attenuation at 3 mm.
 
 \citet{Reid2007a} used comparable-resolution 7 mm VLA data to infer
 the presence of a 2.2 mJy source at the center of the Source I disk.
 The compact-source-to-disk flux ratio at 7 mm was $\sim20\%$, substantially
-higher than we observe at 1 mm but comparable to our
-observation at 3 mm (Table \ref{tab:continuum_fit_parameters}).  
+higher than we observe at 1 mm and somewhat
+higher than at 3 mm (Table \ref{tab:continuum_fit_parameters}).  
 % -log(2.2/10) / log(7/3)
-The spectral index from 3 to 7 mm is $\alpha=1.8$, close to an optically
-thick blackbody, suggesting that the disk is nearly optically thin at 3 mm,
-at least along the line of sight toward this object.
+% -log(2.2/7.3) / log(7/3)
+The spectral index from 3 to 7 mm is $\alpha=1.4$, approaching that of an optically
+thick blackbody.  {\color{red} NOTE TO COAUTHORS: These numbers have not stayed
+quite as steady as I like; improved fitting dropped the 3 mm point-to-total
+from $\sim20\%$ to $\sim13\%$.}
+%blackbody, suggesting that the disk is nearly optically thin at 3 mm,
+%at least along the line of sight toward this object.
 
 The central source has a surface temperature $T\geq1250$ K, the brightness
 temperature of a 2.2 mJy source within a $41\times28$ milliarcsecond beam at 7
@@ -657,6 +700,8 @@ along the disk direction in Figure \ref{fig:contmodel_residuals_B6}
 suggests that we are seeing the hot inner disk.
 As pointed out by \citet{Plambeck2016a}, it is quite unlikely to be
 free-free emission, since there are no detected recombination lines.
+{\color{red} This may be an area worth exploring further given
+the existence of \citet{Baez-Rubio2018a}.}
 
 The source is slightly offset from the center of the disk by 3-5 AU in
 projection.  This offset hints that it is not a single central source, but
@@ -906,5 +951,71 @@ Curiously, these higher-resolution diagrams seem to prefer a velocity
 slightly lower, $v\sim4-5$ \kms.
 }
 {fig:h2okepler_rm2}{1}{3.5in}
+
+\section{The SiO outflow in PV space}
+\label{sec:siopv}
+To illustrate the change in velocity structure with height from the disk, 
+we show position-velocity diagrams of SiO v=0 J=5-4 in Figure \ref{fig:sio_pvs}.
+These images are extracted from equal distances above and below
+the disk midplane.  At greater distances from the midplane, the high-velocity,
+low-separation features fade out, while more low-velocity material
+becomes visible at larger separations.  In the innermost slice, which shows the
+SiO emission that just skirts the edges of the disk, the velocity curve is 
+consistent with the 19 \msun Keplerian curve overlaid.
+
+\FigureFour
+{figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{Position-velocity slices of SiO v=0 J=5-4 along the disk direction at four heights:
+(a) $|h|<0.05\arcsec$,
+(b) $0.05\arcsec<|h|<0.1\arcsec$,
+(c) $0.1\arcsec<|h|<0.15\arcsec$,
+(d) $0.15\arcsec<|h|<0.2\arcsec$.
+These images are produced from the robust -2 weighted cubes.
+The missing emission around $v=0$ \kms is likely caused by image filtering
+effects; at these velocities, there is extended, smooth SiO emission from the
+surrounding cloud.
+}
+{fig:siopv}{1}{0.23\textwidth}
+
+\FigureFour
+{figures/keplercurves_sourceI_29SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{Position-velocity slices of $^{29}$SiO v=0 J=5-4 along the disk direction at four heights:
+(a) $|h|<0.05\arcsec$,
+(b) $0.05\arcsec<|h|<0.1\arcsec$,
+(c) $0.1\arcsec<|h|<0.15\arcsec$,
+(d) $0.15\arcsec<|h|<0.2\arcsec$.
+These images are produced from the robust -2 weighted cubes.
+While similar to the $^{28}$SiO shown in Figure \ref{fig:siopv},
+there is a remarkable position-velocity ring at high elevations
+that corresponds to  masers.
+}
+{fig:29siopv}{1}{0.23\textwidth}
+
+\section{Stacked Spectra}
+\label{sec:stackedspectra}
+As described in Section \ref{sec:otherlines}, we performed a line-stacking
+analysis by measuring the velocity field of the U232.511 line, shifting all
+spectra across the disk to a common velocity frame, and averaging them.
+We stacked the robust 0.5 cubes, as the surface brightness sensitivity
+of the robust -2 cubes was too poor to justify stacking.
+
+\FigureFourVertical
+{figures/lines_labeled_spw0_B6_yzoom.pdf}
+{figures/lines_labeled_spw1_B6_yzoom.pdf}
+{figures/lines_labeled_spw2_B6_yzoom.pdf}
+{figures/lines_labeled_spw3_B6_yzoom.pdf}
+{Plots of the stacked spectra from spectral windows 0, 1, 2, and 3 (see Table \ref{tab:cube_metadata})
+with detected lines labeled.  The spectra are shown with the same y-axis limits; bright SiO and \water
+emission is cut off.  In spectral window 2, the region around 215.5-215.6 GHz, near the SiO v=1 J=5-4
+maser line (which is the brightest line we detect) is affected by imaging artifacts from the cleaning
+process.}
+{fig:stackplots_labeled}{0.5}{0.6\linewidth}
+
 
 \end{document}
