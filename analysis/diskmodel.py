@@ -254,7 +254,6 @@ for fn, freq, band in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcu
                                          fitted_diskends_mod4.icrs.dec.deg[0],
                                          fitted_diskends_mod4.icrs.ra.deg[1],
                                          fitted_diskends_mod4.icrs.dec.deg[1],))
-    break
     
     # compute offset from point source to disk center along the disk axis angle
     assert ptsrc_diskcen_sep < 0.1*u.arcsec
