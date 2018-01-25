@@ -59,6 +59,7 @@ for robust, depth1, depth2 in ((2, '2mJy', '1mJy',),
                veltype='radio',
                savemodel='none',
                uvrange='50~36000m',
+               parallel=True,
               )
         makefits(contimagename)
 
