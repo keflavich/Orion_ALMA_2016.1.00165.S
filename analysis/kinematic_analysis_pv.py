@@ -28,11 +28,15 @@ import pylab as pl
 
 pl.close(1)
 
+redo = False
+
 
 # just do water (goes faster)
 #disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
 #disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x or 'SiO' in x}
 #disk_lines = {x:y for x,y in disk_lines.items() if 'Unknown_4' in x or 'Unknown_5' in x}
+#disk_lines = {x:y for x,y in disk_lines.items() if 'U230.966' in x or 'U230.72' in x}
+#redo = True
 
 diskycoorddict = {}
 source = "sourceI"
@@ -62,10 +66,10 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
         diskycoords = diskycoorddict[name]
 
         for fnt in (
-                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.longbaselines.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.longbaselines.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
@@ -133,7 +137,7 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
                     extraction_path = pvextractor.Path(diskycoords, width*u.arcsec)
 
-                    if os.path.exists(outfn):
+                    if os.path.exists(outfn) and not redo:
                         extracted = fits.open(outfn)[0]
                     else:
                         subcube = (medsub.with_spectral_unit(u.km/u.s,
