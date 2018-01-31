@@ -12,13 +12,16 @@ import radio_beam
 #conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
 
+levels = [50, 150, 300, 600]*u.K
+
 for robust in (-2, 0.5):
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
 
     beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
-    print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
-                                 0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
+    cont_levels_Jy = levels.to(u.Jy, beam.jtok_equiv(224*u.GHz))
+    #print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
+    #                             0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
 
     for band,suffix in (('B3', 'clarkclean10000'),
                         ('B6', 'maskedclarkclean10000')):
@@ -80,9 +83,7 @@ for robust in (-2, 0.5):
 
                         mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
                                      .format(linename, sourcename, robust=robust), aplpy_kwargs={'figure':pl.figure(1)})
-                        mx.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
-                                                                    0.02, 0.03, 0.04,
-                                                                    0.05],
+                        mx.FITSFigure.show_contour(conthdu, levels=cont_levels_Jy,
                                                    colors=['r']*10)
                         mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
                         mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
@@ -93,9 +94,7 @@ for robust in (-2, 0.5):
                         m0.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0.pdf')
                                      .format(linename, sourcename, robust=robust), aplpy_kwargs={'figure':pl.figure(1)})
 
-                        m0.FITSFigure.show_contour(conthdu, levels=[0.001, 0.005, 0.01,
-                                                                    0.02, 0.03, 0.04,
-                                                                    0.05],
+                        m0.FITSFigure.show_contour(conthdu, levels=cont_levels_Jy,
                                                    colors=['r']*10)
                         m0.FITSFigure.colorbar.set_axis_label_text("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
                         m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0.pdf')
@@ -103,7 +102,6 @@ for robust in (-2, 0.5):
 
                         pl.figure(1).clf()
 
-    beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
-    print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
-                                 0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
-
+#    beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
+#    print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
+#                                 0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))

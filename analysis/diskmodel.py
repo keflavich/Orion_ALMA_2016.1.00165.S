@@ -542,7 +542,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     ax = fig5.gca()
     im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='gray', vmin=-5, vmax=40)
     im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray', vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3)
-    con = ax.contour(data*jtok.value, levels=[50, 100, 150, 200, 300, 400, 500], colors=['r']*10)
+    con = ax.contour(data*jtok.value, levels=[50, 100, 150, 200, 300, 400, 500, 600], colors=['r']*10)
     cb2 = fig5.colorbar(mappable=im0)
     cb2.set_label('$T_B$ [K]')
     cb = fig5.colorbar(mappable=im)
