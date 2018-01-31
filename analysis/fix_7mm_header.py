@@ -1,3 +1,7 @@
+"""
+Manually shift the Reid+ 2007 7mm data to match ours.  This process invalidates
+any sort of absolute astrometry and is eyeballed.
+"""
 from astropy.io import fits
 import paths
 
