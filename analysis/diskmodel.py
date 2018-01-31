@@ -370,6 +370,32 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print("pointmodel_image_sum/ppbeam = {0}  ptsrcamp = {1}".format(pointmodel_image.sum()/ppbeam,
                                                                      result4.params['ptsrcamp'].value))
 
+    with open(paths.rpath('{0}_continuum_disk.reg'.format(band)), 'w') as fh:
+        fh.write('icrs\n')
+        fh.write("line({0},{1},{2},{3}) # text={{{4}}} color=magenta\n"
+                 .format(fitted_diskends_mod4.icrs.ra.deg[0],
+                         fitted_diskends_mod4.icrs.dec.deg[0],
+                         fitted_diskends_mod4.icrs.ra.deg[1],
+                         fitted_diskends_mod4.icrs.dec.deg[1],
+                         band
+                        ))
+        fh.write("line({0},{1},{2},{3}) # text={{{4} pm0.4}} color=green\n"
+                 .format(ll_0p4.icrs.ra.deg, ll_0p4.icrs.dec.deg,
+                         ur_0p4.icrs.ra.deg, ur_0p4.icrs.dec.deg,
+                         band
+                        ))
+
+        fh.write("point({0},{1}) # text={{{2} diskcen}} point=x color=red\n"
+                 .format(disk_center_mod4.icrs.ra.deg,
+                         disk_center_mod4.icrs.dec.deg,
+                         band
+                        ))
+        fh.write("point({0},{1}) # text={{{2} ptsrc}} point=circle color=blue\n"
+                 .format(fitted_ptsrc.icrs.ra.deg,
+                         fitted_ptsrc.icrs.dec.deg,
+                         band
+                        ))
+               
     fit_results[freq] = {
                          'Disk FWHM': scaleheight*(8*np.log(2))**0.5,
                          'Disk Radius': length_au/2,
