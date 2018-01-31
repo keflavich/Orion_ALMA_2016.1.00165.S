@@ -12,6 +12,7 @@ import imp
 import edge_on_ring_velocity_model
 from constants import d_orion
 import show_pv
+from constants import vcen
 
 imp.reload(edge_on_ring_velocity_model)
 imp.reload(show_pv)
@@ -31,9 +32,6 @@ diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
 diskycoords = coordinates.SkyCoord([diskycoord_list[0].start,
                                     diskycoord_list[0].end])
 
-# I prefer 6 km/s to the 5 km/s used by other groups
-vcen = 6.0*u.km/u.s
-vcen = 5.5*u.km/u.s
 
 #source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
 #                             unit=(u.hour, u.deg))

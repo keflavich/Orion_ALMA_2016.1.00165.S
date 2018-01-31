@@ -95,9 +95,9 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
     return fig,ax
 
 
-def show_keplercurves(ax, origin, maxdist, vcen, masses=[5,10,20],
-                      linestyles=':::',
-                      colors=['r','g','b'],
+def show_keplercurves(ax, origin, maxdist, vcen, masses=[15,19],
+                      linestyles=':-',
+                      colors=['g', 'r'],
                       radii={19: ([30, 80], ['m', 'm'])},
                       yaxis_unit=u.m/u.s
                      ):

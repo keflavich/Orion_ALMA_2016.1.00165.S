@@ -13,7 +13,7 @@ from astropy.nddata import Cutout2D
 from mpl_plot_templates import asinh_norm
 import latex_info
 from latex_info import strip_trailing_zeros, round_to_n
-from files import b6_hires_cont, b3_hires_cont
+from files import b6_hires_cont, b3_hires_cont, reid7mm
 
 import pylab as pl
 
@@ -40,6 +40,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                                #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                                (b6_hires_cont, 224.0*u.GHz, 'B6', 2*u.mJy),
                                (b3_hires_cont, 93.3*u.GHz, 'B3', None),
+                               (reid7mm, 43.165*u.GHz, '7mm', None),
                               ]:
     parhist[band] = {}
 
@@ -102,9 +103,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
         #if (x1 > data.shape[1]-1) or (x2 > data.shape[1]-1) or (y1 > data.shape[0]-1) or (y2 > data.shape[0]-1):
         #    return 1e5
         if x2 > data.shape[1] - 1:
-            x2 = data.shape[1] -1
+            x2 = data.shape[1] - 1
         if y2 > data.shape[0] - 1:
-            y2 = data.shape[0] -1
+            y2 = data.shape[0] - 1
 
         def line_y(x):
             # y = m x + b
@@ -355,8 +356,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
     print("Scale height: {0}".format(scaleheight))
 
-    length_as = (((result2.params['x2'] - result2.params['x1'])**2 +
-                  (result2.params['y2']-result2.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
+    length_as = (((result4.params['x2'] - result4.params['x1'])**2 +
+                  (result4.params['y2'] - result4.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
     length_au = (length_as * d_orion).to(u.au, u.dimensionless_angles())
 
     print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g}  or radius {2:0.3g}"
@@ -477,7 +478,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
             ell_wid_bm = ptsrc_bm.ellipse_to_plot(10, 35, pixscale)
             ell_obs_bm = observed_beam.ellipse_to_plot(10, 55, pixscale)
         else:
-            raise
+            continue
         for ell in (ell_smearing_bm, ell_wid_bm, ell_obs_bm):
             ax.add_patch(ell)
 
@@ -500,7 +501,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     cb2 = fig5.colorbar(mappable=im0)
     cb2.set_label('$T_B$ [K]')
     cb = fig5.colorbar(mappable=im)
-    cb.set_label('$S_{1.3 mm}$ [mJy beam$^{-1}$]')
+    wavelength = '1.3 mm' if band == 'B6' else '3 mm' if band == 'B3' else '7 mm' if band == '7mm' else 'ERROR'
+    cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
     ax.set_xticks([])
     ax.set_yticks([])
 
@@ -512,12 +514,13 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     fig5.clf()
     ax = fig5.gca()
-    im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='viridis', vmin=-5, vmax=40)
-    im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='viridis', vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3)
+    im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='gray', vmin=-5, vmax=40)
+    im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray', vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3)
+    con = ax.contour(data*jtok.value, levels=[50, 100, 150, 200, 300, 400, 500], colors=['r']*10)
     cb2 = fig5.colorbar(mappable=im0)
     cb2.set_label('$T_B$ [K]')
     cb = fig5.colorbar(mappable=im)
-    cb.set_label('$S_{1.3 mm}$ [mJy beam$^{-1}$]')
+    cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
     ax.set_xticks([])
     ax.set_yticks([])
 
@@ -612,7 +615,7 @@ tbl['Pt Flux'].unit = u.mJy
 tbl['Disk PA'] = tbl['Disk PA'].to(u.deg)
 
 
-formats = {'Pt Position': lambda x: "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.dec.dms.s+30),
+formats = {'Pt Position': lambda x: "-" if np.isnan(x.ra) else "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.dec.dms.s+30),
            'Pt Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Pt Width': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
@@ -632,11 +635,19 @@ latexdict['tablefoot'] = ('\n\par The pointlike source '
                           'position is given as RA seconds and Dec arcseconds '
                           'offset from ICRS 5h35m14s -5d22m30s.   The disk FWHM'
                           ' is the vertical full-width half-maximum of the '
-                          'fitted Gaussian profile.'
+                          'fitted Gaussian profile.  For the 7 mm data, the '
+                          'position is left blank because we do not have '
+                          'astrometric information for those data (they were '
+                          'self-calibrated on a bright maser whose position '
+                          'was not well-constrained).' 
                          )
+
+mask7mm = tbl['Frequency'] == 43.165
+tbl['Pt Position'][mask7mm] = coordinates.SkyCoord(np.nan, np.nan, unit=(u.deg, u.deg), frame='icrs')
 
 
 tbl = tbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt Flux', 'Total Flux', 'Pt \%', ]
+tbl.sort('Frequency')
 tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
           formats=formats,
           latexdict=latexdict, overwrite=True)

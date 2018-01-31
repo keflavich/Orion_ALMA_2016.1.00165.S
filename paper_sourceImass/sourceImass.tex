@@ -6,16 +6,22 @@
 \title{A Keplerian disk around Orion Source I, a 15-20 \msun YSO}
 \begin{abstract}
    We report ALMA long-baseline observations of Orion Source I with resolution 0.03-0.06\arcsec (12-24 AU).
-   We detect Source I's disk in both continuum and in some lines.
-   We resolve the disk around source I and measure its rotation curve.  Because
-   of the higher resolution of these observations, we were able to measure the
-   outer envelope of the rotation curve of the \water $5_{5,0}-6_{4,3}$ line,
-   which gives a mass $M_I\approx19$ \msun.  Using centroid-of-channel methods,
+   We detect both continuum and spectral line emission from Source I's disk.
+   We resolve the 90 AU diameter disk around Source I and measure its rotation curve.
+   We also detect a central weakly resolved source that we interpret as a hot spot
+   in the inner disk.
+   Because of the higher resolution and sensitivity of these observations, we
+   were able to measure the outer envelope of the rotation curve of the \water
+   $5_{5,0}-6_{4,3}$ line, which gives a mass $M_I\approx19$ \msun.  Using
+   centroid-of-channel methods,
    we still infer a higher mass than previous authors, with
-   $M_I\gtrsim15$\msun.  These measurements solidify Source I as a genuine
-   high-mass protostar system and provide some support for the Source I, BN,
-   Source X dynamical decay scenario as an explanation for the explosive
-   molecular outflow.
+   $M_I\gtrsim15$\msun.
+   These measurements solidify Source I as a genuine
+   high-mass protostar system.
+   These measurements support the theory that Source I and the Becklin
+   Neugebauer Object were ejected from the dynamical decay of a multiple star
+   system $\sim$500 years ago, an event that also launched the explosive
+   molecular outflow in Orion.
 \end{abstract}
 
 \section{Introduction}
@@ -33,6 +39,10 @@ its mass below the classic 8 \msun threshold for a single star to go supernova
 Several attempts have been made to measure the mass of Orion Source I using the
 rotation curve of various molecular lines:
 \begin{itemize}
+    \item \citet{Matthews2010a} used 3D measurements of SiO maser velocities
+        at 0.5 mas (0.2 AU) resolution along a `bridge' hovering just above and
+        below the disk and an assumed radius $r\sim35$ AU  to infer a mass
+        $M\approx8-10$ \msun.
     \item \citet{Hirota2014a} observed vibrationally excited \water emission
         from the $v_2=0, 10_{2,9}-9_{3,6}$ and  $v_2=1, 5_{2,3}-6_{1,6}$ lines
         with $E_L=1846$ and 2939 K, respectively.  They imaged these lines
@@ -44,20 +54,16 @@ rotation curve of various molecular lines:
         curve of gas around Source I.  They used a centroiding approach
         similar to \citet{Hirota2014a} to measure the rotation curve of
         SO, SiS, SiO, and CO and infer the source mass $M\sim5-7$ \msun.
-    \item \citet{Matthews2010a} used 3D measurements of SiO maser velocities
-        at 0.5 mas (0.2 AU) resolution along a `bridge' hovering just above and
-        below the disk and an assumed radius $r\sim35$ AU  to infer a mass
-        $M\approx8-10$ \msun.
 \end{itemize}
 
 Source I's mass is also closely tied to the origin of the Orion Outflow.
 Several authors argue that Source I, BN, and Source N \citep[or, alternatively,
 source X][]{Luhman2017a} were part of a single non-hierarchical multiple system
 that underwent dynamical decay, and this decay somehow triggered the outflow
-\citep{Bally2005a,Rodriguez2005a,Goddi2011b,Bally2011a,Bally2015a,Bally2017a}.
+\citep{Bally2005a,Rodriguez2005a,Goddi2011b,Moeckel2012b,Bally2011a,Bally2015a,Bally2017a}.
 However, others have
 noted that the lower masses inferred for Source I above are incompatible with
-this scenario \citep{Chatterjee2012a,Farias2017a,Plambeck2016a}, which requires
+this scenario \citep{Chatterjee2012a,Plambeck2016a,Farias2017a}, which requires
 a mass $M_{I} \gtrsim 15$ \msun.
 
 \section{Observations}
@@ -68,24 +74,31 @@ configuration are given in Table \ref{tab:observations}.  The
 multiconfiguration data were combined for all
 images considered here.
 The flux and phase calibrators are listed in Table \ref{tab:observations}.
+{\color{red} Band 7 data are not discussed in this work because the data for
+the long-baseline observations were not delivered by the time of submission; we
+record the observational details here for completeness since they are part of
+the same project in the ALMA archive.}
 
 Continuum images were produced with several weighting parameters to emphasize
 different scales, though most of the discussion here will be limited to the
 robust -2 weighted images with the highest resolution.  The calibrated data
 delivered from the ALMA QA2 process were imaged directly, since we found
-that self-calibration was ineffective.
-{\color{red} The phase self-calibrated data shows a significant shift in
-the centroid of Source I and some of the material around it; I am suspicious
-of that sort of motion.  However, the peak intensity increases by $\sim10\%$,
-so maybe it is better to use the self-cal version?}
+that self-calibration did not improve the image; we suspect the unmodeled, resolved-out
+emission prevents us from obtaining good solutions.
+% {\color{red} The phase self-calibrated data shows a significant shift in
+% the centroid of Source I and some of the material around it; I am suspicious
+% of that sort of motion.  However, the peak intensity increases by $\sim10\%$,
+% so maybe it is better to use the self-cal version?}
 
-To emphasize the disk scales, we imaged only baselines $>150$ m (angular scales
-$<1.8$\arcsec) in the robust -2 images used for disk fitting and modeling.
-{\color{red} NOTE TO COAUTHORS: I believe it will be necessary to present
-other images with different weights.  For now, though, the emphasis is on
-the long-baseline stuff.  When including baselines $<100m$ or so, large-scale
-ripples parallel to the ISF affect the image and result in a background that
-shifts source I's centroid a little.}
+To emphasize the disk scales and eliminate ripple artifacts produced by
+poorly-sampled large-scale structure in the map, we imaged only baselines
+$>150$ m (115 k$\lambda$, angular scales $<1.8$\arcsec) in the robust -2 images
+used for disk fitting and modeling.
+%{\color{red} NOTE TO COAUTHORS: I believe it will be necessary to present
+%other images with different weights.  For now, though, the emphasis is on
+%the long-baseline stuff.  When including baselines $<100m$ or so, large-scale
+%ripples parallel to the ISF affect the image and result in a background that
+%shifts source I's centroid a little.}
 
 % processed through four iterations of
 % phase-only self-calibration using progressively deeper cleans on robust -2
@@ -111,7 +124,8 @@ shifts source I's centroid a little.}
 The continuum images have dynamic range in the vicinity of Source I of about 200-400.
 These values are reported in Table \ref{tab:image_metadata} and are measured by
 taking the ratio of the peak intensity in source I to the standard deviation
-within a neighboring, apparently signal-free region.
+within a neighboring, apparently signal-free region (an $r=0.7\arcsec$ circle 1.4\arcesc
+to the northwest of Source I).
 %with local noise in the range 0.1 mJy \perbeam and a measured peak intensity of 17-30
 %mJy/beam depending on the weighting.
 %{\color{red} Our target noise level was $\sim20$ \microJy \perbeam,
@@ -128,7 +142,7 @@ within a neighboring, apparently signal-free region.
 % and line cube properties.  This is \emph{still} a todo item after a week because
 % I spent forever re-imaging the robust -2 data...}
 
-Line cubes were produced covering the complete data set to identify lines
+Spectral line image cubes were produced covering the complete data set to identify lines
 associated with the disk.  Cubes were produced centered on Source I with robust
 0.5 and -2 weightings.  These cubes were only cleaned in the
 $0.5\arcsec\times0.5$\arcsec region immediately surrounding source I, therefore lines with
@@ -144,11 +158,12 @@ All cube analysis was performed using
 \section{Results}
 
 \subsection{Continuum}
-We detect the disk in the continuum at 3mm, 1mm, and 0.8mm, but we detect
-spectral lines only from the surfaces above and below the continuum disk at 1
-mm (Figure \ref{fig:continuum_data_B6} shows the 1 mm continuum).  The nondetection of
-lines in the disk midplane is a strong indication that the continuum is
-optically thick, as has previously been noted
+We detect the disk in the continuum at 3mm, 1mm, and 0.8mm.  At 1mm, where we
+have enough resolution to clearly distinguish the line-emitting region from the
+disk midplane, we detect spectral lines only from the surfaces above and below the
+continuum disk (Figure \ref{fig:continuum_data_B6}).
+The nondetection of lines in the disk midplane is a strong indication that the
+continuum is optically thick, as has previously been noted
 \citep[e.g.][]{Plambeck2016a}.
 
 % \FigureTwo
@@ -172,9 +187,11 @@ observational structure.  We used a linear model (i.e., an infinitely thin
 perfectly edge-on disk) for the disk, with endpoints and amplitude as free parameters.
 This simple model left significant residuals, so we added a two-dimensional
 Gaussian smoothing kernel as another three free parameters to obtain a
-substantially better fit (Figure \ref{fig:contmodel_residuals_B6}).
+substantially better fit.
 The optimization was performed using a Levenberg-Marquardt
-fitter \citep{Newville2014a}. %https://zenodo.org/record/11813#.WlPUoGS7_pQ
+fitter \citep{Newville2014a}.  The models and their residuals
+are shown in Appendix \ref{appendix:contmodel}.
+%https://zenodo.org/record/11813#.WlPUoGS7_pQ
 
 We determined that the disk is resolved in both
 directions, with a vertical FWMH height of about 35 AU and a length of about
@@ -184,7 +201,7 @@ only marginally resolved the source at wavelengths 1 mm and shorter.
 
 This simple model leaves a significant residual compact source near
 the center of the disk, which we measured by adding a smeared point
-source to the model in Figure \ref{fig:contmodel_residuals_B6}.
+source to the model (see Appendix \ref{appendix:contmodel}).
 We have allowed the source to be smeared only in the direction
 of the disk, requiring only two additional free parameters.
 This source is discussed further in Section \ref{sec:ptsrc}.
@@ -214,8 +231,7 @@ central source to the total.
 The disk position angle points to within 2 degrees of the Becklin-Neugebauer
 object (Orion BN); the PA of the vector from Source I to Source BN is -37.6
 degrees, while the measured disk position angle is -36 to -37 degrees.
-This coincidence was noted by \citet{Bally2011a} and is now more strongly
-corroborated.
+This coincidence was noted by \citet{Bally2011a} and \citet{Goddi2011b}.
 %There is no remaining doubt that the disk is oriented NW-SE \citep[][contended
 %the disk had the opposite orientation]{Testi2010a}.
 
@@ -237,47 +253,26 @@ the presence of an optically thick $T=500$ K surface from the SED.
 % relies on overview figure fainter (at 1mm) than to either side.}
 
 \FigureTwo
-{figures/OrionSourceI_data_B6.pdf}
+{figures/OrionSourceI_data_stretched_B3.pdf}
 {figures/OrionSourceI_data_stretched_B6.pdf}
-{The robust -2 continuum image of Orion Source I at 1.3 mm.  The beam is shown
-in the bottom right, with size $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
-PA$=\Bsixpa\degrees$.
-The left panel shows the full intensity range, while the right panel
-shows a narrower stretch to highlight some of the extended features
-around the disk, which may be imaging artifacts (the synthesized beam
-has $\sim30\%$ sidelobes approximately along the East-West axis).
-Both panels have flux density and brightness temperature colorbars.
+{The robust -2 continuum image of Orion Source I at 3 mm (left) and 1.3 mm (right).
+The beam is shown
+in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
+PA$=\Bthreepa\degrees$ (3 mm, left) and $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
+PA$=\Bsixpa\degrees$ (1.3 mm, right).
+Contours are overlaid at $T_B=$50, 100, 150, 200, 300, 400, 500 K.
 }
 {fig:continuum_data_B6}{1}{3.5in}
 
-\FigureTwo
-{figures/OrionSourceI_data_B3.pdf}
-{figures/OrionSourceI_data_stretched_B3.pdf}
-{The robust -2 continuum image of Orion Source I at 3.3 mm.  The beam is shown
-in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
-PA$=\Bthreepa\degrees$.
-}
-{fig:continuum_data_B3}{1}{3.5in}
+% \FigureTwo
+% {figures/OrionSourceI_data_B3.pdf}
+% {figures/OrionSourceI_data_stretched_B3.pdf}
+% {The robust -2 continuum image of Orion Source I at 3.3 mm.  The beam is shown
+% in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
+% PA$=\Bthreepa\degrees$.
+% }
+% {fig:continuum_data_B3}{1}{3.5in}
 
-\Figure{figures/models_and_residuals_B6.pdf}
-{A series of plots showing the band 6 continuum models used and their residuals.
-The top row shows the models, starting from a simple 1D linear model convolved
-with the beam (left), continuing with a disk smoothed with a broader beam to
-account for scale height (middle), and finally a version of the middle model
-with a smeared point source added (right).  The fit parameters are given in Table
-\ref{tab:continuum_fit_parameters}.  The second and third row show the
-residuals (data - model) for each of the models in the top row; the bottom row
-uses a narrow linear scale to emphasize the lower-amplitude residuals, while
-the top two use an arcsinh stretch to display the full dynamic range.
-}
-{fig:contmodel_residuals_B6}{1}{7.5in}
-
-
-\Figure{figures/models_and_residuals_B3.pdf}
-{A series of plots showing the band 3 continuum models used and their residuals.
-See the caption of Figure \ref{fig:contmodel_residuals_B6} for details.
-}
-{fig:contmodel_residuals_B3}{1}{7.5in}
 
 % \FigureThree
 % {figures/SourceI_Disk_model.png}
@@ -419,54 +414,6 @@ sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
 }
 {fig:U1peak}{1}{2.2in}
 
-\FigureThree
-{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{Moment-0 (integrated intensity) map of the U230.322 (left) and \water (middle,
-right) line with continuum overlaid in contours.  Continuum contours
-from the robust -2 map are shown
-in red at levels of 
-% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
-1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
-The left two figures are robust 0.5 weighted images, while the right
-is a robust -2 weighted image with higher resolution and poorer
-sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
-}
-{fig:h2omom0}{1}{2.2in}
-
-\FigureThree
-{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
-{{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01}.pdf}
-{Moment 0 and peak intensity map of U232.511, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
-The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
-The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
-The dashed magenta lines show the velocity curves at r=30 and 70 AU.
-%{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
-%guess at the unidentified line's rest velocity.}
-{\color{red} Note to coauthors: Notice the asymmetry in the blobs
-in both this and the next figure; the blueshifted blob is closer to the 70 AU
-line than the redshifted blob.  I assume this is just some asymmetry in the disk.
-A non-smooth disk would be consistent with the not-quite-relaxed-yet disk
-you'd get from the interaction.}
-}
-{fig:U4}{1}{2.25in}
-
-\FigureThree
-{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
-{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
-{{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01}.pdf}
-{Moment 0 and peak intensity map of U217.980, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
-The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
-The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
-The dashed magenta lines show the velocity curves at r=30 and 70 AU.
-%{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
-%guess at the unidentified line's rest velocity.}
-}
-{fig:U5}{1}{2.25in}
-
-
 
 \subsection{Kinematics: a Keplerian disk}
 \label{sec:kinematics}
@@ -490,9 +437,10 @@ acceptable match to the outer profiles of the unidentified lines
 described in Section \ref{sec:otherlines}.  A 15 \msun central source is consistent
 with the \water data only if we allow for line broadening of about 1.5-2 \kms,
 which could be produced by turbulence within the emitting regions or
-by thermal broadening if the gas temperature is $\sim5000$ K. {\color{red}
-Sanity check me here - we want the thermal broadening of \water, $(k_B T / (18
-\mathrm{amu}))^{1/2}$, right?}
+by thermal broadening if the gas temperature is $\sim5000$ K.
+% {\color{red}
+% Sanity check me here - we want the thermal broadening of \water, $(k_B T / (18
+% \mathrm{amu}))^{1/2}$, right?}
 
 A substantially smaller mass, such as the 5-10 \msun suggested previously
 \citep{Plambeck2016a,Hirota2014a}, is inconsistent with the data: for such
@@ -505,7 +453,7 @@ masses, emission is clearly detected outside of the Keplerian curve.
 The blue dotted curve is the outer envelope of the velocity curve
 determined using the method of \citet{Seifried2016a}.
 Red curves show the Keplerian velocity profile surrounding a 19 \msun
-central source; green dotted curves show a Keplerian profile for a 10 \msun
+central source; green dotted curves show a Keplerian profile for a 15 \msun
 source.
 White dashed lines indicate the adopted source central position
 05h35m14.5167s -05d22m30.6069s (ICRS) and central velocity (5.5 \kms).
@@ -519,14 +467,14 @@ version is extracted from a narrower $\pm0.01\arcsec$
 range, less than a beam width, and shows the best approximation of the midplane.
 %{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
 %identical data and \emph{should} be identical shapes.}
-{\color{blue} TO COAUTHORS: I've identified a few possible comparison figures
-to reference:
-\citet{Matra2017a} Figure 4 (5 AU resolution, $r\sim150$ AU disk),
-\citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk).
-These are PV diagrams of edge-on disks that look somewhat similar to our own.
-I don't plan on including them in the submitted publication, but they may be
-worth glancing at to assuage any skepticism about the measurement technique.
-}
+% {\color{blue} TO COAUTHORS: I've identified a few possible comparison figures
+% to reference:
+% \citet{Matra2017a} Figure 4 (5 AU resolution, $r\sim150$ AU disk),
+% \citet{Dutrey2017a} Figure 4 (60 AU resolution, $r\sim250$ AU disk).
+% These are PV diagrams of edge-on disks that look somewhat similar to our own.
+% I don't plan on including them in the submitted publication, but they may be
+% worth glancing at to assuage any skepticism about the measurement technique.
+% }
 }
 {fig:h2okepler}{1}{3.5in}
 
@@ -572,6 +520,12 @@ We measure a mass for the object at the center of the disk of $M_I=15-19$
 measurement is higher than previous works in part because our spatial
 resolution is high enough to allow a direct fit of the rotation curve to the
 outer envelope of an emission line in position-velocity space.
+Additionally, though, the greater sensitivity of these observations allowed
+us to detect the outer envelope of the \water position-velocity diagram
+and detect - and resolve - several unknown lines that directly trace the disk.
+The consistency of these new estimates with higher masses than derived from
+previous SiO measurements hints that, in this system, SiO chemically selects a
+kinemetically distinct region from the disk.
 
 Even if Source I consists of an equal-mass binary, this mass measurement
 confirms that Orion is still a region with ongoing high-mass star formation.
@@ -587,7 +541,7 @@ the required central source luminosity is 6500 \lsun.  This estimate
 should be taken as a lower limit, since the inner disk is likely to be
 optically thicker and capable of shielding the outer disk, thereby
 keeping the observed $\tau=1$ surface at 1 mm cooler than would
-be produced by radiative equilibrium.
+be produced by radiative equilibrium with the central star.
 
 \subsection{Properties of the disk}
 Our observations yield disk properties nearly identical to those in
@@ -612,23 +566,23 @@ in prep).
 \citet{Farias2017a} report that, while any dynamical decay scenario involving
 Sources I, X, and BN that can reproduce the observed proper motions are
 unlikely, those with a higher mass for source I ($M_I>14$ \msun) are the only
-ones capable of producing the observed proper motions.  Our observed higher
-mass for source I therefore keeps the dynamical interaction scenario viable.
+ones capable of producing the observed proper motions\footnote{Their results
+are similar to those obtained in \citet{Goddi2011b} and \citet{Moeckel2012b},
+but now with source X instead of source n as the third member of the
+interaction.}.  Our observed higher mass for source I therefore keeps the
+dynamical interaction scenario viable.
 
-\subsection{The `flyby' scenario}
-{\color{red} Ciriaco pointed out that the disk PA has been well-known for a while.
-However, I haven't seen this discussed anywhere in the context
-of model evaluation.  Did I miss it?}
-\citet{Tan2004a} and \citet{Chatterjee2012a} described a scenario in which BN
-was ejected from the $\theta$1C system and flew through the Orion Hot Core that
-contains Source I.   Our observations provide one important constraint on this model:
-the disk position angle.
-The Source I disk position angle is  closely aligned to the proper
-motion vector of BN and the vector connecting Source I and BN,
-implying that BN played a significant role in the disk's formation.
-This role in turn implies that BN must have come very close to Source I,
-within $<100$ AU, and greatly reduces the interaction cross-section
-from a $\theta$1C ejection.
+% \subsection{The `flyby' scenario}
+% \citet{Tan2004a} and \citet{Chatterjee2012a} described a scenario in which BN
+% was ejected from the $\theta$1C system and flew through the Orion Hot Core that
+% contains Source I.   Our observations provide one important constraint on this model:
+% the disk position angle.
+% The Source I disk position angle is  closely aligned to the proper
+% motion vector of BN and the vector connecting Source I and BN,
+% implying that BN played a significant role in the disk's formation.
+% This role in turn implies that BN must have come very close to Source I,
+% within $<100$ AU, and greatly reduces the interaction cross-section
+% from a $\theta$1C ejection.
 
 
 \subsection{Is the disk consistent with the dynamical ejection model?}
@@ -652,14 +606,15 @@ with
 velocity relative to source I 
 $$v < v_{esc} = 23 \kms (M/15\msun)^{1/2}  (r/50~\mathrm{AU})^{-1/2}$$
 would remain bound.
-Assuming source I's present-day proper motion of 17 \kms reflects its velocity
+Assuming source I's present-day proper motion of 11.5 \kms reflects its velocity
 at the time of ejection, less than half of the original disk mass would
 have been lost, while the rest would remain bound (material moving in the
 direction directly opposite source I's ejection direction would have net
 velocity relative to source I high enough to escape; the greatest mass
 loss would occur if the disk was already in the direction of source I's eventual
 launch).
-Material outside $R\gtrsim90$ AU would likely all have become unbound.
+% 11.5 km / s = 23 * (200/50)**-0.5
+Material outside $R\gtrsim200$ AU would likely all have become unbound.
 %would remain bound, and with source I's present motion of 17 \kms on the sky,
 %that implies all mass within the currently observed disk radius would have
 %remained with it.
@@ -681,10 +636,13 @@ higher than we observe at 1 mm and somewhat
 higher than at 3 mm (Table \ref{tab:continuum_fit_parameters}).  
 % -log(2.2/10) / log(7/3)
 % -log(2.2/7.3) / log(7/3)
-The spectral index from 3 to 7 mm is $\alpha=1.4$, approaching that of an optically
-thick blackbody.  {\color{red} NOTE TO COAUTHORS: These numbers have not stayed
-quite as steady as I like; improved fitting dropped the 3 mm point-to-total
-from $\sim20\%$ to $\sim13\%$.}
+% -log(2.2/7.3) / log(93.3/43.165)
+The spectral index of this compact source from 3 to 7 mm is $\alpha=1.6$,
+approaching that of an optically
+thick blackbody.
+%{\color{red} NOTE TO COAUTHORS: These numbers have not stayed
+%quite as steady as I like; improved fitting dropped the 3 mm point-to-total
+%from $\sim20\%$ to $\sim13\%$.}
 %blackbody, suggesting that the disk is nearly optically thin at 3 mm,
 %at least along the line of sight toward this object.
 
@@ -693,23 +651,33 @@ temperature of a 2.2 mJy source within a $41\times28$ milliarcsecond beam at 7
 mm.  If the source is a 5000 K spherical blackbody \citep[e.g.,][]{Testi2010a},
 it must have a radius $R=7.5$ AU.  Such a gigantic star is implausible, as it
 would produce a luminosity of 1.5\ee{6} \lsun, several orders of magnitude
-higher than the total luminosity in the region.
+higher than the total luminosity in the region.  We therefore argue
+that this emission source is not a star.
 
 What is the emission mechanism from this central source?
 It could simply be hot, optically thick dust that is partly obscured by the
-cooler disk at higher frequencies.  The  extension of this `source'
-along the disk direction in Figure \ref{fig:contmodel_residuals_B6}
-suggests that we are seeing the hot inner disk.
-As pointed out by \citet{Plambeck2016a}, it is quite unlikely to be
-free-free emission, since there are no detected recombination lines.
-{\color{red} This may be an area worth exploring further given
-the existence of \citet{Baez-Rubio2018a}.}
+cooler disk at higher frequencies.  The  extension of this `source' along the
+disk direction in Figure \ref{fig:contmodel_residuals_B6} suggests that we are
+seeing the hot inner disk.  As pointed out by \citet{Plambeck2016a}, it is
+quite unlikely to be classical free-free emission, since there are no detected
+recombination lines.  However, it is still plausible that the emission is
+produced by brehmsstrahlung emission from HI and \hh
+\citep{Reid2007a,Baez-Rubio2018a}.
+% {\color{red} This may be an area worth exploring further given
+% the existence of \citet{Baez-Rubio2018a}.}
 
+% 3-5 AU is the expected separation of a binary
 The source is slightly offset from the center of the disk by 3-5 AU in
 projection.  This offset hints that it is not a single central source, but
 instead is a hot region of the inner disk.  Such an asymmetry in the disk could
 be driven either by instability in the disk or, if the central star is a
 binary, by the proximity of the more luminous companion.
+
+If this source is an inner edge of the disk, it may imply the presence of a
+binary that has cleared the area within $r<6-10$ AU.  Since a tight binary is
+one of the expected outcomes of the dynamical scenario \citep{Goddi2011b}, this
+detection of the inner region in dust emission provides additional
+circumstantial evidence for that scenario.
 
 \section{Conclusions}
 We report observations that resolve source I's disk in both continuum
@@ -875,24 +843,29 @@ and inner and outer radial cutoffs.}
 \section{A deeper examination of the water line: Evidence that it traces the disk kinematics}
 \label{sec:waterlinerevisited}
 The \water-derived mass presented in Section \ref{sec:kinematics} relies on the
-\water line tracing the disk kinematics.  Since the \water clearly \emph{also}
+\water line tracing the disk kinematics.  Since the \water clearly also
 traces the outflow, showing the same X-shaped morphology as the SiO, it does
-not \emph{uniquely} trace the disk.
+not  trace just the disk.
 
 Nonetheless, the midplane position-velocity slice of the \water line does
 appear to genuinely trace disk kinematics.  Qualitatively, the PV diagram
 appears exactly as expected for a disk with an inner and out radial cutoff.
 
-To assess possible contamination from the outflow, we perform additional
-position velocity slices.  In Figure \ref{fig:waterpvheights}, we show
-position-velocity diagrams from different vertical regions around the disk.
-The velocity profile of the selected line.  The middle panel is likely
+To assess possible contamination from the outflow, we compare position velocity
+slices at different vertical displacements from the disk center in Figure
+\ref{fig:waterpvheights}.
+The left panel shows the kinematic signature we attribute to the disk, which
+closely resembles that predicted for a pure Keplerian rotation curve.
+In contrast, the middle panel is likely
 dominated by outflow emission, since it shows material 0.05-0.1\arcsec (20-40
 AU) above the disk, i.e., just outside the 1-$\sigma$ height of the continuum
-disk.  It exhibits narrower velocity ranges at all but the closest separations.
+disk.  
 While the outflow continues to show some motion similar to that of the disk, it
 lacks the characteristic convex shape of a Keplerian orbit at higher velocities
 and separation.
+Finally, the rightmost panel shows that the water emission nearly disappears
+at heights $h>0.1\arcsec=40$ AU while the maximum velocities observed get
+smaller ($dv < 10$ \kms), suggesting that rotation slows in the outflow.
 
 Figure \ref{fig:waterpvheights} also characterizes some of the `forbidden' velocity
 components, i.e., those seen in quadrants 2 and 4.  These components get stronger
@@ -957,7 +930,7 @@ slightly lower, $v\sim4-5$ \kms.
 \section{The SiO outflow in PV space}
 \label{sec:siopv}
 To illustrate the change in velocity structure with height from the disk, 
-we show position-velocity diagrams of SiO v=0 J=5-4 in Figure \ref{fig:sio_pvs}.
+we show position-velocity diagrams of SiO v=0 J=5-4 in Figure \ref{fig:siopv}.
 These images are extracted from equal distances above and below
 the disk midplane.  At greater distances from the midplane, the high-velocity,
 low-separation features fade out, while more low-velocity material
@@ -969,14 +942,12 @@ consistent with the 19 \msun Keplerian curve overlaid.
 {figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
 {figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
 {figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-%{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
 {Position-velocity slices of SiO v=0 J=5-4 along the disk direction at four heights:
 (a) $|h|<0.05\arcsec$,
 (b) $0.05\arcsec<|h|<0.1\arcsec$,
 (c) $0.1\arcsec<|h|<0.15\arcsec$,
 (d) $0.15\arcsec<|h|<0.2\arcsec$.
-{\color{red} FIGURE (d) IS A PLACEHOLDER - IT IS PRESENTLY IDENTICAL TO (c).}
 These images are produced from the robust -2 weighted cubes.
 The missing emission around $v=0$ \kms is likely caused by image filtering
 effects; at these velocities, there is extended, smooth SiO emission from the
@@ -988,14 +959,12 @@ surrounding cloud.
 {figures/keplercurves_sourceI_29SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
 {figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
 {figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-%{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
 {Position-velocity slices of $^{29}$SiO v=0 J=5-4 along the disk direction at four heights:
 (a) $|h|<0.05\arcsec$,
 (b) $0.05\arcsec<|h|<0.1\arcsec$,
 (c) $0.1\arcsec<|h|<0.15\arcsec$,
 (d) $0.15\arcsec<|h|<0.2\arcsec$.
-{\color{red} FIGURE (d) IS A PLACEHOLDER - IT IS PRESENTLY IDENTICAL TO (c).}
 These images are produced from the robust -2 weighted cubes.
 While similar to the $^{28}$SiO shown in Figure \ref{fig:siopv},
 there is a remarkable position-velocity ring at high elevations
@@ -1022,6 +991,91 @@ emission is cut off.  In spectral window 2, the region around 215.5-215.6 GHz, n
 maser line (which is the brightest line we detect) is affected by imaging artifacts from the cleaning
 process.}
 {fig:stackplots_labeled}{0.5}{0.6\linewidth}
+
+\section{Continuum Modeling Figures}
+\label{appendix:contmodel}
+In this appendix, we show figures illustrating the continuum modeling process.
+Figures \ref{fig:contmodel_residuals_B6} and \ref{fig{contmodel_residuals_B3}
+show the model and residuals for the band 6 and band 3 data, highlighting the
+significantly improved fit as more model parameters are added.
+
+\Figure{figures/models_and_residuals_B6.pdf}
+{A series of plots showing the band 6 continuum models used and their residuals.
+The top row shows the models, starting from a simple 1D linear model convolved
+with the beam (left), continuing with a disk smoothed with a broader beam to
+account for scale height (middle), and finally a version of the middle model
+with a smeared point source added (right).  The fit parameters are given in Table
+\ref{tab:continuum_fit_parameters}.  The second and third row show the
+residuals (data - model) for each of the models in the top row; the bottom row
+uses a narrow linear scale to emphasize the lower-amplitude residuals, while
+the top two use an arcsinh stretch to display the full dynamic range.
+}
+{fig:contmodel_residuals_B6}{1}{7.5in}
+
+
+\Figure{figures/models_and_residuals_B3.pdf}
+{A series of plots showing the band 3 continuum models used and their residuals.
+See the caption of Figure \ref{fig:contmodel_residuals_B6} for details.
+}
+{fig:contmodel_residuals_B3}{1}{7.5in}
+
+\section{Additional figures showing the disk}
+We include several additional figures showing the disk moment 0 maps and
+position-velocity profiles for some other unknown lines.  These figures show
+that the lines displayed in the main text are not unique.
+
+Figure \ref{fig:h2omom0} shows moment 0 maps, which provide a slightly
+different view from the peak intensity maps shown in Figure \ref{fig:U1peak}.
+Figures \ref{fig:U4} and \ref{fig:U5} show peak intensity, moment 0, and
+position-velocity maps of the U232.511 and U217.980 lines.
+
+\FigureThree
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{Moment-0 (integrated intensity) map of the U230.322 (left) and \water (middle,
+right) line with continuum overlaid in contours.  Continuum contours
+from the robust -2 map are shown
+in red at levels of 
+% robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
+1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
+The left two figures are robust 0.5 weighted images, while the right
+is a robust -2 weighted image with higher resolution and poorer
+sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
+}
+{fig:h2omom0}{1}{2.2in}
+
+\FigureThree
+{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
+{{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01}.pdf}
+{Moment 0 and peak intensity map of U232.511, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
+The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
+The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
+The dashed magenta lines show the velocity curves at r=30 and 70 AU.
+%{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
+%guess at the unidentified line's rest velocity.}
+{\color{red} Note to coauthors: Notice the asymmetry in the blobs
+in both this and the next figure; the blueshifted blob is closer to the 70 AU
+line than the redshifted blob.  I assume this is just some asymmetry in the disk.
+A non-smooth disk would be consistent with the not-quite-relaxed-yet disk
+you'd get from the interaction.}
+}
+{fig:U4}{1}{2.25in}
+
+\FigureThree
+{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0}.pdf}
+{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
+{{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01}.pdf}
+{Moment 0 and peak intensity map of U217.980, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
+The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
+The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
+The dashed magenta lines show the velocity curves at r=30 and 70 AU.
+%{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
+%guess at the unidentified line's rest velocity.}
+}
+{fig:U5}{1}{2.25in}
+
 
 
 \end{document}

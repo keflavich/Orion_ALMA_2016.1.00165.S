@@ -16,6 +16,7 @@ from constants import d_orion
 import imp
 import edge_on_ring_velocity_model
 from astropy.utils.console import ProgressBar
+from constants import vcen as assumed_vcen
 
 imp.reload(edge_on_ring_velocity_model)
 from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
@@ -197,15 +198,16 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
             offset_fits_arcsec.append((offset-ref_offset)*3600)
 
 
-    assumed_vcen = 6.0*u.km/u.s
-    show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={})
+    show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={},
+                      masses=[15, 19], linestyles=[':','-'], colors=['g', 'r']
+                     )
 
     # xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
     # ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
     #          yy_thindisk + assumed_vcen,
     #          'k:',
     #          transform=trans)
-    xx_thindisk, yy_thindisk = thindiskcurve(mass=14*u.M_sun, rmin=35*u.au, rmax=50*u.au)
+    xx_thindisk, yy_thindisk = thindiskcurve(mass=15.5*u.M_sun, rmin=17*u.au, rmax=66*u.au)
     thindiskline = ax2.plot((xx_thindisk / d_orion).to(u.arcsec,
                                                        u.dimensionless_angles()),
                             yy_thindisk + assumed_vcen, 'k-', transform=trans)
