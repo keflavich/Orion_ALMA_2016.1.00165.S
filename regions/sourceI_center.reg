@@ -1,5 +1,5 @@
 # Region file format: DS9 version 4.1
 global color=red dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 icrs
-point(5:35:14.517242, -5:22:30.616774) # point=x text={Continuum Center}
+point(83.81048816210084,-5.3751716623649575) # text={B6 Continuum Disk Center} point=x color=red
 point(5:35:14.517965, -5:22:30.633931) # point=cross text={Unknown1_peak_center}

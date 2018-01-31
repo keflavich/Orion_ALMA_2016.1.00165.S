@@ -57,6 +57,16 @@ for spw in (0,1,2,3):
                           ((u.Quantity(slc.specfit.parinfo['WIDTH0'].value,
                                        u.GHz)) / freq *
                            constants.c.to(u.km/u.s)),
-                          'linesearch': linesearch
+                          'linesearch': linesearch,
+                          'freq': freq,
                          }
 
+linenames = table.Column(name='Line Name', data=sorted(fits.keys()))
+freqs = table.Column(name='Frequency', data=u.Quantity([fits[ln]['freq'] for ln in linenames]))
+velos = table.Column(name='Fitted velocity', data=u.Quantity([fits[ln]['vel'] for ln in linenames]))
+vwidths = table.Column(name='Fitted width', data=u.Quantity([fits[ln]['vwidth'] for ln in linenames]))
+ampls = table.Column(name='Amplitude', data=u.Quantity([fits[ln]['pars']['AMPLITUDE0'].value*1e3 for ln in linenames], u.mJy))
+
+tbl = table.Table([linenames, freqs, velos, vwidths, ampls])
+
+tbl.write('fitted_stacked_lines.txt', format='ascii.fixed_width')

@@ -17,6 +17,7 @@ from lines import disk_lines
 import show_pv; imp.reload(show_pv)
 import re
 from mpl_plot_templates import adaptive_param_plot
+from constants import vcen as assumed_vcen
 
 robustnumre = re.compile('robust(0.5|-2|2)')
 bandre = re.compile("\.B([367])\.")
@@ -42,6 +43,13 @@ diskycoorddict = {}
 source = "sourceI"
 coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                              unit=(u.hour, u.deg))
+
+# this is the fitted disk center value from the disk continuum modeling
+# This position *must* be in the same frame as diskycoordlist below
+coord = coordinates.SkyCoord(83.81048816210084, -5.3751716623649575,
+                             frame='icrs',
+                             unit=(u.hour, u.deg))
+
 #diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
 #                                            .format(source)))[0].coord_list
 #diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
@@ -60,7 +68,7 @@ diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
 
 for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
     for name, cutoutname, source, vrange, vcen in (
-        ('sourceI', 'sourceI', coord, (-30,40), 5.5),
+        ('sourceI', 'sourceI', coord, (-30,40), assumed_vcen),
        ):
 
         diskycoords = diskycoorddict[name]
@@ -242,6 +250,7 @@ masers_3mm = Table.read(paths.rpath('3mm_maser_velocity_table.fits'))
 masers_7mm = Table.read(paths.rpath('7mm_maser_velocity_table.fits'))
 
 
+# this is the center position used to reference the maser positions
 maser_center_reg = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0]
 maser_center = maser_center_reg.center[0]
 
@@ -257,7 +266,7 @@ maser_center_7mm = xpoints_7mm.mean()
 
 for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
     for name, cutoutname, source, vrange, vcen in (
-        ('sourceI', 'sourceI', coord, (-30,40), 5.5),
+        ('sourceI', 'sourceI', coord, (-30,40), assumed_vcen),
        ):
         for robustnum in (0.5, -2):
             for linename, linefreq in disk_lines.items():

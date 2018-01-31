@@ -351,19 +351,19 @@ Since these lines only appear immediately around the disk, and in particular
 because they peak just outside of the dust emission along the disk axis, they
 are the most direct tracers of the disk's kinematics.
 
-{\color{blue} This paragraph follows from discussion with John.  It might
-be too much detail for a Letter.}
-The lines' kinematic structure suggests they are emitting only from $30~\mathrm{AU}< r <
-70$ AU.  There are several plausible explanations for the lack of gas
-emission at $r<30-40$ AU: (1) there is no gas at these radii except in the
-optically-thick dust disk, i.e., the gas and dust are well-mixed and the dust
-hides the gas emission (2) the gas is
-heated enough to drop the optical depth in the observed lines by increasing the
-number of available levels in the partition function, decreasing the intensity
-of any given line (3) the molecular line abundance is
-lower closer to the center (e.g., the molecule we observe is dissociated).
-The first explanation is perhaps the simplest, but all three are 
-plausible.
+% {\color{blue} This paragraph follows from discussion with John.  It might
+% be too much detail for a Letter.}
+% The lines' kinematic structure suggests they are emitting only from $30~\mathrm{AU}< r <
+% 70$ AU.  There are several plausible explanations for the lack of gas
+% emission at $r<30-40$ AU: (1) there is no gas at these radii except in the
+% optically-thick dust disk, i.e., the gas and dust are well-mixed and the dust
+% hides the gas emission (2) the gas is
+% heated enough to drop the optical depth in the observed lines by increasing the
+% number of available levels in the partition function, decreasing the intensity
+% of any given line (3) the molecular line abundance is
+% lower closer to the center (e.g., the molecule we observe is dissociated).
+% The first explanation is perhaps the simplest, but all three are 
+% plausible.
 
 
 % Their lack of association with the inner disk suggests that they trace the outer
@@ -377,19 +377,6 @@ plausible.
 % it should appear in emission.  These lines therefore appear to trace the disk
 % directly and provide the best direct tools for measuring the disk kinematics.
 
-We have not identified any of the carrier species of these lines.
-However, to measure their velocities precisely, we performed a stacking
-analysis in which we adopt the velocity field of the U232.511 line,
-shift all spectra across the disk to the same velocity frame, and average them.
-We then fit the lines with Gaussians to determine their centroid frequency.
-We searched within a narrow range of velocities ($v_{LSR}=3-8$ \kms)
-for known lines in the Splatalogue collection of line catalogs using
-\texttt{astroquery}.
-While many of the lines have plausible carriers within 1-2 \kms, such as
-highly-excited CH$_3$OCHO or variants of SO$_2$, there is no consistent pattern
-to the detected lines and no individual species can explain more than a few of
-the observed lines.  The stacked spectra are shown, with labels,
-in Appendix \ref{sec:stackedspectra}.
 
 \FigureThree
 {{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak}.pdf}
@@ -974,11 +961,29 @@ that corresponds to  masers.
 
 \section{Stacked Spectra}
 \label{sec:stackedspectra}
-As described in Section \ref{sec:otherlines}, we performed a line-stacking
-analysis by measuring the velocity field of the U232.511 line, shifting all
-spectra across the disk to a common velocity frame, and averaging them.
+We reported the detection of several unidentified lines.
+%We have not identified any of the carrier species of these lines.
+To measure their velocities precisely, we performed a stacking
+analysis in which we adopt the velocity field of the U232.511 line,
+shift all spectra across the disk to the same velocity frame, and average them.
 We stacked the robust 0.5 cubes, as the surface brightness sensitivity
 of the robust -2 cubes was too poor to justify stacking.
+We then fit the lines with Gaussians to determine their centroid frequency.
+We searched within a narrow range of velocities ($v_{LSR}=3-8$ \kms)
+for known lines in the Splatalogue collection of line catalogs using
+\texttt{astroquery}.
+While many of the lines have plausible carriers within 1-2 \kms, such as
+highly-excited CH$_3$OCHO or variants of SO$_2$, there is no consistent pattern
+to the detected lines and no individual species can explain more than a few of
+the observed lines.  These disk-averaged spectra are shown in Figure \ref{fig:stackplots_labeled}
+with the lines labeled.
+
+%The stacked spectra are shown, with labels,
+%in Appendix \ref{sec:stackedspectra}.
+%As described in Section \ref{sec:otherlines}, we performed a line-stacking
+%analysis by measuring the velocity field of the U232.511 line, shifting all
+%spectra across the disk to a common velocity frame, and averaging them.
+
 
 \FigureFourVertical
 {figures/lines_labeled_spw0_B6_yzoom.pdf}
@@ -1055,11 +1060,11 @@ The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central
 The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 %{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
 %guess at the unidentified line's rest velocity.}
-{\color{red} Note to coauthors: Notice the asymmetry in the blobs
-in both this and the next figure; the blueshifted blob is closer to the 70 AU
-line than the redshifted blob.  I assume this is just some asymmetry in the disk.
-A non-smooth disk would be consistent with the not-quite-relaxed-yet disk
-you'd get from the interaction.}
+% {\color{red} Note to coauthors: Notice the asymmetry in the blobs
+% in both this and the next figure; the blueshifted blob is closer to the 70 AU
+% line than the redshifted blob.  I assume this is just some asymmetry in the disk.
+% A non-smooth disk would be consistent with the not-quite-relaxed-yet disk
+% you'd get from the interaction.}
 }
 {fig:U4}{1}{2.25in}
 
