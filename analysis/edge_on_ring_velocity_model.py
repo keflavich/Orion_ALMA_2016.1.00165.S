@@ -1,7 +1,9 @@
+import sys
 import numpy as np
 from astropy import constants
 from astropy import units as u
 import lmfit
+from constants import vcen
 
 
 def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
@@ -74,6 +76,9 @@ def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
 
 def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
 
+    # cheap progressbar
+    sys.stdout.write('.')
+
     mass, rinner, delta, router, vcen = parameters.values()
 
     result = thindiskcurve(mass=mass,
@@ -94,7 +99,7 @@ def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
     #error[np.isnan(resid)] = 1e10
     # we want significant, but hopefully not dominant, residuals when the model
     # predicts no data but there are data
-    resid[np.isnan(resid)] = 10
+    resid[np.isnan(resid)] = 5
 
     return resid/error
 
@@ -102,13 +107,13 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
                          rinner=20*u.au, router=50*u.au):
 
     parameters = lmfit.Parameters()
-    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=5, max=25)
+    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=10, max=25)
     parameters.add('rinner', value=u.Quantity(rinner, u.au).value, min=3, max=50)
     parameters.add('delta', value=20, min=10, max=50)
     parameters.add('router', value=u.Quantity(router, u.au).value, min=20, max=100,
                    expr='rinner+delta')
-    parameters.add('vcen', value=6.0, min=4.5, max=7.5)
-    result = lmfit.minimize(thindiskcurve_residual, parameters, epsfcn=0.05,
+    parameters.add('vcen', value=vcen.value, min=2.5, max=9.5)
+    result = lmfit.minimize(thindiskcurve_residual, parameters, epsfcn=0.005,
                             kws={'xsep': u.Quantity(xsep, u.au),
                                  'velo': u.Quantity(velo, u.km/u.s),
                                  'error': error})

@@ -35,8 +35,11 @@ for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
             imagename = 'OrionSourceI_only.B6.robust{2}.spw{0}.{1}'.format(spw, suffix, robust)
 
             if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
-                print("Skipping completed file {0}".format(imagename))
-                continue
+                if fits.getheader("{0}.image.pbcor.fits".format(imagename))['RADESYS'] == 'ICRS':
+                    print("Skipping completed file {0}".format(imagename))
+                    continue
+                else:
+                    print("Redoing {0} because it's in fk5.".format(imagename))
 
             print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
             tclean(vis=mslist,

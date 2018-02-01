@@ -6,13 +6,17 @@ from spectral_cube import SpectralCube, wcs_utils, tests, Projection
 import pylab as pl
 from lines import disk_lines
 import radio_beam
+from files import b6_hires_cont
 
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r0.5_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
-conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
+#conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
+conthdu = fits.open(paths.dpath(b6_hires_cont))
 
-levels = [50, 150, 300, 600]*u.K
+assert conthdu.header['RADESYS'] == 'ICRS'
+
+levels = [50, 150, 300, 500]*u.K
 
 for robust in (-2, 0.5):
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
@@ -101,6 +105,7 @@ for robust in (-2, 0.5):
                                            .format(linename, sourcename, robust=robust))
 
                         pl.figure(1).clf()
+                        pl.close('all')
 
 #    beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
 #    print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,

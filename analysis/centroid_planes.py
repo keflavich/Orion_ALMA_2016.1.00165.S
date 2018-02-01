@@ -24,11 +24,12 @@ from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
 if 'cached_gaussfit_results' not in locals():
     cached_gaussfit_results = {}
 
-for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
-                                    ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12)),
-                                    ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2)),
-                                    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2)),
-                                   ):
+for linename,(vmin,vmax),limits,(cenx, ceny) in (
+    ('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
+    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
+   ):
 
     regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
 
@@ -47,6 +48,10 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
                          .format(linename=linename))
     basename = os.path.splitext(os.path.basename(cubefn))[0]
     cube = SpectralCube.read(cubefn)
+
+    # hard-coded icrs radecsys assumed
+    assert cube.header['RADESYS'] == 'ICRS'
+
     vdiff = np.abs(np.diff(cube.spectral_axis).mean())
     rms = cube.std()
     weights = np.ones(cube.shape[1:]) * rms.value**2
@@ -127,11 +132,25 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
 
 
     diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
-    diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs])
+    diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs]).icrs
 
-    center = coordinates.SkyCoord(diskends.ra.mean(), diskends.dec.mean(), frame=diskends.frame)
-    center = regions.read_ds9(paths.rpath('sourceI_center.reg'))[1].center
-    ref_cen_x, ref_cen_y = cube.wcs.celestial.wcs_world2pix(center.ra.deg, center.dec.deg, 0)
+    #center = coordinates.SkyCoord(diskends.ra.mean(), diskends.dec.mean(),
+    #                              frame=diskends.frame)
+    center_cont = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0].center.transform_to(coordinates.ICRS)
+    center_U = regions.read_ds9(paths.rpath('sourceI_center.reg'))[1].center.transform_to(coordinates.ICRS)
+    center_h2o = regions.read_ds9(paths.rpath('sourceI_center.reg'))[2].center.transform_to(coordinates.ICRS)
+
+    center = center_U
+
+    ref_cen_x, ref_cen_y = cube.wcs.celestial.wcs_world2pix(center.ra.deg,
+                                                            center.dec.deg, 0)
+    # had to switch to pixel centering because coordinate transformations
+    # aren't accurate enough (and/or, don't match ds9)
+    ref_cen_x = cenx
+    ref_cen_y = ceny
+
+    #assert np.abs(ref_cen_x - 66) < 2
+    #assert np.abs(ref_cen_y - 63) < 2
 
     def offset_to_point(xx, yy):
         line = geom.LineString(zip(diskends.ra.deg, diskends.dec.deg))
@@ -154,7 +173,8 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
                                                               diskends.dec.deg,
                                                               0)
     ax1.plot((diskends_x-ref_cen_x)*pixscale.to(u.arcsec),
-             (diskends_y-ref_cen_y)*pixscale.to(u.arcsec), 'k-', linewidth=3, alpha=0.2, zorder=-100)
+             (diskends_y-ref_cen_y)*pixscale.to(u.arcsec), 'k-',
+             linewidth=3, alpha=0.2, zorder=-100)
     ax1.plot(0, 0, 'ko', markersize=5, alpha=0.5, zorder=-50)
 
     loc = pl.matplotlib.ticker.MultipleLocator(base=0.04)
@@ -227,15 +247,19 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
                bbox_inches='tight')
 
-    # previously had an 
+    # previously had an
     #if 'Unknown' in linename:
     # statement here because these are the only ones that represent disks,
     # but since we're using the *average* offset position, maybe this is OK?
 
     offsets_au = (u.Quantity(offset_fits_arcsec, u.arcsec) *
                   d_orion).to(u.au, u.dimensionless_angles())
+    print("Beginning thin disk fitting for {0}".format(linename))
     fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au),
                                      velo=vels,
+                                     mguess=15.5*u.M_sun,
+                                     rinner=17,
+                                     router=66,
                                     )
 
     for line in thindiskline:
@@ -245,6 +269,8 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
                                              rmin=fitresult.params['rinner']*u.au,
                                              rmax=fitresult.params['router']*u.au,
                                             )
+
+
     lines = ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
                      yy_thindisk + assumed_vcen,
                      'k-',
@@ -256,6 +282,10 @@ for linename,(vmin,vmax),limits in (('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 
                                    )
                            )
                     )
+
+    xmin,xmax = ax2.get_xlim()
+    ax2.hlines(fitresult.params['vcen'].value, xmin, xmax, linestyle='--', color='k',
+               alpha=0.5, zorder=500, transform=trans)
 
     pl.legend(loc='upper left', fontsize=12, handlelength=1.0)
 

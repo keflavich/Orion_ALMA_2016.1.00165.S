@@ -85,6 +85,7 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
             for spw in (0,1,2,3):
 
+
                 if 'longbaselines' in name:
                     name = name+"_longbaselines"
 
@@ -128,6 +129,7 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
                 for linename, linefreq in disk_lines.items():
 
+                    pl.close('all')
 
                     band = 'B'+bandre.search(fnt).groups()[0]
 
@@ -333,12 +335,13 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                     vmax = 0.1
 
                 fig,ax = show_pv.show_pv(diff, ww,
-                                         origin, vrange=vrange, vcen=vcen*u.km/u.s,
+                                         origin, vrange=vrange, vcen=u.Quantity(vcen,u.km/u.s),
                                          imvmin=vmin, imvmax=vmax)
 
-                kc = show_pv.show_keplercurves(ax, origin, 150*u.au, vcen*u.km/u.s,
-                                               masses=[19],
-                                               linestyles='-',
+                kc = show_pv.show_keplercurves(ax, origin, 150*u.au, u.Quantity(vcen,u.km/u.s),
+                                               masses=[15, 19],
+                                               linestyles=':-',
+                                               colors=['g','r'],
                                               )
 
                 fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +
