@@ -66,7 +66,7 @@ diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
                                                diskycoord_list[0].end])
 
 
-for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
+for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
     for name, cutoutname, source, vrange, vcen in (
         ('sourceI', 'sourceI', coord, (-30,40), assumed_vcen),
        ):
@@ -75,12 +75,13 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
         for fnt in (
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.longbaselines.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    '/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    # these need to be replaced w/ ICRS versions
+                    #'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
+                    #'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
+                    #'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    #'/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                    ):
 
             for spw in (0,1,2,3):
@@ -95,15 +96,22 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
                 #fn = '/Volumes/external/orion/full_OrionSourceI_B6_spw0_lines_cutout.fits'
 
-                medsubfn = fn.replace(".fits","_medsub.fits")
+                medsubfn = fn.replace(".image.pbcor.fits",
+                                      "_medsub.image.pbcor.fits")
 
                 if os.path.exists(medsubfn):
                     medsub = SpectralCube.read(medsubfn)
                     medsub.beam_threshold = 5000
+                    if not medsub.wcs.wcs.radesys.lower() == 'icrs':
+                        log.exception("Skipping {0} because of a bad coordinate system.".format(medsubfn))
+                        continue
 
                 else:
                     #cube = (SpectralCube.read(fn)[:,515:721,550:714].mask_out_bad_beams(5))
                     cube = (SpectralCube.read(fn).mask_out_bad_beams(5))
+                    if not cube.wcs.wcs.radesys.lower() == 'icrs':
+                        log.exception("Skipping {0} because of a bad coordinate system.".format(fn))
+                        continue
                     # cube.allow_huge_operations=True
                     cube.beam_threshold = 5000
                     log.info("Calculating 25th percentile")
@@ -121,7 +129,7 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
                     # of the actual line emission comes from just above/below...
                     #extraction_path = pvextractor.Path(diskycoords, width=0.05*u.arcsec)
                     extraction_path = pvextractor.Path(diskycoords, width=width*u.arcsec)
-                    log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
+                    log.info("Beginning extraction of path with width {0} for {1}".format(extraction_path.width, outfn))
                     extracted = pvextractor.extract_pv_slice(medsub, extraction_path)
                     log.info("Writing to {0}".format(outfn))
                     extracted.writeto(outfn, overwrite=True)
@@ -149,6 +157,9 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
 
                     if os.path.exists(outfn) and not redo:
                         extracted = fits.open(outfn)[0]
+                        if 'RADESYS' in extracted.header and not extracted.header['RADESYS'].lower == 'icrs':
+                            log.exception("Skipping line {0} in {1} because of a bad coordinate system.".format(linename, fn))
+                            continue
                     else:
                         subcube = (medsub.with_spectral_unit(u.km/u.s,
                                                              velocity_convention='radio',
@@ -160,7 +171,7 @@ for width in (0.05, 0.1, 0.01, 0.2, 0.3, 0.4):
                             continue
 
 
-                        log.info("Beginning extraction of path with width {0}".format(extraction_path.width))
+                        log.info("Beginning extraction of path with width {0} for {1}".format(extraction_path.width, outfn))
                         extracted = pvextractor.extract_pv_slice(subcube, extraction_path)
                         log.info("Writing to {0}".format(outfn))
                         extracted.writeto(outfn, overwrite=True)

@@ -24,9 +24,12 @@ from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
 if 'cached_gaussfit_results' not in locals():
     cached_gaussfit_results = {}
 
+fitresult_list = []
+
 for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
     ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    ('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
     ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
     ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
    ):
@@ -44,7 +47,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     velocities = np.array(sorted(guesses.keys()))*u.km/u.s
 
-    cubefn = paths.dpath('cubes/OrionSourceI_{linename}_robust0.5.maskedclarkclean10000_medsub_K.fits'
+    cubefn = paths.dpath('cubes/OrionSourceI_{linename}_robust0.5maskedclarkclean10000_medsub_K.fits'
                          .format(linename=linename))
     basename = os.path.splitext(os.path.basename(cubefn))[0]
     cube = SpectralCube.read(cubefn)
@@ -140,7 +143,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     center_U = regions.read_ds9(paths.rpath('sourceI_center.reg'))[1].center.transform_to(coordinates.ICRS)
     center_h2o = regions.read_ds9(paths.rpath('sourceI_center.reg'))[2].center.transform_to(coordinates.ICRS)
 
-    center = center_U
+    center = center_cont
 
     ref_cen_x, ref_cen_y = cube.wcs.celestial.wcs_world2pix(center.ra.deg,
                                                             center.dec.deg, 0)
@@ -227,7 +230,8 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     #          yy_thindisk + assumed_vcen,
     #          'k:',
     #          transform=trans)
-    xx_thindisk, yy_thindisk = thindiskcurve(mass=15.5*u.M_sun, rmin=17*u.au, rmax=66*u.au)
+    xx_thindisk, yy_thindisk = thindiskcurve(mass=15.5*u.M_sun, rmin=17*u.au,
+                                             rmax=66*u.au)
     thindiskline = ax2.plot((xx_thindisk / d_orion).to(u.arcsec,
                                                        u.dimensionless_angles()),
                             yy_thindisk + assumed_vcen, 'k-', transform=trans)
@@ -261,6 +265,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                                      rinner=17,
                                      router=66,
                                     )
+    fitresult_list.append(fitresult)
 
     for line in thindiskline:
         line.set_visible(False)

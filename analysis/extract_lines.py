@@ -7,14 +7,31 @@ import pylab as pl
 from lines import disk_lines
 import radio_beam
 from files import b6_hires_cont
+from astropy.nddata import Cutout2D
 
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r0.5_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('OrionSourceI_Band6_QA2_continuum_cutout.fits'))
 #conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
 conthdu = fits.open(paths.dpath(b6_hires_cont))
+assert conthdu[0].header['RADESYS'] == 'ICRS'
 
-assert conthdu.header['RADESYS'] == 'ICRS'
+coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
+                             unit=(u.hour, u.deg))
+mywcs = wcs.WCS(conthdu[0].header).celestial
+cutout = Cutout2D(data=conthdu[0].data.squeeze(),
+                  wcs=mywcs,
+                  position=coord,
+                  size=0.5*u.arcsec)
+
+beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
+data = cutout.data
+new_header = cutout.wcs.to_header()
+new_header.update(beam.to_header_keywords())
+mywcs = cutout.wcs
+conthdu = fits.PrimaryHDU(data=data, header=new_header)
+
+
 
 levels = [50, 150, 300, 500]*u.K
 
@@ -22,7 +39,6 @@ for robust in (-2, 0.5):
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
 
-    beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
     cont_levels_Jy = levels.to(u.Jy, beam.jtok_equiv(224*u.GHz))
     #print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
     #                             0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
@@ -43,6 +59,9 @@ for robust in (-2, 0.5):
 
                     if os.path.exists(filename):
                         cube = SpectralCube.read(filename)
+                        if not cube.wcs.wcs.radesys.lower() == 'icrs':
+                            log.exception("File {0} has wrong coordinate system {1}".format(filename, cube.wcs.wcs.radesys))
+                            continue
                     else:
                         log.exception("File {0} does not exist".format(filename))
                         continue
@@ -77,6 +96,9 @@ for robust in (-2, 0.5):
                                      overwrite=True)
                             m0.write(m0_fn,
                                      overwrite=True)
+
+                            del cubeK
+                            del scube
                         else:
 
                             # the cubes have to exist anyway...
@@ -106,6 +128,10 @@ for robust in (-2, 0.5):
 
                         pl.figure(1).clf()
                         pl.close('all')
+
+                        del mx, m0
+                    del cube
+
 
 #    beam = radio_beam.Beam.from_fits_header(conthdu[0].header)
 #    print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,

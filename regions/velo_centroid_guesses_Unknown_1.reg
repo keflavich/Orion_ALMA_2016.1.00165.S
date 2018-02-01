@@ -1,47 +1,66 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
 image
-point(73.445682, 82.305415) # point=x color=#ce0000 text={24.6}
-point(76.865595, 85.055335) # point=x color=#d80000 text={23.3}
-point(78.812761, 84.338153) # point=x color=#e90000 text={22.0}
-point(84.491408, 83.665974) # point=x color=#fc0000 text={20.8}
-point(82.002574, 84.149497) # point=x color=#ff5100 text={19.5}
-point(73.010815, 82.270799) # point=x color=#ffa100 text={18.2}
-point(71.584333, 81.352727) # point=x color=#ffc100 text={16.9}
-point(81.275091, 70.913061) # point=x color=#f9d700 text={15.7}
-point(73.876222, 79.641989) # point=x color=#cccccc text={27.1}
-point(87.452297, 74.86075) # point=x color=#ffa100 text={18.2}
-point(80.523869, 72.37563) # point=x color=#ffc100 text={16.9}
-point(70.232135, 79.927719) # point=x color=#f9d700 text={15.7}
-point(79.94398, 71.228574) # point=x color=#efed00 text={14.4}
-point(67.173214, 78.98118) # point=x color=#efed00 text={14.4}
-point(65.763693, 76.928127) # point=x color=#d0f800 text={13.1}
-point(67.264333, 78.032625) # point=x color=#93ff00 text={11.9}
-point(73.819792, 59.274924) # point=x color=#93ff00 text={11.9}
-point(74.471189, 60.393608) # point=x color=#2cff00 text={10.6}
-point(68.853909, 56.282652) # point=x color=#00f200 text={9.3}
-point(61.195056, 73.222997) # point=x color=#00f200 text={9.3}
-point(70.411642, 56.838) # point=x color=#00dc00 text={8.0}
-point(60.805622, 73.12929) # point=x color=#00dc00 text={8.0}
-point(70.411642, 54.08808) # point=x color=#00c700 text={6.8}
-point(69.762587, 53.893364) # point=x color=#00b200 text={5.5}
-point(71.90447, 82.451801) # point=x color=#00b200 text={5.5}
-point(65.7066, 53.968029) # point=x color=#009f00 text={4.2}
-point(58.891518, 66.75442) # point=x color=#009f00 text={4.2}
-point(58.236561, 63.912635) # point=x color=#00a13d text={3.0}
-point(71.217668, 51.710393) # point=x color=#00a13d text={3.0}
-point(55.478685, 60.588324) # point=x color=#00aa8b text={1.7}
-point(66.772249, 53.318904) # point=x color=#00aa8b text={1.7}
-point(55.478685, 58.33813) # point=x color=#00aaa0 text={0.4}
-point(63.306293, 52.418745) # point=x color=#00aaa0 text={0.4}
-point(60.534217, 50.665982) # point=x color=#00a4bb text={-0.9}
-point(53.680192, 58.37676) # point=x color=#00a4bb text={-0.9}
-point(53.145625, 56.321595) # point=x color=#009bd7 text={-2.1}
-point(59.53233, 44.950145) # point=x color=#009bd7 text={-2.1}
-point(56.951431, 42.965033) # point=x color=#008add text={-3.3}
-point(53.134986, 57.296176) # point=x color=#008add text={-3.3}
-point(54.232499, 41.899817) # point=x color=#0067dd text={-4.7}
-point(49.621609, 50.560813) # point=x color=#0067dd text={-4.7}
-point(48.105671, 40.492526) # point=x color=#0025dd text={-5.9}
-point(50.715562, 39.244612) # point=x color=#0000cd text={-7.2}
-point(54.544045, 37.338221) # point=x color=#0000ad text={-8.5}
-point(49.683919, 48.460434) # point=x color=#0000ad text={-8.5}
-point(48.012207, 45.587981) # point=x color=#4d00a0 text={-9.8}
+point(78,85) # point=x color=#ffb500 text={24.57}
+point(80,87.486791) # point=x color=#ffcd00 text={23.29}
+point(80,87) # point=x color=#f8da00 text={22.02}
+point(89,88) # point=x color=#f1e700 text={20.75}
+point(83,89) # point=x color=#e0f300 text={19.48}
+point(77,86) # point=x color=#ccf900 text={18.21}
+point(73,83) # point=x color=#b0ff00 text={16.94}
+point(84,72) # point=x color=#58ff00 text={15.67}
+point(71,82) # point=x color=#0fff00 text={14.4}
+point(69.405659,78.495806) # point=x color=#00f400 text={13.13}
+point(72,82) # point=x color=#00e400 text={11.85}
+point(79,64) # point=x color=#00d700 text={10.58}
+point(75,60) # point=x color=#00ca00 text={9.31}
+point(65,74) # point=x color=#00ba00 text={8.04}
+point(77,85) # point=x color=#009f00 text={5.5}
+point(64,69) # point=x color=#009e28 text={4.23}
+point(64,67) # point=x color=#00a55d text={2.96}
+point(59,64) # point=x color=#00aa8b text={1.69}
+point(69,54) # point=x color=#00aa9b text={0.41}
+point(65,50) # point=x color=#00aaa8 text={-0.86}
+point(57,59) # point=x color=#00a4bb text={-2.13}
+point(65,46) # point=x color=#009cd3 text={-3.4}
+point(58,41) # point=x color=#0092dd text={-4.67}
+point(51,40) # point=x color=#0085dd text={-5.94}
+point(54,41) # point=x color=#0070dd text={-7.21}
+point(59,39) # point=x color=#0041dd text={-8.48}
+point(54,45) # point=x color=#0013dd text={-9.75}
+point(85.733317,86.405033) # point=x color=#ffcd00 text={23.29}
+point(84.759735,85.539627) # point=x color=#f8da00 text={22.02}
+point(87.2151,79.994992) # point=x color=#f1e700 text={20.75}
+point(88.13835,82.239013) # point=x color=#e0f300 text={19.48}
+point(84.734569,76.642795) # point=x color=#ccf900 text={18.21}
+point(83.493051,73.75097) # point=x color=#b0ff00 text={16.94}
+point(74.047828,82.060348) # point=x color=#58ff00 text={15.67}
+point(83.800801,70.506323) # point=x color=#0fff00 text={14.4}
+point(83.468511,69.39101) # point=x color=#00f400 text={13.13}
+point(67.078002,76.158508) # point=x color=#00e400 text={11.85}
+point(78.760987,62.798798) # point=x color=#00e400 text={11.85}
+point(66.505697,75.953424) # point=x color=#00d700 text={10.58}
+point(66.183673,74.874171) # point=x color=#00ca00 text={9.31}
+point(73.924502,59.125829) # point=x color=#00ba00 text={8.04}
+point(71.703725,57.39654) # point=x color=#00ba00 text={6.77}
+point(62.779222,72.54115) # point=x color=#00ba00 text={6.77}
+point(59.80005,69.044072) # point=x color=#009f00 text={5.5}
+point(72.078002,55.035307) # point=x color=#009f00 text={5.5}
+point(74.281027,54.980418) # point=x color=#009e28 text={4.23}
+point(73.813707,55.005469) # point=x color=#00a55d text={2.96}
+point(69.4368,55.198818) # point=x color=#00aa8b text={1.69}
+point(57.940108,62.100203) # point=x color=#00aa9b text={0.41}
+point(56.354591,60.20314) # point=x color=#00aaa8 text={-0.86}
+point(66.916114,46.785151) # point=x color=#00a4bb text={-2.13}
+point(54.99374,58.079629) # point=x color=#009cd3 text={-3.4}
+point(54.884537,51.190159) # point=x color=#0092dd text={-4.67}
+point(51.843771,49.151671) # point=x color=#0085dd text={-5.94}
+point(53.610567,46.516965) # point=x color=#0070dd text={-7.21}
+point(54.002279,49.125254) # point=x color=#0041dd text={-8.48}
+point(58.932816,38.769075) # point=x color=#0013dd text={-9.75}
+point(68.47392,48.050557) # point=x color=#0013dd text={-9.75}
+point(53.684803,54.146418) # point=x color=#0013dd text={-11.03}
+point(49.4341,47.775985) # point=x color=#0013dd text={-12.30}
+point(56.770768,63.646445) # point=x color=#00a4bb text={-14.84}
+point(59.661052,53.239955) # point=x color=#00aaa8 text={-16.1}
+point(62.034717,53.306207) # point=x color=#00aaa8 text={-17.4}

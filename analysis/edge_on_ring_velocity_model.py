@@ -99,7 +99,7 @@ def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
     #error[np.isnan(resid)] = 1e10
     # we want significant, but hopefully not dominant, residuals when the model
     # predicts no data but there are data
-    resid[np.isnan(resid)] = 5
+    resid[np.isnan(resid)] = 15
 
     return resid/error
 
@@ -112,7 +112,7 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
     parameters.add('delta', value=20, min=10, max=50)
     parameters.add('router', value=u.Quantity(router, u.au).value, min=20, max=100,
                    expr='rinner+delta')
-    parameters.add('vcen', value=vcen.value, min=2.5, max=9.5)
+    parameters.add('vcen', value=vcen.value, min=3.5, max=7.5)
     result = lmfit.minimize(thindiskcurve_residual, parameters, epsfcn=0.005,
                             kws={'xsep': u.Quantity(xsep, u.au),
                                  'velo': u.Quantity(velo, u.km/u.s),
