@@ -443,7 +443,9 @@ Red curves show the Keplerian velocity profile surrounding a 19 \msun
 central source; green dotted curves show a Keplerian profile for a 15 \msun
 source.
 White dashed lines indicate the adopted source central position
-05h35m14.5167s -05d22m30.6069s (ICRS) and central velocity (5.5 \kms).
+%05h35m14.5167s -05d22m30.6069s (ICRS)
+05h35m14.5172s -05d22m30.618s (ICRS)
+and central velocity (5.5 \kms).
 The purple dashed lines show the full orbital path for radii of
 10 and 100 AU, and indicate the approximate limits of the disk.
 The left version is extracted from a range $\pm0.05\arcsec$ (20 AU)
@@ -451,7 +453,9 @@ around the fitted centerline of the continuum emission, so it includes
 significant amounts of emission from above and below the disk (but
 see Appendix \ref{sec:waterlinerevisited}).  The right
 version is extracted from a narrower $\pm0.01\arcsec$
-range, less than a beam width, and shows the best approximation of the midplane.
+range, less than a beam width, and shows the best approximation of the midplane
+(however, both plots still show only material above and below the midplane, see
+Figure \ref{fig:U1peak} and Appendix \ref{sec:waterlinerevisited}).
 %{\color{red} NOTE TO SELF: Why are these figures different sizes?  They are from nearly
 %identical data and \emph{should} be identical shapes.}
 % {\color{blue} TO COAUTHORS: I've identified a few possible comparison figures
@@ -816,8 +820,13 @@ The average positions at each velocity are closer to a reasonable fit.
 {fig:velcen_sio}{1}{6in}
 
 \Figure
-{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots_fittedmodel_withavgs.pdf}
+{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots.pdf}
 {Results of the centroid-velocity analysis for the \water line.
+See Figure \ref{fig:velcen_U4} for details.
+The model disk fit to these data was a very poor fit, so we
+have instead overlaid a model that is \emph{not} a fit to the data
+with 15.5 \msun, $r_{inner}=17$ AU, and $r_{outer}=66$ AU in the
+right panel.
 Note that the centroid positions do not extend as far from
 the source center as the U232.511 line; this effect is 
 a symptom of the blending of lines of sight in the centroid-based approach,

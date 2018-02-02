@@ -292,7 +292,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ax2.hlines(fitresult.params['vcen'].value, xmin, xmax, linestyle='--', color='k',
                alpha=0.5, zorder=500, transform=trans)
 
-    pl.legend(loc='upper left', fontsize=12, handlelength=1.0)
+    leg = pl.legend(loc='upper left', fontsize=12, handlelength=1.0)
 
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel.pdf'.format(linename=linename)),
@@ -306,3 +306,36 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_withavgs.pdf'.format(linename=linename)),
                bbox_inches='tight')
+
+
+    for mass in (15.5, 19):
+        for line in lines:
+            line.set_visible(False)
+        leg.remove()
+
+        fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au),
+                                         velo=vels,
+                                         mguess=mass*u.M_sun,
+                                         rinner=17,
+                                         router=66,
+                                         fixedmass=True,
+                                        )
+        assert fitresult.params['mass'].value == mass
+        lines = ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
+                         yy_thindisk + assumed_vcen,
+                         'k-',
+                         transform=trans,
+                         label=('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
+                                .format(fitresult.params['mass'].value,
+                                        int(fitresult.params['rinner'].value),
+                                        int(fitresult.params['router'].value),
+                                       )
+                               )
+                        )
+        leg = pl.legend(lines,
+                        [line.get_label() for line in lines],
+                        loc='upper left',
+                        fontsize=12, handlelength=1.0)
+        pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_withavgs.pdf'
+                               .format(mass=mass, linename=linename)),
+                   bbox_inches='tight')

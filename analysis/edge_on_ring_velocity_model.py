@@ -104,10 +104,14 @@ def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
     return resid/error
 
 def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
-                         rinner=20*u.au, router=50*u.au):
+                         rinner=20*u.au, router=50*u.au,
+                         fixedmass=False
+                        ):
 
     parameters = lmfit.Parameters()
-    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=10, max=25)
+    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=10, max=25,
+                   vary=not fixedmass,
+                  )
     parameters.add('rinner', value=u.Quantity(rinner, u.au).value, min=3, max=50)
     parameters.add('delta', value=20, min=10, max=50)
     parameters.add('router', value=u.Quantity(router, u.au).value, min=20, max=100,
@@ -119,6 +123,9 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
                                  'error': error})
 
     result.params.pretty_print()
+
+    if fixedmass:
+        assert parameters['mass'].value == mguess.value
 
     return result
 

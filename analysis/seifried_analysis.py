@@ -37,6 +37,8 @@ diskycoords = coordinates.SkyCoord([diskycoord_list[0].start,
 #                             unit=(u.hour, u.deg))
 # fitted *disk* center from diskmodel
 source = coordinates.SkyCoord(83.81048617*u.deg, -5.37516858*u.deg, frame='icrs')
+source = coordinates.SkyCoord(regions.read_ds9(paths.rpath('sourceI_center.reg'))[0].center)
+print(source.to_string('hmsdms'))
 extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
 origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
@@ -54,8 +56,6 @@ for fn, vmin, vmax, savename, rms, radii in [#('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)
                                               'H2O_kepler_SeifriedPlot_0.2arcsec_robust-2.pdf', 0.7*u.mJy, [10,100]),
                                              #('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.01.fits', -0.0005, 0.048,
                                              # 'H2O_kepler_SeifriedPlot_0.01arcsec.pdf', 1*u.mJy, [10,100]),
-                                             ('pv/sourceI_29SiOv=0_2-1_B3_robust-2_diskpv_0.01.fits', -0.05, 1,
-                                              '29SiOv0_2-1_kepler_SeifriedPlot.pdf', 1*u.mJy, [10,100]),
                                              ('pv/sourceI_29SiOv=0_5-4_B6_robust0.5_diskpv_0.01.fits', -0.01, 0.05,
                                               '29SiOv0_5-4_kepler_SeifriedPlot.pdf', 2*u.mJy, [10,100]),
                                              ('pv/sourceI_SiS_12-11_B6_robust0.5_diskpv_0.01.fits', -0.01, 0.05,
@@ -66,6 +66,8 @@ for fn, vmin, vmax, savename, rms, radii in [#('pv/sourceI_H2Ov2=1_5(5,0)-6(4,3)
                                               'Unknown_4_kepler_SeifriedPlot.pdf', 0.5*u.mJy, [30,80]),
                                              ('pv/sourceI_Unknown_5_B6_robust0.5_diskpv_0.01.fits', -0.005, 0.02,
                                               'Unknown_5_kepler_SeifriedPlot.pdf', 0.5*u.mJy, [30,80]),
+                                             ('pv/sourceI_29SiOv=0_2-1_B3_robust-2_diskpv_0.01.fits', -0.05, 1,
+                                              '29SiOv0_2-1_kepler_SeifriedPlot.pdf', 1*u.mJy, [10,100]),
                                             ]:
     print(fn, vmin, vmax, savename, rms)
     fh = fits.open(paths.dpath(fn))
