@@ -109,7 +109,8 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
                         ):
 
     parameters = lmfit.Parameters()
-    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value, min=10, max=25,
+    parameters.add('mass', value=u.Quantity(mguess, u.M_sun).value,
+                   min=min([10,mguess.value]), max=25,
                    vary=not fixedmass,
                   )
     parameters.add('rinner', value=u.Quantity(rinner, u.au).value, min=3, max=50)

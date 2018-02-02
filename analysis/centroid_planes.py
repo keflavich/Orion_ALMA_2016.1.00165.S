@@ -308,7 +308,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                bbox_inches='tight')
 
 
-    for mass in (15.5, 19):
+    for mass in (15.5, 19, 5, 10, 15, 20, ):
         for line in lines:
             line.set_visible(False)
         leg.remove()
@@ -321,6 +321,12 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                                          fixedmass=True,
                                         )
         assert fitresult.params['mass'].value == mass
+
+        xx_thindisk, yy_thindisk = thindiskcurve(mass=fitresult.params['mass']*u.M_sun,
+                                                 rmin=fitresult.params['rinner']*u.au,
+                                                 rmax=fitresult.params['router']*u.au,
+                                                )
+
         lines = ax2.plot((xx_thindisk / d_orion).to(u.arcsec, u.dimensionless_angles()),
                          yy_thindisk + assumed_vcen,
                          'k-',
