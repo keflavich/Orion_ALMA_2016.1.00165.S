@@ -246,9 +246,10 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                     ax.set_xlim(good_limits)
 
                     show_pv.show_keplercurves(ax, origin, maxdist, vcen,
-                                              masses=[19],
+                                              masses=[15, 19],
                                               radii={19: ([30, 80], ['m', 'm'])},
-                                              linestyles='-',
+                                              linestyles=':-',
+                                              colors=['g','r'],
                                              )
 
                     fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +

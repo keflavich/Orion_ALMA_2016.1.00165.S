@@ -49,7 +49,7 @@ for fn in (b6_hires_cont, b3_hires_cont):
     sourceIpeak = sourceImask.cutout(data)[sourceImask.data.astype('bool')].max()
 
     row = (r"{band} & {robust} & {bmaj:0.3f} & {bmin:0.3f} & {bpa:0.1f} &"
-           r" {rms:0.3f} & {srcipeak:0.3f} & {DR:0.1f} \\"
+           r" {rms:0.3f} & {srcipeak:0.3f} & {DR:0d} \\"
            .format(band="B3" if "B3" in fn else "B6",
                    bmaj=beam.major.to(u.arcsec).value,
                    bmin=beam.minor.to(u.arcsec).value,
