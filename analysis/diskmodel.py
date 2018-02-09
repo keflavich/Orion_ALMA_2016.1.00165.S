@@ -42,6 +42,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                                (b3_hires_cont, 93.3*u.GHz, 'B3', None),
                                (reid7mm, 43.165*u.GHz, '7mm', None),
                               ]:
+    print(band, freq)
     parhist[band] = {}
 
     fh = fits.open(paths.dpath(fn))
@@ -330,7 +331,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     # compute offset from point source to disk center along the disk axis angle
     assert ptsrc_diskcen_sep < 0.1*u.arcsec
     sep_projected = ptsrc_diskcen_sep * np.abs(np.cos(posang-90*u.deg))
-    print("The source is separated from the disk center by {0} = {1}"
+    print("The source is separated from the disk center by {0} = {1} in projection"
           .format(sep_projected, (sep_projected*d_orion).to(u.au,
                                                             u.dimensionless_angles())))
 
