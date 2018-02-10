@@ -248,6 +248,9 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ax1.set_ylabel("Offset Dec (arcsec)")
     ax1.axis(limits)
 
+    for tick in ax1.get_xticklabels():
+        tick.set_rotation(90)
+
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
                bbox_inches='tight')
 
