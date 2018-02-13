@@ -1,9 +1,9 @@
 \documentclass[twocolumn]{aastex61}
 \input{continuum_beams}
 \input{preface}
-\newcommand{\sourcei}{SrcI}
-\newcommand{\sourcen}{SrcN}
-\newcommand{\sourcex}{SrcX}
+\newcommand{\sourcei}{SrcI\xspace}
+\newcommand{\sourcen}{SrcN\xspace}
+\newcommand{\sourcex}{SrcX\xspace}
 \begin{document}
 
 \title{A Keplerian disk around Orion \sourcei, a 15-20 \msun YSO}
@@ -46,7 +46,7 @@ rotation curve of various molecular lines:
         at 0.5 mas (0.2 AU) resolution along a `bridge' hovering just above and
         below \sourcei's disk and an assumed radius $r\sim35$ AU  to infer a mass
         $M\approx8-10$ \msun.
-    \item \citet{Hirota2014a} observed vibrationally excited \water emission
+    \item \citet{Hirota2014a} observed \water emission
         from the $v_2=0, 10_{2,9}-9_{3,6}$ and  $v_2=1, 5_{2,3}-6_{1,6}$ lines
         with $E_L=1846$ and 2939 K, respectively.  They imaged these lines
         with $0.40\arcsec\times0.34\arcsec$ resolution and made
@@ -63,7 +63,7 @@ rotation curve of various molecular lines:
 \sourcei's mass is an important parameter in models of the origin of the Orion
 Outflow.
 Several authors argue that \sourcei, BN, and \sourcen \citep[or, alternatively,
-\sourcex][]{Luhman2017a} were part of a single non-hierarchical multiple system
+\sourcex;][]{Luhman2017a} were part of a single non-hierarchical multiple system
 that underwent dynamical decay, and this decay somehow triggered the outflow
 \citep{Bally2005a,Rodriguez2005a,Goddi2011b,Moeckel2012b,Bally2011a,Bally2015a,Bally2017a}.
 However, others have
@@ -76,7 +76,7 @@ In Section \ref{sec:observations}, we present details of the observations.
 In Section \ref{sec:results}, we discuss measurements of the continuum
 and spectral lines.  Section \ref{sec:discussion} discusses these results and
 some of their simple physical implications.
-We conclude in \ref{sec:conclusions}.
+We conclude in Section \ref{sec:conclusions}.
 Several appendices present additional figures and detailed method discussion.
 
 
@@ -177,10 +177,10 @@ All cube analysis was performed using
 We detect the disk in the continuum at 3mm, 1mm, and 0.8mm.  At 1mm, where we
 have enough resolution to clearly distinguish the line-emitting region from the
 disk midplane, we detect spectral lines only from the surfaces above and below the
-continuum disk (Figure \ref{fig:continuum_data_B6} and \ref{fig:U1peak}).
+continuum disk (Figures \ref{fig:continuum_data_B6} and \ref{fig:U1peak}).
 The nondetection of lines in the disk midplane is a strong indication that the
 continuum is optically thick, as has previously been noted
-\citep[e.g.][]{Plambeck2016a}.
+\citep[e.g.,][]{Plambeck2016a}.
 
 % \FigureTwo
 % {figures/Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor_inset.pdf}
@@ -212,17 +212,17 @@ are shown in Appendix \ref{appendix:contmodel}.
 %https://zenodo.org/record/11813#.WlPUoGS7_pQ
 
 We determined that the disk is resolved in both
-directions, with a vertical FWMH height of about 35 AU and a length of about
+directions, with a vertical FWHM height of about 35 AU and a length of about
 90 AU (Table \ref{tab:continuum_fit_parameters}).  These measurements
 are very close to those published by \citet{Plambeck2016a}, though their data
 only marginally resolved the source at wavelengths 1 mm and shorter.
 
-This simple model leaves a significant residual compact source near
-the center of the disk, which we measured by adding a smeared point
-source to the model (see Appendix \ref{appendix:contmodel}).
-We have allowed the source to be smeared only in the direction
-of the disk, requiring only two additional free parameters.
-This source is discussed further in Section \ref{sec:ptsrc}.
+This simple model leaves a significant residual compact source near the center
+of the disk, which we measured by adding a smeared point source to the model
+(see Appendix \ref{appendix:contmodel}).  We have allowed the source to be
+smeared only in the direction of the disk's elongation, requiring only two
+additional free parameters.  This source is discussed further in Section
+\ref{sec:ptsrc}.
 
 Table \ref{tab:continuum_fit_parameters} lists the fitted parameters.  It 
 includes measurements of the total integrated intensity recovered in the model
@@ -349,8 +349,9 @@ fit an upper-envelope velocity curve in Section \ref{sec:kinematics}.
 
 \subsection{Other lines}
 \label{sec:otherlines}
-Several unidentified lines exhibit emission at the outer edge of the continuum disk.
-They all share a common morphology, though they vary in strength.
+Several unidentified lines are observed in  emission at the outer edge of the
+continuum disk.  They all share a common morphology, though they vary in
+strength.
 The peak signal from these lines appears around the $T_B\sim150$ K continuum contour
 in the robust -2 images
 %within the $T_B\gtrsim75$ K contour
@@ -412,8 +413,7 @@ are the most direct tracers of the disk's kinematics.
 {{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak}.pdf}
 {Peak intensity map of an unknown line (U230.322; left) and the \water
 line (middle, right) with continuum overlaid
-in contours.
-Continuum contours are shown in red at levels of 
+in red contours at levels of 
 % robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
 50, 150, 300, and 500 K. %robust -2
 The \water and unknown line clearly trace different physical structures, as
@@ -433,13 +433,17 @@ sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
 \subsection{Kinematics: a Keplerian disk}
 \label{sec:kinematics}
 Following \citet{Seifried2016a}, we measure the outer edge of the detected
-\water emission to define the rotation curve surrounding \sourcei.  In Appendix
-\ref{appendix:centroids}, to facilitate direct comparison with previous works,
-we use the centroid-of-velocity-channel approach that \citet{Seifried2016a}
-warn may underestimate the central mass.
+\water emission to define the rotation curve surrounding \sourcei.  In this technique,
+the outer envelope of the rotation curve is identified in a position-velocity
+diagram extracted along the disk direction by tracing emission from
+its peak along a given line of sight down to some emission threshold;
+we use a threshold of 5-$\sigma$.
+In Appendix \ref{appendix:centroids}, to facilitate direct comparison with
+previous works, we use the centroid-of-velocity-channel approach that
+\citet{Seifried2016a} warn may underestimate the central mass.
 
 Of the detected lines, the \water line spans the widest range of
-velocities as a function of radius; as shown in Figures \ref{fig:h2okepler},
+velocities as a function of radius; as shown in Figure \ref{fig:h2okepler},
 there is \water emission spanning at least from radius 10 to 100 AU.  Many
 other molecules, most of
 which we have not been able to identify, span a range of 30-80 AU, while SiS
@@ -449,7 +453,7 @@ see Appendix \ref{sec:siopv}, in which SiO also exhibits Keplerian velocity
 curves).
 
 We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge of
-the \water line reasonably well (Figure \ref{fig:h2okepler}), and is also an
+the \water line reasonably well (Figure \ref{fig:h2okepler}) and is also an
 acceptable match to the outer profiles of the unidentified lines
 described in Section \ref{sec:otherlines}.  A 15 \msun central source is consistent
 with the \water data only if we allow for line broadening of about 1.5-2 \kms,
@@ -470,6 +474,8 @@ Keplerian curve.
 {figures/H2O_kepler_SeifriedPlot_0.1arcsec.pdf}
 {figures/H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {Position-velocity diagram of \water $5_{5,0}-6_{4,3}$.
+The colorbars show average intensity along the extracted region in units
+of mJy \perbeam.
 The blue dotted curve is the outer envelope of the velocity curve
 determined using the method of \citet{Seifried2016a}.
 Red curves show the Keplerian velocity profile surrounding a 19 \msun
@@ -554,9 +560,9 @@ kinemetically distinct region from the disk.
 
 Even if \sourcei consists of an equal-mass binary, this mass measurement
 confirms that the Orion Molecular Cloud is presently a region with ongoing
-high-mass star formation.  If \sourcei were below $M<8$ \msun, Orion might
-instead have been regarded as a
-region of past high-mass star formation.
+high-mass star formation.  If the star or stars in \sourcei were below $M<8$
+\msun, Orion might instead have been regarded as a region of past high-mass
+star formation.
 % ref to Goddi2011b?
 
 \subsection{The luminosity of \sourcei}
@@ -625,13 +631,13 @@ circular disk configuration after the explosive event.
 The alignment of \sourcei's disk with the I-BN vector is consistent with a
 dynamical interaction between these sources.  If the ejection resulted in
 \sourcei and BN being launched in nearly opposite directions from their center
-of mass (which must have been moving in the rest frame of the Orion nebula; see
+of mass (which must have been moving in the rest frame of the Orion nebula; 
 Bally et al. in prep), any material around \sourcei that remained bound would
 be dragged in the direction of \sourcei, and would therefore have a resulting
 angular momentum vector orthogonal to the direction of motion.  Any material
 with
 velocity relative to \sourcei 
-$$v < v_{esc} = 23 \kms (M/15\msun)^{1/2}  (r/50~\mathrm{AU})^{-1/2}$$
+$$v < v_{esc} = 23 \kms (M_I/15\msun)^{1/2}  (r/50~\mathrm{AU})^{-1/2}$$
 would remain bound.
 Assuming \sourcei's present-day proper motion of 11.5 \kms reflects its velocity
 at the time of ejection, less than half of the original disk mass would
@@ -664,7 +670,7 @@ higher than at 3 mm (Table \ref{tab:continuum_fit_parameters}).
 % -log(2.2/10) / log(7/3)
 % -log(2.2/7.3) / log(7/3)
 % -log(2.2/7.3) / log(93.3/43.165)
-The spectral index of this compact source from 3 to 7 mm is $\alpha=1.6$,
+The spectral index of this compact source from 7 to 3 mm is $\alpha=1.6$,
 approaching that of an optically
 thick blackbody.
 %{\color{red} NOTE TO COAUTHORS: These numbers have not stayed
@@ -684,7 +690,7 @@ that this emission source is not a star.
 What is the emission mechanism from this central source?
 It could simply be hot, optically thick dust that is partly obscured by the
 cooler disk at higher frequencies.  The  extension of this `source' along the
-disk direction (Appendix \ref{appendix:contmodel} Figure
+disk direction (Appendix \ref{appendix:contmodel}, Figure
 \ref{fig:contmodel_residuals_B6}) suggests that we are
 seeing the hot inner disk.  As pointed out by \citet{Plambeck2016a}, it is
 quite unlikely to be classical free-free emission from protons
@@ -697,7 +703,7 @@ produced by brehmsstrahlung emission from HI and \hh
 
 % 3-5 AU is the expected separation of a binary
 The source is slightly offset from the center of the disk by 3-5 AU in
-projection.  This offset, combined with the source's extend, implies that it is
+projection.  This offset, combined with the source's extent, implies that it is
 not a single central source, but
 instead is a hot region of the inner disk.  Such an asymmetry in the disk could
 be driven either by instability in the disk or, if the central star is a
@@ -725,8 +731,7 @@ rotation curve with a Keplerian disk model, finding the following:
 
 \begin{enumerate}
     \item The central source has mass $M=15-19$ \msun, where the range
-        accounts for different masses recovered using different mass
-        measurement methods.
+        accounts for different mass measurement methods.
     \item The \water $5_{5,0}-6_{4,3}$ line is not masing and kinematically
         traces both the upper envelope of the disk and the lower portion of
         the outflow.
