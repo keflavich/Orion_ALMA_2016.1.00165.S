@@ -95,11 +95,12 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
     return fig,ax
 
 
-def show_keplercurves(ax, origin, maxdist, vcen, masses=[15,19],
-                      linestyles=':-',
-                      colors=['g', 'r'],
-                      radii={19: ([30, 80], ['m', 'm'])},
-                      yaxis_unit=u.m/u.s
+def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
+                      linestyles='-',
+                      colors=['r'],
+                      radii={15: ([30, 80], ['m', 'm'])},
+                      yaxis_unit=u.m/u.s,
+                      show_other_powerlaws=False,
                      ):
 
     trans = ax.get_transform('world')
@@ -122,6 +123,18 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15,19],
         #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), linestyle=linestyle,
                 color=color, linewidth=1.0, alpha=1.0, transform=trans)
+
+        if show_other_powerlaws:
+            vcurve = positions**-1 / (positions[200]**-1) * (vel[200])
+            ax.plot((origin+loc).to(u.arcsec),
+                    (vcen+vcurve).to(yaxis_unit),
+                    color=color, linestyle='--',
+                    transform=trans)
+            ax.plot((origin-loc).to(u.arcsec),
+                    (vcen-vcurve).to(yaxis_unit),
+                    color=color, linestyle='--',
+                    transform=trans)
+
 
     lines = []
     for mass in radii:

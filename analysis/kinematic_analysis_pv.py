@@ -78,10 +78,10 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     '/Volumes/external/orion/OrionSourceI_only.B6.robust-2.longbaselines.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                     # these need to be replaced w/ ICRS versions
-                    #'/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
-                    #'/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
-                    #'/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
-                    #'/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B3.robust-2.spw{0}.clarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B3.robust0.5.spw{0}.clarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust-2.spw{0}.maskedclarkclean10000.image.pbcor.fits',
+                    '/Volumes/external/orion/OrionSourceI_only.B7.robust0.5.spw{0}.maskedclarkclean10000.image.pbcor.fits',
                    ):
 
             for spw in (0,1,2,3):
@@ -246,10 +246,10 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                     ax.set_xlim(good_limits)
 
                     show_pv.show_keplercurves(ax, origin, maxdist, vcen,
-                                              masses=[15, 19],
-                                              radii={19: ([30, 80], ['m', 'm'])},
-                                              linestyles=':-',
-                                              colors=['g','r'],
+                                              masses=[15, ],
+                                              radii={15: ([30, 80], ['m', 'm'])},
+                                              linestyles='-',
+                                              colors=['r'],
                                              )
 
                     fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +
@@ -351,9 +351,9 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                                          imvmin=vmin, imvmax=vmax)
 
                 kc = show_pv.show_keplercurves(ax, origin, 150*u.au, u.Quantity(vcen,u.km/u.s),
-                                               masses=[15, 19],
-                                               linestyles=':-',
-                                               colors=['g','r'],
+                                               masses=[15,],
+                                               linestyles='-',
+                                               colors=['r'],
                                               )
 
                 fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +

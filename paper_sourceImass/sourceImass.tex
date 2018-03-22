@@ -7,19 +7,20 @@
 \begin{document}
 \input{authors}
 
-\title{A Keplerian disk around Orion \sourcei, a 15-20 \msun YSO}
+\title{A Keplerian disk around Orion \sourcei, a $\sim15$ \msun YSO}
 \begin{abstract}
-   We report ALMA long-baseline observations of Orion \sourcei with resolution 0.03-0.06\arcsec (12-24 AU).
+   We report ALMA long-baseline observations of Orion \sourcei with resolution
+   0.03-0.06\arcsec (12-24 AU).
    We detect both continuum and spectral line emission from \sourcei's 90 AU disk.
    %We resolve the 90 AU diameter disk around \sourcei and measure its rotation curve.
    We also detect a central weakly resolved source that we interpret as a hot spot
    in the inner disk, which may indicate the presence of a binary system.
    Because of the higher resolution and sensitivity of these observations, we
    were able to measure the outer envelope of the rotation curve of the \water
-   $5_{5,0}-6_{4,3}$ line, which gives a mass $M_I\approx19$ \msun.  Using
+   $5_{5,0}-6_{4,3}$ line, which gives a mass $M_I\approx15$ \msun.  Using
    centroid-of-channel methods,
-   we still infer a higher mass than previous authors, with
-   $M_I\gtrsim15$\msun.
+   we infer a similar mass.
+   %$M_I\gtrsim15$\msun.
    These measurements solidify \sourcei as a genuine
    high-mass protostar system.
    These measurements support the theory that \sourcei and the Becklin
@@ -72,7 +73,7 @@ noted that the lower masses inferred for \sourcei above are incompatible with
 this scenario \citep{Chatterjee2012a,Plambeck2016a,Farias2017a}, which requires
 a mass $M_{I} \gtrsim 15$ \msun.
 
-We present new measurements of \sourcei's mass, finding it has $M_I \sim 15-19$ \msun.
+We present new measurements of \sourcei's mass, finding it has $M_I \sim 15$ \msun.
 In Section \ref{sec:observations}, we present details of the observations.
 In Section \ref{sec:results}, we discuss measurements of the continuum
 and spectral lines.  Section \ref{sec:discussion} discusses these results and
@@ -323,10 +324,12 @@ brightness temperature $\sim1000$ K, it is most likely a thermal line.
 The water line traces an X-shaped feature above and below the disk, resembling
 the overall distribution of SiO masers.  The water is not directly aligned with
 the continuum disk (Figures \ref{fig:U1peak} and \ref{fig:h2omom0}), but it
-does exhibit emission parallel to the disk at small ($<20$ AU) separation.  The velocity profile of
-\water is much better fit by a Keplerian profile than the SiO thermal or maser
-emission (see Appendix \ref{sec:siopv}), though
-this may be because the SiO is brighter in the outflow than in the disk.
+does exhibit emission parallel to the disk at small ($<20$ AU) separation.  The
+velocity profile of \water is much better fit by a Keplerian profile than the
+SiO thermal or maser emission (see Appendix \ref{sec:siopv}), though this may
+be because the SiO is brighter in the outflow than in the disk.
+The morphology of this line confirms that it traces both the disk and
+the inner rotating outflow discussed by \citet{Hirota2017a}.
 
 %the SiO is absent from intermediate velocities at
 %intermediate separation and is detected at higher velocities and lower
@@ -453,7 +456,13 @@ but they are predominantly detected far from the disk midplane (however,
 see Appendix \ref{sec:siopv}, in which SiO also exhibits Keplerian velocity
 curves).
 
-We find that a 19 \msun edge-on Keplerian rotation curve fits the outer edge of
+We find that a 15 \msun edge-on Keplerian rotation curve fits\footnote{We do
+not report best-fit parameters and statistical errors here because the errors
+on the outer envelope are poorly characterized and likely dominated by
+systematic errors such as channel discretization.  Directly fitting the outer
+edge points in Figure \ref{fig:h2okepler} with equal weights yields a best-fit
+power-law with $\alpha=0.4$, which is consistent with the Keplerian profile
+$\alpha=0.5$.  Appendix XX discusses fitting further.} the outer edge of
 the \water line reasonably well (Figure \ref{fig:h2okepler}) and is also an
 acceptable match to the outer profiles of the unidentified lines
 described in Section \ref{sec:otherlines}.  A 15 \msun central source is consistent
@@ -465,6 +474,7 @@ by thermal broadening if the gas temperature is $\sim5000$ K.
 % {\color{red}
 % Sanity check me here - we want the thermal broadening of \water, $(k_B T / (18
 % \mathrm{amu}))^{1/2}$, right?}
+
 
 A substantially smaller mass, such as the 5-10 \msun suggested previously
 \citep{Plambeck2016a,Hirota2014a}, is inconsistent with the data: for models
@@ -479,7 +489,7 @@ The colorbars show average intensity along the extracted region in units
 of mJy \perbeam.
 The blue dotted curve is the outer envelope of the velocity curve
 determined using the method of \citet{Seifried2016a}.
-Red curves show the Keplerian velocity profile surrounding a 19 \msun
+Red curves show the Keplerian velocity profile surrounding a 15 \msun
 central source; green dotted curves show a Keplerian profile for a 15 \msun
 source.
 White dashed lines indicate the adopted source central position
@@ -547,7 +557,7 @@ Figure \ref{fig:U1peak} and Appendix \ref{sec:waterlinerevisited}).
 \section{Discussion}
 \label{sec:discussion}
 \subsection{The mass of \sourcei}
-We measure a mass for the object at the center of the disk of $M_I=15-19$
+We measure a mass for the object at the center of the disk of $M_I=15$
 \msun, which is higher than most measurements previously reported.  Our mass
 measurement is higher than previous works in part because our spatial
 resolution is high enough to allow a direct fit of the rotation curve to the
@@ -731,7 +741,7 @@ and line emission.  We measure the mass of \sourcei by fitting the
 rotation curve with a Keplerian disk model, finding the following:
 
 \begin{enumerate}
-    \item The central source has mass $M=15-19$ \msun, where the range
+    \item The central source has mass $M=15$ \msun, where the range
         accounts for different mass measurement methods.
     \item The \water $5_{5,0}-6_{4,3}$ line is not masing and kinematically
         traces both the upper envelope of the disk and the lower portion of
@@ -880,7 +890,7 @@ midplane as determined from the continuum modeling.  The circles are colored by
 their velocity as indicated in
 the right panel.  The right panel shows a position-velocity diagram of these
 same centroids.  The dotted external curves show Keplerian velocity profiles
-for a 15 \msun (green dotted), and 19 \msun (red solid) central source.
+for a  15 \msun (red solid) central source.
 The black
 curve shows the predicted centroid velocity profile of an edge-on disk with
 parameters displayed in the figure.
@@ -980,9 +990,9 @@ shows the inner 0.1\arcsec (i.e., near the midplane, $|h| < 0.05\arcsec$,
 $|h|<20$ AU), the middle shows the range $0.05\arcsec < |h| < 0.1$\arcsec, and
 the right shows the range $0.1\arcsec < |h| < 0.15\arcsec$.  All three panels
 show averages over the specified range, with the colorbar showing intensity in
-mJy \perbeam.  The red solid lines and grren dotted lines show the Keplerian
-profile for a 19 \msun and 15 \msun
-central source, respectively, and the purple dashed lines show the orbital
+mJy \perbeam.  The red solid lines show the Keplerian
+profile for a 15 \msun
+central source, and the purple dashed lines show the orbital
 track for a particle at 30 and 80 AU for such a source; these are included
 primarily to guide the eye.  The middle and right panel are dominated by the
 outflow, while the left panel is dominated by the Keplerian orbital profile.
@@ -1004,7 +1014,7 @@ outflow, while the left panel is dominated by the Keplerian orbital profile.
 % $0.05\arcsec < |h| < 0.1$\arcsec, and the right shows the range $0.1\arcsec <
 % |h| < 0.15\arcsec$.  All three panels show averages over the specified range,
 % with the colorbar showing intensity in
-% mJy \perbeam.  The red solid lines show the Keplerian profile for a 19 \msun
+% mJy \perbeam.  The red solid lines show the Keplerian profile for a 15 \msun
 % central source and the purple dashed lines show the orbital track for a
 % particle at 30 and 80 AU for such a source; these are included primarily
 % to guide the eye.  The middle and right panel are dominated by the outflow,
@@ -1036,7 +1046,7 @@ the disk midplane.  At greater distances from the midplane, the high-velocity,
 low-separation features fade out, while more low-velocity material
 becomes visible at larger separations.  In the innermost slice, which shows the
 SiO emission that just skirts the edges of the disk, the velocity curve is 
-consistent with the 19 \msun Keplerian curve overlaid.
+consistent with the 15 \msun Keplerian curve overlaid.
 
 \FigureFour
 {figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
@@ -1176,7 +1186,7 @@ sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
 {{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01}.pdf}
 {Moment 0 and peak intensity map of U232.511, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
-The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
+The overlaid  curve shows the Keplerian velocity profiles for a 15 \msun central source in red.
 The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 %{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
 %guess at the unidentified line's rest velocity.}
@@ -1194,7 +1204,7 @@ The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 {{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01}.pdf}
 {Moment 0 and peak intensity map of U217.980, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
-The overlaid  curve shows the Keplerian velocity profiles for a 19 \msun central source in red.
+The overlaid  curve shows the Keplerian velocity profiles for a 15 \msun central source in red.
 The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 %{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
 %guess at the unidentified line's rest velocity.}
@@ -1202,5 +1212,41 @@ The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 {fig:U5}{1}{2.25in}
 
 
+\section{Fitting power-laws to the velocity profile}
+To support the argument that the velocity profiles are Keplerian, as opposed to
+some other power-law profile as has been found for the outer envelopes of
+several low-mass YSOs
+\citep{Lee2017h,Aso2017b,Ohashi2014a,Lindberg2014a,Murillo2013a}, we performed
+fits to the outer envelope velocity profile of the \water line.  We limit our
+fits to the outer envelope velocity profile, as opposed to the centroid
+velocity profile, both because of the recommendations of \citet{Seifried2016a}
+that the centroid velocities are biased and poorly fit by Keplerian curves, and
+because the centroid velocities of both SiO and \water are not dominated by the
+disk's velocity.  The outer envelope profile, however, appears to be dominated
+by the disk.
+
+\Figure{figures/bestfit_powerlaw_H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
+{Radial profile of the outer-envelope velocity profile extracted from
+Figure \ref{fig:h2okepler}b.  The red and blue points represent the redshifted
+and blueshifted components of the velocity profile, respectively.  The velocities
+are shown relative to the best-fit centroid velocity for the \water line,
+$v_{LSR}=5.2$ \kms.  The curves show the best-fit power-law (black solid line)
+and the best-fit curves with fixed powerlaw indices of 0.5 (magenta dotted line)
+and 1 (green dashed line).}
+{fig:h2opowerlaws}{1}{4in}
+
+Figure \ref{fig:h2opowerlaws} shows several power-law profiles superposed on
+the outer-envelope velocity profile.  The figure convincingly demonstrates that
+a power law $\alpha=1$ \citep[e.g., as observed in the outer parts of low-mass
+YSO disks;][]{Aso2017b} is inconsistent with the data.  While the best-fit
+profile of $\alpha\approx0.4$ is slightly shallower than the Keplerian
+$\alpha=0.5$ curve, both shallow profiles are consistent with the data.
+The mass for the $\alpha=0.5$ curve is $M=15$ \msun; we do not determine
+masses for the other models since they are not consistent with a pointlike
+gravitational potential.
+The limited spectral resolution of our data is evident in this plot, where
+there is little separation in velocity from $\sim30-50$ AU; higher
+spectral resolution observations or more sophisticated modeling may be able to
+provide a tighter constraint on the power-law slope.
 
 \end{document}
