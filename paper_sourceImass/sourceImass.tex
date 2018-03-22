@@ -1232,7 +1232,9 @@ and blueshifted components of the velocity profile, respectively.  The velocitie
 are shown relative to the best-fit centroid velocity for the \water line,
 $v_{LSR}=5.2$ \kms.  The curves show the best-fit power-law (black solid line)
 and the best-fit curves with fixed powerlaw indices of 0.5 (magenta dotted line)
-and 1 (green dashed line).}
+and 1 (green dashed line).  The magenta filled curve shows a powerlaw index
+$\alpha=0.5$, i.e., a Keplerian rotation curve, for the range $13 \msun < M <
+17 \msun$. }
 {fig:h2opowerlaws}{1}{4in}
 
 Figure \ref{fig:h2opowerlaws} shows several power-law profiles superposed on
@@ -1241,12 +1243,31 @@ a power law $\alpha=1$ \citep[e.g., as observed in the outer parts of low-mass
 YSO disks;][]{Aso2017b} is inconsistent with the data.  While the best-fit
 profile of $\alpha\approx0.4$ is slightly shallower than the Keplerian
 $\alpha=0.5$ curve, both shallow profiles are consistent with the data.
-The mass for the $\alpha=0.5$ curve is $M=15$ \msun; we do not determine
-masses for the other models since they are not consistent with a pointlike
-gravitational potential.
 The limited spectral resolution of our data is evident in this plot, where
 there is little separation in velocity from $\sim30-50$ AU; higher
 spectral resolution observations or more sophisticated modeling may be able to
 provide a tighter constraint on the power-law slope.
+
+The mass for the $\alpha=0.5$ curve is $M=15$ \msun; we do not determine
+masses for the other models since they are not consistent with a pointlike
+gravitational potential.  We show the curves for a central 13-17 \msun source
+in filled magenta; since there are many points above the curve, a more massive
+central source is plausible, while a less massive source is unlikely.
+
+We also assess the uncertainty introduced by the threshold level adopted in the
+velocity envelope profile measurement.  Figure \ref{fig:seifreidthresholderror}
+shows the effects of increasing or decreasing the threshold, which is to
+decrease or increase the measured mass, respectively.  These figures suggest
+that our measurement uncertainty is approximately 2 \msun.
+
+\Figure{figures/outerenvelope_velocity_thresholds_H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
+{Demonstration of the effect of a changing threshold in the Seifried method.
+The panels show a lower 3-$\sigma$ threshold (left), the adopted 5-$\sigma$
+threshold (center), and a higher 7-$\sigma$ threshold (right).  
+The magenta highlighted region is the same 13-17 \msun Keplerian curve shown
+in Figure \ref{fig:h2opowerlaws}.  
+}
+{fig:seifreidthresholderror}{1}{7.5in}
+
 
 \end{document}
