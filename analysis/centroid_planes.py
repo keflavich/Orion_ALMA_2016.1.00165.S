@@ -411,7 +411,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     im.set_visible(True)
     for line in lines:
         line.set_visible(False)
-    #leg.remove()
+    leg.remove()
 
     xx,vv,pvd = thindiskcurve(mass=15*u.M_sun,
                               rmin=25*u.au,
@@ -434,11 +434,17 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                interpolation='none', origin='lower',
                vmin=0,
                vmax=sm_pvd[np.abs(vv)<20*u.km/u.s].max(),
+               label=('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
+                      .format(15, 25, 65))
               )
     xlim_as, ylim_kms = [-0.2,0.2], [vmin-3, vmax+3]
     ax1.set_xlim(*xlim_as)
     ax1.set_ylim(*ylim_kms)
     ax1.set_aspect('auto')
+    #ax1.legend(('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
+    #                  .format(15, 25, 65)),
+    #           [im],
+    #           loc='best')
 
     loc = pl.matplotlib.ticker.MultipleLocator(base=0.1)
     ax1.xaxis.set_major_locator(loc)
