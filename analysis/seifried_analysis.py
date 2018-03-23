@@ -13,40 +13,17 @@ from scipy import optimize
 from line_point_offset import offset_to_point
 import imp
 import edge_on_ring_velocity_model
-from constants import d_orion, vcen
+from constants import d_orion, vcen, origin
 import show_pv
 import pylab as pl
 
 imp.reload(edge_on_ring_velocity_model)
 imp.reload(show_pv)
 
-source = 'sourceI'
-#diskycoord_list = pyregion.open(paths.rpath("{0}_disk_pvextract.reg"
-#                                            .format(source)))[0].coord_list
-#diskycoords = coordinates.SkyCoord(["{0} {1}".format(diskycoord_list[jj],
-#                                                     diskycoord_list[jj+1])
-#                                    for jj in range(0,
-#                                                    len(diskycoord_list),
-#                                                    2)], unit=(u.deg,
-#                                                               u.deg),
-#                                   frame='fk5')
-diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
-                                               .format(source)))
-diskycoords = coordinates.SkyCoord([diskycoord_list[0].start,
-                                    diskycoord_list[0].end])
-
 
 #source = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
 #                             unit=(u.hour, u.deg))
 # fitted *disk* center from diskmodel
-source = coordinates.SkyCoord(83.81048617*u.deg, -5.37516858*u.deg, frame='icrs')
-source = coordinates.SkyCoord(regions.read_ds9(paths.rpath('sourceI_center.reg'))[0].center)
-print(source.to_string('hmsdms'))
-extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
-origin = offset_to_point(source.ra.deg,
-                         source.dec.deg,
-                         extraction_path)*u.deg
-
 all_voff_results = {}
 
 for fn, vmin, vmax, savename, rms, radii, start_dv in [

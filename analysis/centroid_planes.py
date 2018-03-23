@@ -4,6 +4,8 @@ from astropy import units as u
 from astropy.modeling import models, fitting
 from astropy import wcs
 from astropy import coordinates
+from astropy.io import fits
+from astropy import convolution
 from spectral_cube import SpectralCube
 import pvextractor
 from gaussfit_catalog.core import gaussfit_image
@@ -11,12 +13,11 @@ import paths
 import os
 import pylab as pl
 import shapely.geometry as geom
-from show_pv import show_keplercurves
-from constants import d_orion
+from show_pv import show_keplercurves, show_pv
 import imp
 import edge_on_ring_velocity_model
 from astropy.utils.console import ProgressBar
-from constants import vcen as assumed_vcen
+from constants import vcen as assumed_vcen, origin, d_orion
 
 imp.reload(edge_on_ring_velocity_model)
 from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
@@ -28,10 +29,10 @@ fitresult_list = []
 
 for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
     ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
     ('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
     ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
-    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
    ):
 
     regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
@@ -64,8 +65,8 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     except AttributeError:
         beam = cube.average_beams(1)
     pixscale = wcs.utils.proj_plane_pixel_area(cube.wcs.celestial)**0.5 * u.deg
-    bmmaj_px = (beam.major / pixscale).decompose()
-    bmmin_px = (beam.minor / pixscale).decompose()
+    bmmaj_px = (beam.major / pixscale).decompose().value
+    bmmin_px = (beam.minor / pixscale).decompose().value
     max_radius_in_beams = 1.25
     max_offset_in_beams = 1.5
 
@@ -101,7 +102,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                                            y_mean=reg.center.y,
                                            x_stddev=bmmaj_px/STDDEV_TO_FWHM*0.75,
                                            y_stddev=bmmin_px/STDDEV_TO_FWHM*0.75,
-                                           theta=beam.pa,
+                                           theta=beam.pa.to(u.deg).value,
                                            bounds={'x_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
                                                                bmmaj_px*max_radius_in_beams/STDDEV_TO_FWHM),
                                                    'y_stddev':(bmmin_px/STDDEV_TO_FWHM*0.5,
@@ -113,6 +114,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                                                    'amplitude':(ampguess*0.1, ampguess*2.1)
                                                   }
                                           )
+                assert not p_init._has_units
                 model_list.append(p_init)
 
             composite_model = model_list[0]
@@ -162,14 +164,42 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     ref_offset = offset_to_point(center.ra.deg, center.dec.deg)
 
+    # Add the data as a background image
+    pvfn = 'pv/sourceI_{0}_B6_robust0.5_diskpv_0.01.fits'.format(linename)
+    fh = fits.open(paths.dpath(pvfn))
+    data = fh[0].data
+    header = fh[0].header
+
+    ww = wcs.WCS(fh[0].header)
+
+    ww.wcs.cdelt[1] /= 1000.0
+    ww.wcs.crval[1] /= 1000.0
+    ww.wcs.cunit[1] = ' '#u.km/u.s
+    ww.wcs.cdelt[0] *= 3600
+    ww.wcs.cunit[0] = u.arcsec
+    ww.wcs.crval[0] = -origin.to(u.arcsec).value
+
+    # #!@#$!@#$@!%@#${^(@#$)%#$(
+    ww.wcs.set()
+
 
     fig1 = pl.figure(1)
     pl.clf()
     ax1 = fig1.add_subplot(1,2,1)
     pvwcs = pvextractor.utils.wcs_slicing.slice_wcs(cube.wcs, pixscale)
+    pvwcs.wcs.cdelt[0] *= 3600
+    pvwcs.wcs.crval[0] = -origin.to(u.arcsec).value
+    pvwcs.wcs.cunit[0] = u.arcsec
+    pvwcs.wcs.crval[1] /= 1e3
+    # not clear why this is needed?
+    pvwcs.wcs.crval[1] += assumed_vcen.to(u.km/u.s).value
     pvwcs.wcs.cdelt[1] /= 1e3
     pvwcs.wcs.cunit[1] = ' ' # force wcs.set to NOT revert to m/s
-    ax2 = fig1.add_subplot(1,2,2, projection=pvwcs)
+    print('pvwcs: cdelt={0} crval={1} crpix={2}'.format(pvwcs.wcs.cdelt,
+                                                        pvwcs.wcs.crval,
+                                                        pvwcs.wcs.crpix))
+    ax2 = fig1.add_subplot(1,2,2, projection=ww)
+
     trans = ax2.get_transform('world')
 
     diskends_x, diskends_y = cube.wcs.celestial.wcs_world2pix(diskends.ra.deg,
@@ -222,7 +252,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
 
     show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={},
-                      masses=[15, 19], linestyles=[':','-'], colors=['g', 'r']
+                      masses=[15, ], linestyles=[':',], colors=['r']
                      )
 
     # xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
@@ -237,6 +267,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                             yy_thindisk + assumed_vcen, 'k-', transform=trans)
 
     xlim, ylim = pvwcs.wcs_world2pix([-0.2,0.2], [vmin-3, vmax+3], 0)
+    xlim, ylim = ww.wcs_world2pix([-0.2,0.2], [vmin-3, vmax+3], 0)
     ax2.set_ylim(*ylim)
     ax2.set_xlim(*xlim)
     ax2.yaxis.tick_right() # mpl version; incompatible with wcsaxes
@@ -255,6 +286,27 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots.pdf'.format(linename=linename)),
                bbox_inches='tight')
+
+    im = ax2.imshow(data, cmap='gray_r', interpolation='none', vmax=0.02,
+                    vmin=-0.0001, origin='lower',
+                    #transform=ax2.get_transform('world'),
+                   )
+    ax2.set_aspect('auto')
+    ax2.set_ylim(*ylim)
+    ax2.set_xlim(*xlim)
+
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_withbackground.pdf'.format(linename=linename)),
+               bbox_inches='tight')
+    
+    #fig3,ax3 = show_pv(data, ww,
+    #                   origin, vrange=[-40,55], vcen=assumed_vcen,
+    #                   imvmin=-0.001, imvmax=0.020)
+
+    #trans3 = ax3.get_transform('world')
+    #overlay_thindiskline = ax3.plot((xx_thindisk / d_orion).to(u.arcsec,
+    #                                                           u.dimensionless_angles()),
+    #                                 (yy_thindisk + assumed_vcen).to(u.m/u.s), 'k-', transform=trans3)
+
 
     # previously had an
     #if 'Unknown' in linename:
@@ -299,6 +351,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     leg = pl.legend(loc='upper left', fontsize=12, handlelength=1.0)
 
+    im.set_visible(False)
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel.pdf'.format(linename=linename)),
                bbox_inches='tight')
@@ -312,6 +365,10 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_withavgs.pdf'.format(linename=linename)),
                bbox_inches='tight')
 
+    im.set_visible(True)
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_withavgs_withbackground.pdf'.format(linename=linename)),
+               bbox_inches='tight')
+    im.set_visible(False)
 
     for mass in (15.5, 19, 5, 10, 15, 20, ):
         for line in lines:
@@ -350,3 +407,45 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
         pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_withavgs.pdf'
                                .format(mass=mass, linename=linename)),
                    bbox_inches='tight')
+
+    im.set_visible(True)
+    for line in lines:
+        line.set_visible(False)
+    #leg.remove()
+
+    xx,vv,pvd = thindiskcurve(mass=15*u.M_sun,
+                              rmin=25*u.au,
+                              rmax=65*u.au,
+                              pvd=True,
+                             )
+    xx_as = (xx/d_orion).to(u.arcsec, u.dimensionless_angles())
+
+    conv_beam = convolution.Gaussian2DKernel(0.04*u.arcsec/np.diff(xx_as).mean(),
+                                             1.5*u.km/u.s/np.diff(vv).mean(),
+                                            )
+    sm_pvd = convolution.convolve_fft(pvd, conv_beam)
+
+
+    ax1.cla()
+    ax1.imshow(sm_pvd, cmap='gray_r', extent=[xx_as.value.min(),
+                                              xx_as.value.max(),
+                                              (vv+assumed_vcen).value.min(),
+                                              (vv+assumed_vcen).value.max()],
+               interpolation='none', origin='lower',
+               vmin=0,
+               vmax=sm_pvd[np.abs(vv)<20*u.km/u.s].max(),
+              )
+    xlim_as, ylim_kms = [-0.2,0.2], [vmin-3, vmax+3]
+    ax1.set_xlim(*xlim_as)
+    ax1.set_ylim(*ylim_kms)
+    ax1.set_aspect('auto')
+
+    loc = pl.matplotlib.ticker.MultipleLocator(base=0.1)
+    ax1.xaxis.set_major_locator(loc)
+
+    ax1.set_xlabel("Offset Position (arcsec)")
+    ax1.set_ylabel("Offset Dec (arcsec)")
+
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_withavgs_comparepv.pdf'
+                           .format(mass=15, linename=linename)),
+               bbox_inches='tight')
