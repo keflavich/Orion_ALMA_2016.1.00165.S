@@ -44,6 +44,10 @@ its mass below the classic 8 \msun threshold for a single star to go supernova
 Several attempts have been made to measure the mass of Orion \sourcei using the
 rotation curve of various molecular lines:
 \begin{itemize}
+    \item \citet{Kim20008a} used 3D measurements of SiO masers to determine the
+        distance to Orion ($418\pm6$ pc).  They used these data to infer a
+        source mass $M=8$\msun by assuming the masers came from a radius
+        $r\sim42$ AU.
     \item \citet{Matthews2010a} used 3D measurements of SiO maser velocities
         at 0.5 mas (0.2 AU) resolution along a `bridge' hovering just above and
         below \sourcei's disk and an assumed radius $r\sim35$ AU  to infer a mass
@@ -60,17 +64,23 @@ rotation curve of various molecular lines:
         curve of gas around \sourcei.  They used a centroiding approach
         similar to \citet{Hirota2014a} to measure the rotation curve of
         SO, SiS, SiO, and CO and infer the source mass $M\sim5-7$ \msun.
+    \item \citet{Hirota2017b} used Si$^{18}$O J=12-11 to infer a mass $M=8.7$
+        \msun using a radius $r_{inner} = 24$ AU. 
 \end{itemize}
+
+% Additionally, \citet{Testi2010a} inferred the presence of a $M\sim10$ \msun
+% source surrounded by a disk from the reflected spectrum of Source I in the
+% surrounding nebula.  This estimate is based on the observed velocity dispersion
 
 \sourcei's mass is an important parameter in models of the origin of the Orion
 Outflow.
 Several authors argue that \sourcei, BN, and \sourcen \citep[or, alternatively,
 \sourcex;][]{Luhman2017a} were part of a single non-hierarchical multiple system
 that underwent dynamical decay, and this decay somehow triggered the outflow
-\citep{Bally2005a,Rodriguez2005a,Goddi2011b,Moeckel2012b,Bally2011a,Bally2015a,Bally2017a}.
+\citep{Bally2005a,Rodriguez2005a,Goddi2011b,Moeckel2012b,Bally2011a,Bally2015a,Bally2017a,Rodriguez2017a}.
 However, others have
 noted that the lower masses inferred for \sourcei above are incompatible with
-this scenario \citep{Chatterjee2012a,Plambeck2016a,Farias2017a}, which requires
+this scenario \citep{Chatterjee2012a,Plambeck2016a,Farias2017b}, which requires
 a mass $M_{I} \gtrsim 15$ \msun.
 
 We present new measurements of \sourcei's mass, finding it has $M_I \sim 15$ \msun.
@@ -187,15 +197,15 @@ continuum is optically thick, as has previously been noted
 % \FigureTwo
 % {figures/Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor_inset.pdf}
 % {figures/Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor_inset.pdf}
-% {Overfiew figure showing \sourcei and the surrounding hot core at 3 mm
-% (left) and 1 mm (right).  The inset zoom figure shows \sourcei with a wider
+% {Overfiew figure showing \sourcei and the surrounding hot core at 3.2 mm
+% (left) and 1.3 mm (right).  The inset zoom figure shows \sourcei with a wider
 % flux range, from -1 to 25 mJy \perbeam.
 % The insets are expanded by 3$\times$ relative to the main image.
 % The synthesized beam is shown at the same 3$\times$ zoom factor in the
 % bottom-left; it has contours overlaid at 5, 10, 20, and 30\% of peak
 % in purple, blue, green, and yellow respectively.
-% The surface brightness conversion factors are 5\ee{4} K Jy$^{-1}$ at 3 mm and 3\ee{4}
-% K Jy$^{-1}$ at 1 mm.
+% The surface brightness conversion factors are 5\ee{4} K Jy$^{-1}$ at 3.2 mm and 3\ee{4}
+% K Jy$^{-1}$ at 1.3 mm.
 % }
 % {fig:overview}{1}{3.5in}
 
@@ -217,7 +227,7 @@ We determined that the disk is resolved in both
 directions, with a vertical FWHM height of about 35 AU and a length of about
 90 AU (Table \ref{tab:continuum_fit_parameters}).  These measurements
 are very close to those published by \citet{Plambeck2016a}, though their data
-only marginally resolved the source at wavelengths 1 mm and shorter.
+only marginally resolved the source at wavelengths 1.3 mm and shorter.
 
 This simple model leaves a significant residual compact source near the center
 of the disk, which we measured by adding a smeared point source to the model
@@ -277,10 +287,10 @@ the presence of an optically thick $T=500$ K surface from the SED.
 \FigureTwo
 {figures/OrionSourceI_data_stretched_B3.pdf}
 {figures/OrionSourceI_data_stretched_B6.pdf}
-{The robust -2 continuum image of Orion \sourcei at 3 mm (left) and 1.3 mm (right).
+{The robust -2 continuum image of Orion \sourcei at 3.2 mm (left) and 1.3 mm (right).
 The beam is shown
 in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
-PA$=\Bthreepa\degrees$ (3 mm, left) and $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
+PA$=\Bthreepa\degrees$ (3.2 mm, left) and $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
 PA$=\Bsixpa\degrees$ (1.3 mm, right).
 Contours are overlaid at $T_B=$50, 100, 150, 200, 300, 400, and 500 K.
 }
@@ -584,7 +594,7 @@ it is heated only by radiation.  Taking the disk radius to be 50 AU,
 the required central source luminosity is 6500 \lsun.  This estimate
 should be taken as a lower limit, since the inner disk is likely to be
 optically thick and capable of shielding the outer disk, thereby
-keeping the observed $\tau=1$ surface at 1 mm cooler than would
+keeping the observed $\tau=1$ surface at 1.3 mm cooler than would
 be produced by radiative equilibrium with the central star.
 
 \subsection{Properties of the disk}
@@ -607,7 +617,7 @@ in this interaction, but instead that \sourcex, another star within the same
 field, has high proper motion that points back to the interaction center (Bally et al,
 in prep).
 
-\citet{Farias2017a} report that, while any dynamical decay scenario involving
+\citet{Farias2017b} report that, while any dynamical decay scenario involving
 Sources I, X, and BN that can reproduce the observed proper motions are
 unlikely, those with a higher mass for \sourcei ($M_I>14$ \msun) are the only
 ones capable of producing the observed proper motions\footnote{Their results
@@ -668,27 +678,27 @@ Material outside $R\gtrsim200$ AU would likely all have become unbound.
 \subsection{The compact source in the disk}
 \label{sec:ptsrc}
 We have detected a compact (but marginally resolved) source near the center of
-the disk at both 3 mm and 1 mm.  The source has a spectral energy distribution
-that is shallow from 3 mm to 1 mm ($\alpha\approx1.1$).  Since the source is nearly
-coincident with an edge-on disk that we show is optically thick at 1 mm, it is
+the disk at both 3.2 mm and 1.3 mm.  The source has a spectral energy distribution
+that is shallow from 3.2 mm to 1.3 mm ($\alpha\approx1.1$).  Since the source is nearly
+coincident with an edge-on disk that we show is optically thick at 1.3 mm, it is
 likely that the source is thermal but is significantly attenuated by the disk
-at 1 mm and seen with less attenuation at 3 mm.
+at 1.3 mm and seen with less attenuation at 3.2 mm.
 
 \citet{Reid2007a} used comparable-resolution 7 mm VLA data to infer
 the presence of a 2.2 mJy source at the center of the \sourcei disk.
 The compact-source-to-disk flux ratio at 7 mm was $\sim30\%$, substantially
-higher than we observe at 1 mm and somewhat
-higher than at 3 mm (Table \ref{tab:continuum_fit_parameters}).  
+higher than we observe at 1.3 mm and somewhat
+higher than at 3.2 mm (Table \ref{tab:continuum_fit_parameters}).  
 % -log(2.2/10) / log(7/3)
 % -log(2.2/7.3) / log(7/3)
 % -log(2.2/7.3) / log(93.3/43.165)
-The spectral index of this compact source from 7 to 3 mm is $\alpha=1.6$,
+The spectral index of this compact source from 7 to 3.2 mm is $\alpha=1.6$,
 approaching that of an optically
 thick blackbody.
 %{\color{red} NOTE TO COAUTHORS: These numbers have not stayed
-%quite as steady as I like; improved fitting dropped the 3 mm point-to-total
+%quite as steady as I like; improved fitting dropped the 3.2 mm point-to-total
 %from $\sim20\%$ to $\sim13\%$.}
-%blackbody, suggesting that the disk is nearly optically thin at 3 mm,
+%blackbody, suggesting that the disk is nearly optically thin at 3.2 mm,
 %at least along the line of sight toward this object.
 
 The central source has a surface temperature $T\geq1250$ K, the brightness
@@ -752,7 +762,7 @@ rotation curve with a Keplerian disk model, finding the following:
         disk and are morphologically distinct from both the \water and SiO
         lines that follow the outflow.
     \item The central emission source in the approximate center of the disk
-        is resolved at 1 mm, and it is slightly off-center.  It therefore is
+        is resolved at 1.3 mm, and it is slightly off-center.  It therefore is
         most likely a hot region of the inner disk.  It may be produced
         by an unequal mass binary.
 \end{enumerate}
@@ -939,7 +949,7 @@ diagrams.
 and inner and outer radial cutoffs.}
 {fig:massradiusdemo}{1}{6in}
 
-% \section{Inset figure of the 3 mm data}
+% \section{Inset figure of the 3.2 mm data}
 
 \subsection{A demonstration of a failure mode of the centroid-of-velocity method}
 Figure \ref{fig:h2opvfailuremode} shows an example of how the centroid-of-velocity
@@ -1002,7 +1012,8 @@ components, i.e., those seen in quadrants 2 and 4.  These components get stronge
 at higher vertical positions on the disk, implying that they come from the outflow,
 not the disk.
 The ``ring'' shape observed in the high-latitude figures indicates the outflow
-is expanding.
+is expanding \citep[see, e.g., the model in supplementary figure 1
+of][]{Hirota2017b}.
 The velocity asymmetry, which shows an excess toward the red side of the disk
 and outflow, is also present in SiO.  We do not have a straightforward
 explanation for this asymmetry except to assert that it implies an
@@ -1175,7 +1186,7 @@ Also in this figure, there appears to be a faint `halo' of emission at the
 $\sim30$ K level around the modeled region.  The halo is asymmetric, with a
 greater extent toward the southwest.  If this feature is not an artifact of the
 data reduction, which we cannot rule out, it is likely to be from optically
-thin dust above and below the disk, since it is not detect in the 3 mm data.
+thin dust above and below the disk, since it is not detect in the 3.2 mm data.
 
 
 \Figure{figures/models_and_residuals_B6.pdf}

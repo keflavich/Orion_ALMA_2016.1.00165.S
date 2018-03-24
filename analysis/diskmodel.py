@@ -32,6 +32,7 @@ import pylab as pl
 epsfcn = 1e-3
 
 fit_results = {}
+ptsrc_diskcen_offsets = {}
 
 parhist = {}
 
@@ -317,6 +318,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print("astropy gaussian fit to residual point source image: ")
     print(astropy_fit_results)
     print(np.diagonal(apylmfit.fit_info['param_cov'])**0.5)
+    astropy_positional_offset = (apylmfit.fit_info['param_cov'][1,1] +
+                                 apylmfit.fit_info['param_cov'][2,2])**0.5 
     print()
 
 
@@ -428,6 +431,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     ptsrc_diskcen_sep = fitted_ptsrc.separation(disk_center_mod4).to(u.arcsec)
     print("fitted pointsource is offset from center by {0}".format(ptsrc_diskcen_sep))
+    ptsrc_diskcen_offsets[band] = ptsrc_diskcen_sep, astropy_positional_offset, astropy_positional_offset*pixscale
 
     posang = np.arctan2(result3.params['y2']-result3.params['y1'],
                         result3.params['x2']-result3.params['x1'])*u.rad - 90*u.deg
@@ -846,7 +850,7 @@ latexdict['tablefoot'] = ('\n\par The pointlike source '
                           'position is left blank because we do not have '
                           'astrometric information for those data (they were '
                           'self-calibrated on a bright maser whose position '
-                          'was not well-constrained).' 
+                          'was not well-constrained).'
                          )
 
 mask7mm = tbl['Frequency'] == 43.165
@@ -871,3 +875,11 @@ with open(paths.texpath('continuum_beams.tex'), 'w') as fh:
         fh.write("\\newcommand{{\\{bandid}maj}}{{{major}}}\n".format(**argdict))
         fh.write("\\newcommand{{\\{bandid}min}}{{{minor}}}\n".format(**argdict))
         fh.write("\\newcommand{{\\{bandid}pa}}{{{pa}}}\n".format(**argdict))
+
+print()
+print("Measured point source offsets: ")
+print(ptsrc_diskcen_offsets)
+for k in ['B6','B3']:
+    print("{0} fitted offset and positional error".format(k))
+    print((ptsrc_diskcen_offsets[k][0]*d_orion).to(u.au, u.dimensionless_angles()),
+          (ptsrc_diskcen_offsets[k][2]*d_orion).to(u.au, u.dimensionless_angles()))
