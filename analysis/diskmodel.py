@@ -309,12 +309,18 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     y_, x_ = np.indices(data_nodisk.shape)
     apylmfit = LevMarLSQFitter()
+    # the weights don't matter.
+    # I feel like they should, but maybe there's some theorem I'm not
+    # appreciating that says that the parameter constraints are independent of
+    # the errors on the data...
+    # if I'm wrong, this is a bug in astropy.
     astropy_fit_results = apylmfit(Gaussian2D(amplitude=source_pars['ptsrcamp'].value,
                                               x_mean=source_pars['ptsrcx'].value,
                                               y_mean=source_pars['ptsrcy'].value,
                                               x_stddev=2,),
                                    x_, y_, data_nodisk,
-                                   weights=np.ones_like(data_nodisk) * (data-bestdiskminussmearedsourcemod).std(),
+                                   weights=1/(np.ones_like(data_nodisk) *
+                                              (data-bestdiskminussmearedsourcemod).std()),
                                   )
 
     print("astropy gaussian fit to residual point source image: ")
@@ -322,6 +328,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print(np.diagonal(apylmfit.fit_info['param_cov'])**0.5)
     astropy_positional_offset = (apylmfit.fit_info['param_cov'][1,1] +
                                  apylmfit.fit_info['param_cov'][2,2])**0.5
+    print(astropy_positional_offset)
     print()
 
 

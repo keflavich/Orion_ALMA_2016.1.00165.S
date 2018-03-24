@@ -1,6 +1,7 @@
 # make metadata table for images used in analysis
 
 from files import b6_hires_cont, b3_hires_cont
+import numpy as np
 import paths
 from astropy.io import fits
 from astropy import units as u
@@ -17,10 +18,10 @@ tabletext = (r"""
 \begin{table*}[htp]
 \centering
 \caption{Continuum Image Parameters}
-\begin{tabular}{cccccccc}
+\begin{tabular}{ccccccccc}
 \label{tab:image_metadata}
-Band & Robust & Beam Major & Beam Minor & Beam PA               & RMS & Source I $S_{\nu,max}$ & Dynamic Range\\
-     &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & \\
+Band & Robust & Beam Major & Beam Minor & Beam PA               & Jy / K             & RMS & Source I $S_{\nu,max}$ & Dynamic Range\\
+     &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $10^3$ Jy K$^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & \\
 \hline
 
 XXDATAXX
@@ -33,7 +34,8 @@ XXDATAXX
 
 datatext = []
 
-for fn in (b6_hires_cont, b3_hires_cont):
+for fn,freq in ((b6_hires_cont, 224*u.GHz),
+                (b3_hires_cont, 93.3*u.GHz)):
 
     fh = fits.open(paths.dpath(fn))
     header = fh[0].header
@@ -49,6 +51,7 @@ for fn in (b6_hires_cont, b3_hires_cont):
     sourceIpeak = sourceImask.cutout(data)[sourceImask.data.astype('bool')].max()
 
     row = (r"{band} & {robust} & {bmaj:0.3f} & {bmin:0.3f} & {bpa:0.1f} &"
+           r" {jtok:0.1f} &"
            r" {rms:0.3f} & {srcipeak:0.3f} & {DR:0d} \\"
            .format(band="B3" if "B3" in fn else "B6",
                    bmaj=beam.major.to(u.arcsec).value,
@@ -61,6 +64,7 @@ for fn in (b6_hires_cont, b3_hires_cont):
                            else 'ERROR'),
                    srcipeak=sourceIpeak*1e3,
                    DR=int((sourceIpeak / noise)/10)*10,
+                   jtok=(beam.jtok(freq).value/1e3),
                   )
           )
     datatext.append(row)
