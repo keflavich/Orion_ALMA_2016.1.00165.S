@@ -10,7 +10,6 @@ from astropy.convolution import convolve_fft, Gaussian2DKernel
 from astropy import modeling
 from astropy import constants
 from scipy import optimize
-from line_point_offset import offset_to_point
 import imp
 import edge_on_ring_velocity_model
 from constants import d_orion, vcen, origin

@@ -3,6 +3,8 @@ import numpy as np
 from astropy import constants, units as u, table, stats, coordinates, wcs, log
 from astropy.io import fits
 from astropy import convolution
+from astropy.modeling.functional_models import Gaussian2D
+from astropy.modeling.fitting import LevMarLSQFitter
 import radio_beam
 import lmfit
 from constants import d_orion
@@ -82,6 +84,14 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     data_K = (data*u.Jy).to(u.K, observed_beam.jtok_equiv(freq))
     jtok = observed_beam.jtok(freq)
+
+    # from the first round of fitting, there is a residual source at this position
+    ptsrc = coordinates.SkyCoord(83.81049240934931*u.deg, -5.375170355557261*u.deg, frame='icrs')
+
+    ptsrcx, ptsrcy = mywcs.wcs_world2pix(ptsrc.ra, ptsrc.dec, 0)
+    ptsrc_amp_value = data[int(ptsrcy), int(ptsrcx)]
+    print("Point source amplitude data value: {0}".format(ptsrc_amp_value))
+    print()
     
     if thresh is not None:
         # mask out low pixels: see what happens if we only fit the stuff we
@@ -162,16 +172,43 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
         return diskmod
 
-    def residual(pars, rms=0.0001):
+    obsbm_max = observed_beam.as_kernel(pixscale).array.max()
+
+    def ptsrcmodel(ptsrcx, ptsrcy, ptsrcamp, ptsrcwid, kernelpa=52):
+        ptsrc_wid_bm = radio_beam.Beam(ptsrcwid*u.arcsec, 0.00001*u.arcsec,
+                                       (kernelpa+90)*u.deg)
+        convbm = observed_beam.convolve(ptsrc_wid_bm)
+        assert convbm.pa.value != 0
+        ptsrc_bm = convbm.as_kernel(pixscale,
+                                    x_size=data.shape[1],
+                                    y_size=data.shape[0])
+        ptsrcmod = (shift.shift2d(ptsrc_bm,
+                                  ptsrcx-data.shape[0]/2, ptsrcy-data.shape[1]/2) /
+                    obsbm_max * ptsrcamp)
+        return ptsrcmod
+
+    def residual(pars, rms=0.0001, maskptsrc=False, data=data, model=model):
         mod = model(**pars)
 
-        parhist[band][len(pars)].append(pars.valuesdict())
+        if maskptsrc:
+            yy,xx = np.indices(data.shape)
+            rr = ((yy-ptsrcy)**2 + (xx-ptsrcx)**2)**0.5
+            mask = rr > 5. # 5 is arbitrary...
+            if baddata is not None:
+                mask &= ~baddata
+        else:
+            if baddata is not None:
+                mask = ~baddata
+            else:
+                mask = None
 
-        if baddata is None:
+        if mask is None:
             # added abs val just to make extra sure...
             resid = ((data - mod)/rms)
         else:
-            resid = ((data[~baddata] - mod[~baddata])/rms)
+            resid = ((data[mask] - mod[mask])/rms)
+
+        parhist[band][len(pars)].append([pars.valuesdict(), (resid**2).sum()])
 
         assert (resid**2).sum() == (np.abs(resid)**2).sum()
         return resid
@@ -186,11 +223,12 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     parameters.add('y2', value=y2)
     parameters.add('scale', value=data.max())
     parhist[band][len(parameters)] = []
-    result = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
+    result = lmfit.minimize(residual, parameters, epsfcn=epsfcn, kws={'maskptsrc':False})
     print("Basic fit parameters (linear model):")
     result.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result.chisqr / (ndata - result.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result.redchi))
+    print(result.message)
     print()
 
     bestdiskmod_beam = model(**result.params)
@@ -206,22 +244,15 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     measured_positionangle = -38
     parameters.add('kernelpa', value=measured_positionangle+90, vary=False)
     parhist[band][len(parameters)] = []
-    result2 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
+    result2 = lmfit.minimize(residual, parameters, epsfcn=epsfcn, kws={'maskptsrc':False})
     print("Smoothed linear fit parameters:")
     result2.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result2.chisqr / (ndata - result2.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result2.redchi))
+    print(result2.message)
     print()
 
     bestdiskmod = model(**result2.params)
-
-    # from the first round of fitting, there is a residual source at this position
-    ptsrc = coordinates.SkyCoord(83.81049240934931*u.deg, -5.375170355557261*u.deg, frame='icrs')
-
-    ptsrcx, ptsrcy = mywcs.wcs_world2pix(ptsrc.ra, ptsrc.dec, 0)
-    ptsrc_amp_value = data[int(ptsrcy), int(ptsrcx)]
-    print("Point source amplitude data value: {0}".format(ptsrc_amp_value))
-    print()
 
     parameters.add('ptsrcx', value=ptsrcx, min=ptsrcx-5, max=ptsrcx+5)
     parameters.add('ptsrcy', value=ptsrcy, min=ptsrcy-5, max=ptsrcy+5)
@@ -232,6 +263,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     result3.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result3.chisqr / (ndata - result3.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result3.redchi))
+    print(result3.message)
     print()
 
     bestdiskplussourcemod = model(**result3.params)
@@ -243,10 +275,104 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     result4.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result4.chisqr / (ndata - result4.nvarys)))
     print("red Chi^2: {0:0.3g}".format(result4.redchi))
+    print(result4.message)
     print()
 
     bestdiskplussmearedsourcemod = model(**result4.params)
 
+
+    # remove the source
+    sourceless_pars = dict(**result4.params)
+    sourceless_pars['ptsrcamp'] = 0
+    bestdiskminussmearedsourcemod = model(**sourceless_pars)
+
+    # refit with source position, amplitude as only free parameters in the
+    # hope that we can estimate errors
+    source_pars = result4.params.copy()
+    for pn in ('x1','x2','y1','y2','scale', 'kernelmajor', 'kernelminor', 'kernelpa'):
+        source_pars.pop(pn)
+    source_pars['ptsrcwid'].vary=False
+
+    data_nodisk = data - bestdiskminussmearedsourcemod
+    data_noptsrc = data - (bestdiskplussmearedsourcemod-bestdiskminussmearedsourcemod)
+
+    parhist[band][len(source_pars)] = []
+    result4b = lmfit.minimize(residual, source_pars, epsfcn=epsfcn,
+                              kws=dict(data=data_nodisk, model=ptsrcmodel))
+    print("Smoothed linear fit parameters with horizontally smeared point source (many pars held fixed):")
+    result4b.params.pretty_print()
+    #print("red Chi^2: {0:0.3g}".format(result4.chisqr / (ndata - result4.nvarys)))
+    print("red Chi^2: {0:0.3g}".format(result4b.redchi))
+    print(result4b.message)
+    print()
+
+    y_, x_ = np.indices(data_nodisk.shape)
+    apylmfit = LevMarLSQFitter()
+    astropy_fit_results = apylmfit(Gaussian2D(amplitude=source_pars['ptsrcamp'].value,
+                                              x_mean=source_pars['ptsrcx'].value,
+                                              y_mean=source_pars['ptsrcy'].value,
+                                              x_stddev=2,),
+                                   x_, y_, data_nodisk)
+
+    print("astropy gaussian fit to residual point source image: ")
+    print(astropy_fit_results)
+    print(np.diagonal(apylmfit.fit_info['param_cov'])**0.5)
+    print()
+
+
+
+    refit_sourceless_params = result4.params.copy()
+    refit_sourceless_params.pop('ptsrcx')
+    refit_sourceless_params.pop('ptsrcy')
+    refit_sourceless_params.pop('ptsrcamp')
+    refit_sourceless_params.pop('ptsrcwid')
+
+    parhist[band][len(refit_sourceless_params)] = []
+    result6 = lmfit.minimize(residual, refit_sourceless_params, epsfcn=epsfcn)
+    print("Smoothed linear fit parameters without horizontally smeared point source, refit:")
+    result6.params.pretty_print()
+    print("red Chi^2: {0:0.3g}".format(result6.redchi))
+    print(result6.message)
+    print()
+
+    bestdiskmod_refit = model(**result6.params)
+    
+    print("For comparison, the original smoothed linear fit: ")
+    result2.params.pretty_print()
+    print("red Chi^2: {0:0.3g}".format(result2.redchi))
+    print()
+
+    parameters.pop('kernelmajor')
+    parameters.pop('kernelminor')
+    parhist[band][len(parameters)] = []
+    result5 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
+    print("Linear fit parameters with horizontally smeared point source:")
+    result5.params.pretty_print()
+    print("red Chi^2: {0:0.3g}".format(result5.redchi))
+    print(result5.message)
+    print()
+
+    bestbasicdiskplussmearedsourcemod = model(**result5.params)
+
+
+    parhist[band][len(refit_sourceless_params)] = []
+    result7 = lmfit.minimize(residual, refit_sourceless_params, epsfcn=epsfcn,
+                             kws={'data':data_noptsrc})
+    print("Smoothed linear fit parameters with best point source removed from data:")
+    result7.params.pretty_print()
+    print("red Chi^2: {0:0.3g}".format(result7.redchi))
+    print(result7.message)
+    print()
+
+    bestdiskmod_refit_withoutptsrc = model(**result7.params)
+
+
+    fits.PrimaryHDU(data=bestbasicdiskplussmearedsourcemod,
+                    header=new_header).writeto(
+                        paths.dpath(
+                            'contmodels/{0}_bestbasicdiskplussmearedsourcemodel.fits'
+                            .format(band)),
+                        overwrite=True)
     fits.PrimaryHDU(data=bestdiskplussmearedsourcemod,
                     header=new_header).writeto(
                         paths.dpath(
@@ -309,6 +435,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print("kernelpa2={0}".format(result2.params['kernelpa']))
     print("kernelpa3={0}".format(result3.params['kernelpa']))
     print("kernelpa4={0}".format(result4.params['kernelpa']))
+    print("kernelpa5={0}".format(result5.params['kernelpa']))
 
     print()
     print("Disk center is {0} in model 4".format(disk_center_mod4))
@@ -352,10 +479,25 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     # in which the input beam is convolved with the observed beam
     #source_size = fitted_beam.deconvolve(observed_beam)
     source_size = fitted_beam
+    print("Result2 version (no point source): ")
     print("Fitted source (disk vertical scale) size: {0}".format(fitted_beam.__repr__()))
     print("Real source (disk vertical scale) size: {0}".format(source_size.__repr__()))
     scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
     print("Scale height: {0}".format(scaleheight))
+    print()
+
+    # the fit is much better with the source included...
+    fitted_beam = radio_beam.Beam(result4.params['kernelmajor']*u.arcsec,
+                                  result4.params['kernelminor']*u.arcsec,
+                                  result4.params['kernelpa']*u.deg,)
+    source_size = fitted_beam
+    print("Result4 version (has smeared point source): ")
+    print("Fitted source (disk vertical scale) size: {0}".format(fitted_beam.__repr__()))
+    print("Real source (disk vertical scale) size: {0}".format(source_size.__repr__()))
+    scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
+    print("Scale height: {0}".format(scaleheight))
+    print()
+
 
     length_as = (((result4.params['x2'] - result4.params['x1'])**2 +
                   (result4.params['y2'] - result4.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
@@ -518,6 +660,44 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     pl.savefig(paths.fpath("contmodel/SourceI_Disk_model_bigbeam_withsmearedptsrc_{0}.pdf".format(band)), bbox_inches='tight')
 
 
+    pl.figure(8)
+    pl.clf()
+    pl.subplot(2,2,1)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    #pl.plot(diskends_pix[0,:], diskends_pix[1,:], 'w')
+    #pl.plot(xx, yy, 'r')
+    pl.subplot(2,2,2)
+    pl.imshow(bestbasicdiskplussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,3)
+    pl.imshow(data - bestbasicdiskplussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,4)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    pl.contour(bestbasicdiskplussmearedsourcemod, colors=['w']*100,
+               levels=np.linspace(bestbasicdiskplussmearedsourcemod.max()*0.05,
+                                  bestbasicdiskplussmearedsourcemod.max(), 5))
+    pl.savefig(paths.fpath("contmodel/SourceI_BasicDisk_model_withsmearedptsrc_{0}.pdf".format(band)), bbox_inches='tight')
+
+
+    pl.figure(9)
+    pl.clf()
+    pl.subplot(2,2,1)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    #pl.plot(diskends_pix[0,:], diskends_pix[1,:], 'w')
+    #pl.plot(xx, yy, 'r')
+    pl.subplot(2,2,2)
+    pl.imshow(bestdiskminussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,3)
+    pl.imshow(data - bestdiskminussmearedsourcemod, interpolation='none', origin='lower', cmap='viridis')
+    pl.subplot(2,2,4)
+    pl.imshow(data, interpolation='none', origin='lower', cmap='viridis')
+    pl.contour(bestdiskminussmearedsourcemod, colors=['w']*100,
+               levels=np.linspace(bestdiskminussmearedsourcemod.max()*0.05,
+                                  bestdiskminussmearedsourcemod.max(), 5))
+    pl.savefig(paths.fpath("contmodel/SourceI_SmoothDisk_model_withOUTsmearedptsrc_{0}.pdf".format(band)), bbox_inches='tight')
+
+
+
+
 
     # publication figures
     fig5 = pl.figure(5)
@@ -599,7 +779,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                    )
     vmin,vmax = im.norm.vmin, im.norm.vmax
     ax8 = fig6.add_subplot(3,3,8)
-    im = ax8.imshow((data - bestdiskmod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax8.imshow((data - bestdiskmod_refit)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
                     vmin=vmin, vmax=vmax)
     ax9 = fig6.add_subplot(3,3,9)
     im = ax9.imshow((data - bestdiskplussmearedsourcemod)*jtok.value, interpolation='none', origin='lower', cmap='viridis',
