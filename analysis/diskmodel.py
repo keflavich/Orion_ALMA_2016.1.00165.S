@@ -313,13 +313,15 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                                               x_mean=source_pars['ptsrcx'].value,
                                               y_mean=source_pars['ptsrcy'].value,
                                               x_stddev=2,),
-                                   x_, y_, data_nodisk)
+                                   x_, y_, data_nodisk,
+                                   weights=np.ones_like(data_nodisk) * (data-bestdiskminussmearedsourcemod).std(),
+                                  )
 
     print("astropy gaussian fit to residual point source image: ")
     print(astropy_fit_results)
     print(np.diagonal(apylmfit.fit_info['param_cov'])**0.5)
     astropy_positional_offset = (apylmfit.fit_info['param_cov'][1,1] +
-                                 apylmfit.fit_info['param_cov'][2,2])**0.5 
+                                 apylmfit.fit_info['param_cov'][2,2])**0.5
     print()
 
 
