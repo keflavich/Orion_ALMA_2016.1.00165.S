@@ -22,10 +22,8 @@ sourceImass:
 .PHONY: diff
 diff:
 	python parse_macros.py sourceImass.tex sourceImass_fordiff.tex
-	python parse_macros.py submitted.tex original_for_diff.tex
-	#python parse_macros.py sourceImass_aug13.tex sourceImass_aug13_fordiff.tex
-	#python2 parse_macros.py sourceImass_feb16_2016_submitted.tex sourceImass_feb16_2016_submitted_fordiff.tex
-	latexdiff original_for_diff.tex sourceImass_fordiff.tex > diff.tex
+	python parse_macros.py sourceImass_feb13.tex submitted_fordiff.tex
+	latexdiff submitted_fordiff.tex sourceImass_fordiff.tex  > diff.tex
 	${SKIPERR} diff.tex
 	${BIBTEX} diff
 	${SKIPERR} diff.tex
