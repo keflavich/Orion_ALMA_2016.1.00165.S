@@ -176,9 +176,14 @@ $0.5\arcsec\times0.5$\arcsec region immediately surrounding \sourcei, therefore 
 significant emission from the surrounding medium may be significantly affected
 by sidelobes.  Continuum-subtracted cubes were produced by subtracting
 the median across the 1.8 GHz bandwidth in each spectral window. 
-Relevant parameters of the cubes are described in Table \ref{tab:cube_metadata}.
 All cube analysis was performed using
 \texttt{spectral-cube} (\url{https://spectral-cube.readthedocs.io/en/latest/}).
+
+Relevant parameters of the cubes are described in Table \ref{tab:cube_metadata}.
+For the noise estimate, we take the scaled median absolute deviation over the full
+continuum-subtracted cutout cube, which effectively ignores the few channels
+that have significant line emission (the standard deviation and median absolute
+deviation differ by $<5\%$).
 
 \input{cube_metadata.tex}
 
@@ -273,9 +278,14 @@ This coincidence was noted by \citet{Bally2011a} and \citet{Goddi2011b}.
 % worth monitoring this blob to see if it is in orbit or infalling or something
 % else.  
 
-The disk has a brightness temperature ranging from 200-500 K.  These measurements
-agree with the continuum model of \citet{Plambeck2016a}, who inferred
-the presence of an optically thick $T=500$ K surface from the SED.
+The disk has a peak brightness temperature at 1.3 mm of $\sim600$ K at the
+position of the compact source and $\sim400-500$ K at other positions, with a
+gradual decline from the center to the exterior.  These measurements agree with
+the continuum model of \citet{Plambeck2016a}, who inferred the presence of an
+optically thick $T=500$ K surface from the SED.  The 3.2 mm continuum has a
+higher peak brightness temperature at the position of the central compact
+source, but otherwise is consistent with the 1.3 mm brightness (see Figure
+\ref{fig:continuum_data_B6}).
 % relies on overview figure {\color{red} The region of the surrounding hot core that is in line with the
 % relies on overview figure disk is slightly fainter than its surroundings, hinting that the disk
 % relies on overview figure is shading the core from the central source and adding circumstantial
@@ -329,7 +339,8 @@ $5_{5,0}-6_{4,3}$ line at 232.68670 GHz, with $E_U=3461.9$ K.
 Verification data, but believed it to be masing.  We report here that, because
 it is similar in morphology and excitation level to the 336 GHz vibrationally
 excited water line reported in \citet{Hirota2014a}, and it has a peak
-brightness temperature $\sim1000$ K, it is most likely a thermal line.
+brightness temperature $\sim1500\pm100$ K (in the robust -2 maps; see Figure
+\ref{fig:U1peak}), it is most likely a thermal line.
 
 The water line traces an X-shaped feature above and below the disk, resembling
 the overall distribution of SiO masers.  The water is not directly aligned with

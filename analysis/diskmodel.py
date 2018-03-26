@@ -84,6 +84,13 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     beams[band] = observed_beam
 
     data_K = (data*u.Jy).to(u.K, observed_beam.jtok_equiv(freq))
+
+    new_header_K = new_header.copy()
+    new_header_K['BUNIT'] = 'K'
+    fits.PrimaryHDU(data=data_K.value, header=new_header_K).writeto(
+        paths.dpath('contmodels/{0}_data_K_cutout.fits'.format(band)),
+        overwrite=True)
+
     jtok = observed_beam.jtok(freq)
 
     # from the first round of fitting, there is a residual source at this position
