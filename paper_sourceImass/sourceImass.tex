@@ -460,17 +460,21 @@ sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
 \label{sec:kinematics}
 Following \citet{Seifried2016a}, we measure the outer edge of the detected
 \water emission to define the rotation curve surrounding \sourcei.  In this technique,
-the outer envelope of the rotation curve is identified in a position-velocity
-diagram extracted along the disk direction by tracing emission from
-its peak along a given line of sight down to some emission threshold;
-we use a threshold of 5-$\sigma$.
-In Appendix \ref{appendix:centroids}, to facilitate direct comparison with
-previous works, we use the centroid-of-velocity-channel approach that
-\citet{Seifried2016a} warn may underestimate the central mass.
+the outer envelope of the rotation curve is identified in a position-velocity (PV)
+diagram extracted along the disk direction.  The emission along each line-of-sight
+in the PV diagram is followed from
+its peak down to some emission threshold.
+We use a threshold of 5-$\sigma$, as was done in \citet{Seifried2016a}, but we assess
+the importance of this threshold in Section \ref{sec:errorestimate}.
+Additionally, to facilitate direct comparison with
+previous works, we use the centroid-of-velocity-channel approach
+in Appendix \ref{appendix:centroids} (although 
+\citet{Seifried2016a} warn it may underestimate the central mass)
+and obtain similar results, albeit from different spectral lines.
 
 Of the detected lines, the \water line spans the widest range of
-velocities as a function of radius; as shown in Figure \ref{fig:h2okepler},
-there is \water emission spanning at least from radius 10 to 100 AU.  Many
+velocities as a function of radius.  As shown in Figure \ref{fig:h2okepler},
+there is \water emission spanning at least radii $r\approx 10$ to 100 AU.  Many
 other molecules, most of
 which we have not been able to identify, span a range of 30-80 AU, while SiS
 spans 30 AU to an unconstrained outer radius.   The SiO lines span varying radii,
@@ -481,10 +485,7 @@ curves).
 We find that a 15 \msun edge-on Keplerian rotation curve fits\footnote{We do
 not report best-fit parameters and statistical errors here because the errors
 on the outer envelope are poorly characterized and likely dominated by
-systematic errors such as channel discretization.  Directly fitting the outer
-edge points in Figure \ref{fig:h2okepler} with equal weights yields a best-fit
-power-law with $\alpha=0.4$, which is consistent with the Keplerian profile
-$\alpha=0.5$.  Appendix XX discusses fitting further.} the outer edge of
+systematic errors such as channel discretization.  } the outer edge of
 the \water line reasonably well (Figure \ref{fig:h2okepler}) and is also an
 acceptable match to the outer profiles of the unidentified lines
 described in Section \ref{sec:otherlines}.  A lower-mass central source is consistent
@@ -578,14 +579,26 @@ Figure \ref{fig:U1peak} and Appendix \ref{sec:waterlinerevisited}).
 To support the argument that the velocity profiles are Keplerian, as opposed to
 some other power-law profile as has been found for the outer envelopes of
 several low-mass YSOs
-\citep{Lee2017h,Aso2017b,Ohashi2014a,Lindberg2014a,Murillo2013a}, we performed
-fits to the outer envelope velocity profile of the \water line.  We limit our
-fits to the outer envelope velocity profile, as opposed to the centroid
-velocity profile, both because of the recommendations of \citet{Seifried2016a}
-that the centroid velocities are biased and poorly fit by Keplerian curves, and
-because the centroid velocities of both SiO and \water are not dominated by the
-disk's velocity.  The outer envelope profile, however, appears to be dominated
-by the disk.
+\citep{Lee2017h,Aso2017b,Ohashi2014a,Lindberg2014a,Murillo2013a}, we show
+power-law fits to the outer envelope velocity profile of the \water line
+in Figure \ref{fig:h2opowerlaws}.
+This figure convincingly demonstrates that
+a power law $\alpha=1$ \citep[e.g., as observed in the outer parts of low-mass
+YSO disks;][]{Aso2017b} is inconsistent with the data.  While the best-fit
+profile of $\alpha\approx0.4$ is slightly shallower than the Keplerian
+$\alpha=0.5$ curve, both shallow profiles are consistent with the data.
+The limited spectral resolution of our data is evident in this plot, where
+there is little separation in velocity from $\sim30-50$ AU; higher
+spectral resolution observations or more sophisticated modeling may be able to
+provide a tighter constraint on the power-law slope.
+
+% We limit our
+% fits to the outer envelope velocity profile, as opposed to the centroid
+% velocity profile, both because of the recommendations of \citet{Seifried2016a}
+% that the centroid velocities are biased and poorly fit by Keplerian curves, and
+% because the centroid velocities of both SiO and \water are not dominated by the
+% disk's velocity.  The outer envelope profile, however, appears to be dominated
+% by the disk.
 
 \FigureOneCol{figures/bestfit_powerlaw_H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {Radial profile of the outer-envelope velocity profile extracted from
@@ -599,16 +612,9 @@ $\alpha=0.5$, i.e., a Keplerian rotation curve, for the range $13 \msun < M <
 17 \msun$. }
 {fig:h2opowerlaws}{1}{3.0in}
 
-Figure \ref{fig:h2opowerlaws} shows several power-law profiles superposed on
-the outer-envelope velocity profile.  The figure convincingly demonstrates that
-a power law $\alpha=1$ \citep[e.g., as observed in the outer parts of low-mass
-YSO disks;][]{Aso2017b} is inconsistent with the data.  While the best-fit
-profile of $\alpha\approx0.4$ is slightly shallower than the Keplerian
-$\alpha=0.5$ curve, both shallow profiles are consistent with the data.
-The limited spectral resolution of our data is evident in this plot, where
-there is little separation in velocity from $\sim30-50$ AU; higher
-spectral resolution observations or more sophisticated modeling may be able to
-provide a tighter constraint on the power-law slope.
+%Figure \ref{fig:h2opowerlaws} shows several power-law profiles superposed on
+%the outer-envelope velocity profile.
+
 
 The mass for the $\alpha=0.5$ curve is $M=15$ \msun; we do not determine
 masses for the other models since they are not consistent with a pointlike
@@ -617,11 +623,13 @@ in filled magenta; since there are many points above the curve, a more massive
 central source is plausible, while a less massive source is unlikely.
 
 \subsubsection{An estimate of the error on the mass measurement}
+\label{sec:errorestimate}
 We  assess the uncertainty introduced by the threshold level adopted in the
 velocity envelope profile measurement.  Figure \ref{fig:seifreidthresholderror}
 shows the effects of increasing or decreasing the threshold, which is to
 decrease or increase the measured mass, respectively.  These figures suggest
-that our measurement uncertainty is approximately 2 \msun.
+that our measurement uncertainty with the PV envelope fitting technique  is
+approximately 2 \msun.
 
 \Figure{figures/outerenvelope_velocity_thresholds_H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {Demonstration of the effect of a changing threshold in the Seifried method.
@@ -657,7 +665,7 @@ star formation.
 
 \subsection{The luminosity of \sourcei}
 Since we observe an optically thick surface, we can infer the luminosity
-required to keep such a surface at the observed $\approx$500 K assuming
+required to keep such a surface at the observed $T_{B,1.3 mm}\approx$500 K assuming
 it is heated only by radiation.  Taking the disk radius to be 50 AU,
 the required central source luminosity is 6500 \lsun.  This estimate
 should be taken as a lower limit, since the inner disk is likely to be
@@ -737,7 +745,8 @@ velocity relative to \sourcei high enough to escape; the greatest mass
 loss would occur if the disk was already in the direction of \sourcei's eventual
 launch).
 % 11.5 km / s = 23 * (200/50)**-0.5
-Material outside $R\gtrsim200$ AU would likely all have become unbound.
+Material outside $R\gtrsim200$ AU would likely all have become unbound, while other
+material would be retained in a disk parallel to Source I's proper motion.
 %would remain bound, and with \sourcei's present motion of 17 \kms on the sky,
 %that implies all mass within the currently observed disk radius would have
 %remained with it.
@@ -824,26 +833,29 @@ and line emission.  We measure the mass of \sourcei by fitting the
 rotation curve with a Keplerian disk model, finding the following:
 
 \begin{enumerate}
-    \item The central source has mass $M=15$ \msun, where the range
-        accounts for different mass measurement methods.
+    \item The central source has mass $M=15\pm2$ \msun, where the the error
+        bar represents the range of consistent models rather than a typical
+        $1-\sigma$ statistical uncertainty.
     \item The \water $5_{5,0}-6_{4,3}$ line is not masing and kinematically
         traces both the upper envelope of the disk and the lower portion of
         the outflow.
-    \item Several lines that remain unidentified trace the disk kinematics
-        directly.  These lines are visible only toward the outskirts of the
+    \item We observe several lines that trace the disk kinematics
+        directly, though the molecules producing these lines remain
+        unidentified.  These lines are visible only toward the outskirts of the
         disk and are morphologically distinct from both the \water and SiO
         lines that follow the outflow.
-    \item The central emission source in the approximate center of the disk
+    \item A compact source in the approximate center of the disk
         is resolved at 1.3 mm, and it is slightly off-center.  It therefore is
         most likely a hot region of the inner disk.  It may be produced
-        by an unequal mass binary.
+        by time-varying illumination from an unequal mass binary.
 \end{enumerate}
 
-The mass we have measured is higher than in several recent publications both
-because of our improved resolution and sensivity, which allowed us to identify
-and measure lines that trace the disk kinematics.  This higher measured mass
-implies that the dynamical decay scenario for the \sourcei - BN - \sourcex
-system is viable.
+The mass we have measured is higher than in several recent publications because
+both the resolution and sensivity of our observations were greater.  These new
+data allowed us to identify and measure the spectral features that directly
+trace the disk kinematics, while previous data convolved the disk and outflow
+kinematics.  This higher measured mass implies that the dynamical decay
+scenario for the \sourcei - BN - \sourcex system is viable.
 
 \acknowledgements{
 This paper makes use of the following ALMA data: ADS/JAO.ALMA\#2016.1.00165.S
@@ -922,13 +934,13 @@ The positions of the fitted components are significantly different for each
 species, which helps illustrate why previous estimates of \sourcei's mass were
 low.  Fits to both the SiO line in Figure \ref{fig:velcen_sio} and water in
 Figure \ref{fig:velcen_h2o} have lower masses than the fit to the U232.511 line
-(in Figure \ref{fig:velcen_U4}) that more closely traces the disk.
+in Figure \ref{fig:velcen_U4} that more closely traces the disk.
 
-The fitted centroid velocities to the SiO and water lines are slightly higher
-than the typically adopted $V_{I,LSR}=5$ \kms; they are  $\approx7$ and
-$\approx6$ \kms for SiO and \water respectively.  We therefore caution that,
-when identifying lines, it would be advisable to include a $\sim2$ \kms
-systematic error on \sourcei's velocity.
+% The fitted centroid velocities to the SiO and water lines are slightly higher
+% than the typically adopted $V_{I,LSR}=5$ \kms; they are  $\approx7$ and
+% $\approx6$ \kms for SiO and \water respectively.  We therefore caution that,
+% when identifying lines, it would be advisable to include a $\sim2$ \kms
+% systematic error on \sourcei's velocity.
 
 
 % We compared our data to the models adopted by \citet{Plambeck2016a},
@@ -951,16 +963,18 @@ extends to higher velocity and radius.
 
 The most important conclusion from this modeling is that the higher-resolution
 data yield a higher mass than the original lower-resolution data, favoring
-a central star with $M>10$ \msun.  However, the centroid-based approach
-still appears consistent with a lower mass ($M\lesssim15\msun$) central star
-than the \citet{Seifried2016a} upper-envelope fitting approach.
-The centroid-based approach may be particularly biased to lower masses
-by the existence of an optically thick disk, which will hide the highest
-velocity regions at the center of the disk.
-This remaining
-ambiguity highlights the difficulty of direct mass inference from assumed
-Keplerian velocity curves and the need for more sophisticated disk radiative
-transfer models.
+a central star with $M>10$ \msun for all lines, but $M\approx15$ \msun for the unidentified
+lines that appear to most closely trace the disk. 
+%However, the centroid-based approach
+%still appears consistent with a lower mass ($M\lesssim15\msun$) central star
+%than the \citet{Seifried2016a} upper-envelope fitting approach.
+%The centroid-based approach may be particularly biased to lower masses
+%by the existence of an optically thick disk, which will hide the highest
+%velocity regions at the center of the disk.
+%This remaining
+%ambiguity highlights the difficulty of direct mass inference from assumed
+%Keplerian velocity curves and the need for more sophisticated disk radiative
+%transfer models.
 
 \Figure
 {figures/Unknown_4_pp_pv_plots_fittedmodel_withavgs.pdf}
@@ -1023,14 +1037,14 @@ and inner and outer radial cutoffs.}
 
 % \section{Inset figure of the 3.2 mm data}
 
-\subsection{A demonstration of a failure mode of the centroid-of-velocity
+\subsection{A demonstration of a issues with the centroid-of-velocity
 method} Figure \ref{fig:h2opvfailuremode} shows an example of how the
 centroid-of-velocity approach produces lower mass fits for some lines,
 particularly \water and SiO.  The figure shows both the optically thin edge-on
 disk model and the midplane-extracted position-velocity diagram with overlaid
 centroid fits.  The centroid fits notably do not extend nearly as far as
-emission is visible.  This discrepancy is because the midplane emission is much
-fainter than some of the off-plane emission.
+emission is visible.  This discrepancy results from the midplane emission being
+much fainter than some of the off-plane emission.
 
 \Figure{figures/H2Ov2=1_5(5,0)-6(4,3)_pp_pv_plots_fittedmodel_15msun_withavgs_comparepv.pdf}
 {A figure showing the edge-on disk model used to fit the centroid-of-velocity curves with
@@ -1041,11 +1055,16 @@ overlaid on the midplane position-velocity diagram of the \water line (right).}
 By contrast, a similar side-by-side comparison of the edge-on optically thin
 model with the U232.511 line reveals a better match.  In Figure
 \ref{fig:u4pvmodelcomparison}, the overall structure of the observed
-position-velocity diagram is well-matched to the model.  The discrepancy in
-intensity, in which the inner part of the disk is fainter in the observations
-than in the naive model, is consistent with the inner disk being optically
-thick in the continuum but the outer edge of the disk being thin in the
-continuum.
+position-velocity diagram is well-matched to the model.
+
+% The discrepancy in
+% intensity, in which the inner part of the disk is fainter in the observations
+% than in the naive model, is an optical depth effect.
+% The inner disk is optically thick, blocking emission at all velocities in the
+% inner portion of the disk in projection.  We therefore see mostly, but not
+% entirely, the optically thin (in the continuum) outer edge of the disk.
+
+
 
 \Figure{figures/Unknown_4_pp_pv_plots_fittedmodel_15msun_withavgs_comparepv.pdf}
 {A figure showing the edge-on disk model used to fit the centroid-of-velocity curves with
@@ -1194,7 +1213,7 @@ surrounding cloud.
 These images are produced from the robust -2 weighted cubes.
 While similar to the $^{28}$SiO shown in Figure \ref{fig:siopv},
 there is a remarkable position-velocity ring at high elevations
-that corresponds to  masers.
+that is coincident with many of the SiO and \water masers.
 }
 {fig:29siopv}{1}{0.23\textwidth}
 
@@ -1249,7 +1268,7 @@ Figures \ref{fig:contmodel_residuals_B6} and \ref{fig:contmodel_residuals_B3}
 show the model and residuals for the band 6 and band 3 data, highlighting the
 significantly improved fit as more model parameters are added.
 
-In figure \ref{fig:contmodel_residuals_B6}, the apparent point sources at the
+In Figure \ref{fig:contmodel_residuals_B6}, the apparent point sources at the
 edge of the disk in the central column are artificial features introduced by
 the model; since the model is forced to be smooth, the best-fit model is one
 that is more centrally peaked, which results in an under-prediction of the disk
@@ -1259,7 +1278,7 @@ Also in this figure, there appears to be a faint `halo' of emission at the
 $\sim30$ K level around the modeled region.  The halo is asymmetric, with a
 greater extent toward the southwest.  If this feature is not an artifact of the
 data reduction, which we cannot rule out, it is likely to be from optically
-thin dust above and below the disk, since it is not detect in the 3.2 mm data.
+thin dust above and below the disk, since it is not detected in the 3.2 mm data.
 
 
 \Figure{figures/models_and_residuals_B6.pdf}
