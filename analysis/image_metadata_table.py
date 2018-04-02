@@ -20,8 +20,8 @@ tabletext = (r"""
 \caption{Continuum Image Parameters}
 \begin{tabular}{ccccccccc}
 \label{tab:image_metadata}
-Band & Robust & Beam Major & Beam Minor & Beam PA               & Jy / K             & RMS & Source I $S_{\nu,max}$ & Dynamic Range\\
-     &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $10^3$ Jy K$^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & \\
+Band & Robust & Beam Major & Beam Minor & Beam PA               & $T_B$/$S_\nu$      & RMS & Source I $S_{\nu,max}$ & Dynamic Range\\
+     &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $10^3$ K Jy$^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & \\
 \hline
 
 XXDATAXX

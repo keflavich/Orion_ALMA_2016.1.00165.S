@@ -739,17 +739,45 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     ax.add_patch(beam_ellipse)
     fig5.savefig(paths.fpath("contmodel/OrionSourceI_data_{0}.pdf".format(band)), bbox_inches='tight')
 
+    extent = [-data.shape[1]/2*pixscale.to(u.arcsec).value,
+              data.shape[1]/2*pixscale.to(u.arcsec).value,
+              -data.shape[0]/2*pixscale.to(u.arcsec).value,
+              data.shape[0]/2*pixscale.to(u.arcsec).value,]
+
+    plotted_center = mywcs.wcs_pix2world(data.shape[1]/2, data.shape[0]/2, 0)
+    plotted_center_coord = coordinates.SkyCoord(*plotted_center, unit=(u.deg,
+                                                                       u.deg),
+                                                frame=mywcs.wcs.radesys.lower())
+    print("Center position of {2} image is: {0}  {1}"
+          .format(plotted_center_coord.to_string('hmsdms'),
+                  plotted_center_coord.to_string('hmsdms', sep=':'),
+                  band
+                 )
+         )
+
     fig5.clf()
     ax = fig5.gca()
-    im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='gray', vmin=-5, vmax=40)
-    im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray', vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3)
-    con = ax.contour(data*jtok.value, levels=[50, 100, 150, 200, 300, 400, 500, 600], colors=['r']*10)
+    im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower',
+                    cmap='gray', vmin=-5, vmax=40,
+                    extent=extent,
+                   )
+    im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray',
+                   vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3,
+                   extent=extent,
+                  )
+    con = ax.contour(data*jtok.value,
+                     levels=[50, 100, 150, 200, 300, 400, 500, 600],
+                     colors=['r']*10,
+                     extent=extent,
+                    )
     cb2 = fig5.colorbar(mappable=im0)
     cb2.set_label('$T_B$ [K]')
     cb = fig5.colorbar(mappable=im)
     cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
-    ax.set_xticks([])
-    ax.set_yticks([])
+    #ax.set_xticks([])
+    #ax.set_yticks([])
+    ax.set_xlabel("RA offset (\")")
+    ax.set_ylabel("Dec offset (\")")
 
     # need duplicate code here (grr) because matplotlib refuses to reuse Aritst objects
     beam_ellipse = observed_beam.ellipse_to_plot(0.9*data.shape[1], 0.1*data.shape[0], pixscale)

@@ -105,7 +105,7 @@ def thindiskcurve_residual(parameters, xsep, velo, error=None, **kwargs):
 
 def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
                          rinner=20*u.au, router=50*u.au,
-                         fixedmass=False
+                         fixedmass=False, conf_int=False, **kwargs
                         ):
 
     parameters = lmfit.Parameters()
@@ -118,17 +118,71 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
     parameters.add('router', value=u.Quantity(router, u.au).value, min=20, max=100,
                    expr='rinner+delta')
     parameters.add('vcen', value=vcen.value, min=3.5, max=7.5)
-    result = lmfit.minimize(thindiskcurve_residual, parameters, epsfcn=0.005,
-                            kws={'xsep': u.Quantity(xsep, u.au),
-                                 'velo': u.Quantity(velo, u.km/u.s),
-                                 'error': error})
+
+    fcn_kws = kwargs
+    fcn_kws.update({'xsep': u.Quantity(xsep, u.au),
+                    'velo': u.Quantity(velo, u.km/u.s),
+                    'error': error})
+
+    minimizer = lmfit.Minimizer(thindiskcurve_residual, parameters, epsfcn=0.005,
+                                fcn_kws=fcn_kws)
+
+    result = minimizer.minimize()
 
     result.params.pretty_print()
 
     if fixedmass:
         assert parameters['mass'].value == mguess.value
 
+    if conf_int:
+        lmfit.report_fit(result.params, min_correl=0.5)
+
+        ci, trace = lmfit.conf_interval(minimizer, result,
+                                        sigmas=[1, 2],
+                                        trace=True,
+                                        verbose=False)
+        lmfit.printfuncs.report_ci(ci)
+        return result, ci, trace, minimizer
+
     return result
+
+def trace_plotter(ci, trace, result, minimizer):
+    import pylab as pl
+    pl.figure(5).clf()
+    cx, cy, grid = lmfit.conf_interval2d(minimizer, result, 'rinner',
+                                         'router', 30, 30)
+    ax = pl.subplot(3,3,4)
+    ax.contourf(cx, cy, grid, np.linspace(0, 1, 11), cmap='gray')
+    ax.xlabel('$R_{inner}$ [AU]')
+    ax.ylabel('$R_{outer}$ [AU]')
+    ax.colorbar()
+
+    cx, cy, grid = lmfit.conf_interval2d(minimizer, result, 'rinner',
+                                         'mass', 30, 30)
+
+    ax = pl.subplot(3,3,7)
+    ax.contourf(cx, cy, grid, np.linspace(0, 1, 11), cmap='gray')
+    ax.xlabel('$R_{inner}$ [AU]')
+    ax.ylabel('Mass [$M_\odot$]')
+    ax.colorbar()
+
+    cx, cy, grid = lmfit.conf_interval2d(minimizer, result, 'router',
+                                         'mass', 30, 30)
+
+    ax = pl.subplot(3,3,8)
+    ax.contourf(cx, cy, grid, np.linspace(0, 1, 11), cmap='gray')
+    ax.xlabel('$R_{outer}$ [AU]')
+    ax.ylabel('Mass [$M_\odot$]')
+    ax.colorbar()
+
+    ax = pl.subplot(3,3,1)
+    ax.hist(trace['rinner'], facecolor='none', bins=25)
+
+    ax = pl.subplot(3,3,2)
+    ax.hist(trace['router'], facecolor='none', bins=25)
+
+    ax = pl.subplot(3,3,3)
+    ax.hist(trace['mass'], facecolor='none', bins=25)
 
 if __name__ == "__main__":
 

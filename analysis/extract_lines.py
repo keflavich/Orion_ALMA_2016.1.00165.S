@@ -8,6 +8,7 @@ from lines import disk_lines
 import radio_beam
 from files import b6_hires_cont
 from astropy.nddata import Cutout2D
+import reproject
 
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r0.5_SourceIcutout.image.tt0.pbcor.fits'))
@@ -68,6 +69,9 @@ for robust in (-2, 0.5):
 
                     fmin, fmax = cube.spectral_extrema
 
+                    mywcs = cube.wcs.celestial
+                    pixscale = wcs.utils.proj_plane_pixel_area(mywcs)**0.5 * u.deg
+
                     if linefreq > fmin and linefreq < fmax:
 
 
@@ -105,6 +109,8 @@ for robust in (-2, 0.5):
                             mx = Projection.from_hdu(fits.open(mx_fn)[0])
                             m0 = Projection.from_hdu(fits.open(m0_fn)[0])
 
+
+                        print("Figures for {0} in spw {1}".format(linename, spw))
                         pl.figure(1).clf()
 
                         mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
@@ -114,6 +120,31 @@ for robust in (-2, 0.5):
                         mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
                         mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
                                            .format(linename, sourcename, robust=robust))
+
+                        pl.figure(1).clf()
+
+                        contdata,_ = reproject.reproject_interp(conthdu, mx.hdu.header)
+
+                        extent = [-mx.shape[1]/2*pixscale.to(u.arcsec).value,
+                                  mx.shape[1]/2*pixscale.to(u.arcsec).value,
+                                  -mx.shape[0]/2*pixscale.to(u.arcsec).value,
+                                  mx.shape[0]/2*pixscale.to(u.arcsec).value,]
+
+                        ax = pl.figure(1).gca()
+                        im = ax.imshow(mx.value, cmap='gray',
+                                       interpolation='none', origin='lower',
+                                       extent=extent,
+                                      )
+                        con = ax.contour(contdata, levels=cont_levels_Jy.value,
+                                         colors=['r']*10, extent=extent)
+                        cb = pl.colorbar(mappable=im)
+                        cb.set_label("$T_B$ [K]")
+                        ax.set_xlabel("RA offset (\")")
+                        ax.set_ylabel("Dec offset (\")")
+
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak_offset.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
 
                         pl.figure(1).clf()
 
@@ -127,6 +158,37 @@ for robust in (-2, 0.5):
                                            .format(linename, sourcename, robust=robust))
 
                         pl.figure(1).clf()
+
+
+                        ax = pl.figure(1).gca()
+                        im = ax.imshow(m0.value, cmap='gray',
+                                       interpolation='none', origin='lower',
+                                       extent=extent,
+                                      )
+                        con = ax.contour(contdata, levels=cont_levels_Jy.value,
+                                         colors=['r']*10, extent=extent)
+                        cb = pl.colorbar(mappable=im)
+                        cb.set_label("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
+                        ax.set_xlabel("RA offset (\")")
+                        ax.set_ylabel("Dec offset (\")")
+
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0_offset.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
+
+                        plotted_center = mywcs.wcs_pix2world(m0.shape[1]/2, m0.shape[0]/2, 0)
+                        plotted_center_coord = coordinates.SkyCoord(*plotted_center, unit=(u.deg,
+                                                                                           u.deg),
+                                                                    frame=mywcs.wcs.radesys.lower())
+                        print("Center position of {2} image is: {0}  {1}"
+                              .format(plotted_center_coord.to_string('hmsdms'),
+                                      plotted_center_coord.to_string('hmsdms', sep=':'),
+                                      band
+                                     )
+                             )
+
+
+
                         pl.close('all')
 
                         del mx, m0

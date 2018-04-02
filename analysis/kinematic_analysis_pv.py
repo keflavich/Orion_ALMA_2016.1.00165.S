@@ -229,12 +229,14 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                     if 'H2O' in linename and width > 0.05 and robustnum > -2:
                         vmax = 0.1
 
-                    fig,ax = show_pv.show_pv(extracted.data, ww,
-                                             origin, vrange=vrange, vcen=vcen,
-                                             imvmin=vmin, imvmax=vmax)
+                    fig,ax,cb = show_pv.show_pv(extracted.data, ww,
+                                                origin, vrange=vrange, vcen=vcen,
+                                                imvmin=vmin, imvmax=vmax)
 
 
                     ax.set_xlim(good_limits)
+
+                    cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
 
                     fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
                                             basename.replace(".fits",".pdf")),
@@ -346,9 +348,10 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                 if 'H2O' in linename and owidth > 0.05 and robustnum > -2:
                     vmax = 0.1
 
-                fig,ax = show_pv.show_pv(diff, ww,
-                                         origin, vrange=vrange, vcen=u.Quantity(vcen,u.km/u.s),
-                                         imvmin=vmin, imvmax=vmax)
+                fig,ax,cb = show_pv.show_pv(diff, ww,
+                                            origin, vrange=vrange, vcen=u.Quantity(vcen,u.km/u.s),
+                                            imvmin=vmin, imvmax=vmax)
+                cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
 
                 kc = show_pv.show_keplercurves(ax, origin, 150*u.au, u.Quantity(vcen,u.km/u.s),
                                                masses=[15,],
@@ -398,4 +401,3 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                                         outfn.replace(".fits",".pdf")),
                             dpi=200,
                             bbox_inches='tight')
-

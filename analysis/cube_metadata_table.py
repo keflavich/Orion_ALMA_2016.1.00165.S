@@ -1,3 +1,4 @@
+import numpy as np
 import paths
 import os
 from astropy import constants, units as u, table, stats, coordinates, wcs, log
@@ -12,10 +13,10 @@ tabletext = (r"""
 \begin{table*}[htp]
 \centering
 \caption{Line Cube Parameters}
-\begin{tabular}{ccccccccc}
+\begin{tabular}{cccccccccc}
 \label{tab:cube_metadata}
-Band & SPW & Freq. Range & Robust & Beam Major & Beam Minor & Beam PA               & RMS                               & RMS\\
-     &     & GHz         &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & K\\
+Band & SPW & Freq. Range & Robust & Beam Major & Beam Minor & Beam PA               & RMS                               & RMS & Channel Width\\
+     &     & GHz         &        & \arcsec    & \arcsec    & $\mathrm{{}^{\circ}}$ & $\mathrm{mJy}~\mathrm{beam}^{-1}$ & K   & \kms         \\
 \hline
 
 XXDATAXX
@@ -46,13 +47,18 @@ for robust in (-2, 0.5):
                     continue
 
                 fmin, fmax = cube.spectral_extrema
+                dv = np.mean(np.diff(
+                    cube.with_spectral_unit(u.km/u.s,
+                                            velocity_convention='radio',
+                                            rest_value=(fmin+fmax)/2.).spectral_axis
+                ))
 
                 noise = cube.mad_std()
                 average_beam = cube.average_beams(0.1)
 
                 row = (r"{band} & {spw} & {freq1:0.3f}-{freq2:0.3f} & "
                        r"{robust} & {bmaj:0.3f} & {bmin:0.3f} & {bpa:0.1f} & "
-                       r"{rms1:0.1f} & {rms2:0.1f} \\"
+                       r"{rms1:0.1f} & {rms2:0.1f} & {dv:0.1f}\\"
                        .format(band=band,
                                bmaj=average_beam.major.to(u.arcsec).value,
                                bmin=average_beam.minor.to(u.arcsec).value,
@@ -63,6 +69,7 @@ for robust in (-2, 0.5):
                                robust=robust,
                                freq1=fmin.to(u.GHz).value,
                                freq2=fmax.to(u.GHz).value,
+                               dv=np.abs(dv.value),
                               )
                       )
                 datatext.append(row)

@@ -118,15 +118,17 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
 
     all_voff_results[savename]['voffs'] = voffs
 
-    fig,ax = show_pv.show_pv(data, ww,
-                             origin, vrange=[-40,55], vcen=vcen,
-                             imvmin=vmin, imvmax=vmax)
+    fig,ax,cb = show_pv.show_pv(data, ww,
+                                origin, vrange=[-40,55], vcen=vcen,
+                                imvmin=vmin, imvmax=vmax)
+
+    cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
 
     ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b',
             zorder=200, alpha=0.9)
     maxdist=150*u.au
-    lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[15, ],
-                                      linestyles=['-'], colors=['r'],
+    lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[15, 10],
+                                      linestyles=['-',':'], colors=['r','g'],
                                       radii={15: (radii, ('m','m'))})
     ax.set_aspect(2)
 
@@ -299,6 +301,6 @@ for key,xmin in [('SiS_12-11_kepler_SeifriedPlot.pdf', 25*u.au),
         pl.xlabel("Offset from center (AU)")
         pl.ylabel("Offset from centroid velocity (km s$^{-1}$)")
         pl.axis([0,90,12,30])
-        pl.legend(loc='best')
+        #pl.legend(loc='best')
 
     pl.savefig(paths.fpath("pv/outerenvelope_velocity_thresholds_{0}".format(key)))

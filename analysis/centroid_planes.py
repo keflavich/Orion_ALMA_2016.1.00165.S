@@ -20,7 +20,7 @@ from astropy.utils.console import ProgressBar
 from constants import vcen as assumed_vcen, origin, d_orion
 
 imp.reload(edge_on_ring_velocity_model)
-from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter
+from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter, trace_plotter
 
 if 'cached_gaussfit_results' not in locals():
     cached_gaussfit_results = {}
@@ -316,13 +316,17 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     offsets_au = (u.Quantity(offset_fits_arcsec, u.arcsec) *
                   d_orion).to(u.au, u.dimensionless_angles())
     print("Beginning thin disk fitting for {0}".format(linename))
-    fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au),
-                                     velo=vels,
-                                     mguess=15.5*u.M_sun,
-                                     rinner=17,
-                                     router=66,
-                                    )
-    fitresult_list.append(fitresult)
+    if False:
+        fitresult, ci, trace, minimizer = thindiskcurve_fitter(
+            xsep=np.array(offsets_au), velo=vels, mguess=15.5*u.M_sun, rinner=17,
+            router=66, conf_int=True, npix=500)
+        fitresult_list.append(fitresult)
+        trace_plotter(ci, trace, fitresult, minimizer)
+    else:
+        fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au), velo=vels,
+                                         mguess=15.5*u.M_sun, rinner=17,
+                                         router=66, conf_int=False, npix=500)
+        fitresult_list.append(fitresult)
 
     for line in thindiskline:
         line.set_visible(False)

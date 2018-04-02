@@ -88,11 +88,11 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
 
     ax.coords[1].set_format_unit(u.km/u.s)
 
-    pl.colorbar(im)
+    cb = pl.colorbar(im)
 
     ax.set_xlim(good_limits)
 
-    return fig,ax
+    return fig,ax,cb
 
 
 def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
