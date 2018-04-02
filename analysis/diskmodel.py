@@ -725,11 +725,22 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     ax = fig5.gca()
     im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='viridis')
     im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='viridis')
-    cb2 = fig5.colorbar(mappable=im0)
-    cb2.set_label('$T_B$ [K]')
-    cb = fig5.colorbar(mappable=im)
+
     wavelength = '1.3 mm' if band == 'B6' else '3 mm' if band == 'B3' else '7 mm' if band == '7mm' else 'ERROR'
+
+    cb = fig5.colorbar(mappable=im)
     cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
+    cb.ax.set_aspect('auto')
+    pos = cb.ax.get_position()
+    cb2 = cb.ax.twinx()
+    cb2.set_ylim([-5, 40])
+    pos.x0 += 0.06
+    cb.ax.set_position(pos)
+    cb2.set_position(pos)
+    cb.ax.yaxis.set_label_position("left")
+    cb2.set_ylabel('$T_B$ [K]')
+    
+
     ax.set_xticks([])
     ax.set_yticks([])
 
@@ -757,10 +768,10 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     fig5.clf()
     ax = fig5.gca()
-    im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower',
-                    cmap='gray', vmin=-5, vmax=40,
-                    extent=extent,
-                   )
+    #im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower',
+    #                cmap='gray', vmin=-5, vmax=40,
+    #                extent=extent,
+    #               )
     im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray',
                    vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3,
                    extent=extent,
@@ -770,10 +781,21 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                      colors=['r']*10,
                      extent=extent,
                     )
-    cb2 = fig5.colorbar(mappable=im0)
-    cb2.set_label('$T_B$ [K]')
+    #cb2 = fig5.colorbar(mappable=im0)
+    # https://stackoverflow.com/questions/27151098/draw-colorbar-with-twin-scales
     cb = fig5.colorbar(mappable=im)
     cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
+    cb.ax.set_aspect('auto')
+    pos = cb.ax.get_position()
+    cb2 = cb.ax.twinx()
+    cb2.set_ylim([-5, 40])
+    pos.x0 +=0.06
+    cb.ax.set_position(pos)
+    cb2.set_position(pos)
+    cb.ax.yaxis.set_label_position("left")
+    cb2.set_ylabel('$T_B$ [K]')
+    
+    
     #ax.set_xticks([])
     #ax.set_yticks([])
     ax.set_xlabel("RA offset (\")")
