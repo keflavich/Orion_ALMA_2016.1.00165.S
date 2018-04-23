@@ -1,16 +1,16 @@
 \begin{table*}[htp]
 \centering
 \caption{Continuum Fit Parameters}
-\begin{tabular}{cccccccccc}
+\begin{tabular}{ccccccccccc}
 \label{tab:continuum_fit_parameters}
-Frequency & Disk FWHM & Disk Radius & Disk PA & Pt Position & Pt Amp & Pt Width & Pt Flux & Total Flux & Pt \% \\
-$\mathrm{GHz}$ & $\mathrm{AU}$ & $\mathrm{AU}$ & $\mathrm{{}^{\circ}}$ &  & $\mathrm{mJy}$ & $\mathrm{AU}$ & $\mathrm{mJy}$ & $\mathrm{mJy}$ & $\mathrm{}$ \\
+Frequency & Disk FWHM & Disk Radius & Disk PA & Pt RA & Pt Dec & Pt Amp & Pt Width & Pt Flux & Total Flux & Pt \% \\
+$\mathrm{GHz}$ & $\mathrm{AU}$ & $\mathrm{AU}$ & $\mathrm{{}^{\circ}}$ & $\mathrm{s}$ & $\mathrm{{}^{\prime\prime}}$ & $\mathrm{mJy}$ & $\mathrm{AU}$ & $\mathrm{mJy}$ & $\mathrm{mJy}$ & $\mathrm{}$ \\
 \hline
-43.165 & 59 & 41 & -36 & - & 1 & 16 & 3 & 10 & 29\% \\
-93.3 & 39 & 37 & -38 & 0.5178 -0.607 & 2 & 9.4 & 5.7 & 57 & 10\% \\
-224.0 & 49 & 51 & -37 & 0.518 -0.613 & 3.2 & 23 & 15 & 280 & 5.5\% \\
+43.165 & 59 $\pm$ 1 & 41 $\pm$ 1.1 & -36 & - & - & 1.00 $\pm$ 0.01 & 16 $\pm$ 0.69 & 3 & 10 & 29\% \\
+93.3 & 39 $\pm$ 0.21 & 37 $\pm$ 0.71 & -38 & 0.518 & -0.0405 & 2.00 $\pm$ 0.03 & 9.4 $\pm$ 0.38 & 5.7 & 57 & 10\% \\
+224.0 & 49 & 51 $\pm$ 0.78 & -37 & 0.518 & -0.0409 & 3.20 & 23 & 15 & 280 & 5.5\% \\
 \hline
 \end{tabular}
 
-\par The pointlike source position is given as RA seconds and Dec arcseconds offset from ICRS 5h35m14s -5d22m30s.   The disk FWHM is the vertical full-width half-maximum of the fitted Gaussian profile.  For the 7 mm data, the position is left blank because we do not have astrometric information for those data (they were self-calibrated on a bright maser whose position was not well-constrained).
+\par The pointlike source position is given as RA seconds and Dec arcseconds offset from ICRS 5h35m14s -5d22m30s.  The error on this position is 0.003s (RA) and 0.0003\arcsec (Dec). For the 7 mm data, the position is left blank because we do not have astrometric information for those data (they were self-calibrated on a bright maser whose position was not well-constrained).  The disk FWHM is the vertical full-width half-maximum of the fitted Gaussian profile.  No formal parameter errors were measured for several of the 224.0 GHz fitted quantities because of a linear algebra failure in the fitter; the errors are likely similar to the 93.3 GHz fit errors. The Pt Flux and Total Flux columns report the integrals of the best-fit models.
 \end{table*}

@@ -1,13 +1,14 @@
 import numpy as np
 from astropy import constants
 from astropy import units as u
+from astropy import stats
 
 import pylab as pl
 from astropy import wcs
 
 from constants import d_orion
 
-def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
+def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
     
 
     if ww.wcs.cunit[1] == 'm/s':
@@ -50,6 +51,12 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax):
                    interpolation='none')
     ax.set_xlabel("Offset [\"]")
     ax.set_ylabel("$V_{LSR}$ [km/s]")
+
+    if contour:
+        std_est = stats.mad_std(data, ignore_nan=True)
+        print("Estimate of standard deviation: {0}".format(std_est))
+        ax.contour(data, colors=['r']*5,
+                   levels=np.array([5,10,15,20,25])*std_est)
 
 
     trans = ax.get_transform('world')

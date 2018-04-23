@@ -27,6 +27,8 @@ from line_point_offset import offset_to_point
 
 import pylab as pl
 
+pl.ioff()
+
 pl.close(1)
 
 redo = False
@@ -243,7 +245,6 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                                 dpi=200,
                                 bbox_inches='tight')
 
-
                     # override that previous junk since we went through the effort of calculating it
                     ax.set_xlim(good_limits)
 
@@ -258,6 +259,23 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                                             basename.replace(".fits",".pdf")),
                                 dpi=200,
                                 bbox_inches='tight')
+
+                    fig,ax,cb = show_pv.show_pv(extracted.data, ww,
+                                                origin, vrange=vrange,
+                                                vcen=vcen, imvmin=vmin,
+                                                imvmax=vmax, contour=True)
+
+
+                    ax.set_xlim(good_limits)
+
+                    cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
+
+                    fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
+                                            basename.replace(".fits","_withcontour.pdf")),
+                                dpi=200,
+                                bbox_inches='tight')
+
+
 
 diskycoords = diskycoorddict['sourceI']
 extraction_path = pvextractor.Path(diskycoords)

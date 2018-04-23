@@ -278,7 +278,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     parameters.add('ptsrcwid', value=0.04, min=0.01, max=0.1)
     parhist[band][len(parameters)] = []
-    result4 = lmfit.minimize(residual, parameters, epsfcn=epsfcn)
+    minimizer = lmfit.Minimizer(residual, parameters, epsfcn=epsfcn)
+    result4 = minimizer.minimize()
     print("Smoothed linear fit parameters with horizontally smeared point source:")
     result4.params.pretty_print()
     #print("red Chi^2: {0:0.3g}".format(result4.chisqr / (ndata - result4.nvarys)))
@@ -418,7 +419,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                         overwrite=True)
 
 
-    ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result4.params['ptsrcx'], result4.params['ptsrcy'], 0)
+    ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result4.params['ptsrcx'],
+                                              result4.params['ptsrcy'], 0)
+    eptsrc_ra, eptsrc_dec = result4.params['ptsrcx'].stderr*pixscale, result4.params['ptsrcy'].stderr*pixscale,
     fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
     print("Fitted point source location = {0} {1}".format(fitted_ptsrc.to_string('hmsdms'), fitted_ptsrc.frame.name))
     print("Fitted point source amplitude: {0}".format(result4.params['ptsrcamp']))
@@ -515,7 +518,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print("Fitted source (disk vertical scale) size: {0}".format(fitted_beam.__repr__()))
     print("Real source (disk vertical scale) size: {0}".format(source_size.__repr__()))
     scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
-    print("Scale height: {0}".format(scaleheight))
+    scaleheight_error = (result4.params['kernelmajor'].stderr*u.arcsec*d_orion).to(u.au, u.dimensionless_angles())
+    print("Scale height: {0} +/- {1}".format(scaleheight, scaleheight_error))
     print()
 
 
@@ -523,8 +527,20 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                   (result4.params['y2'] - result4.params['y1'])**2)**0.5 * pixscale).to(u.arcsec)
     length_au = (length_as * d_orion).to(u.au, u.dimensionless_angles())
 
-    print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g}  or radius {2:0.3g}"
-          .format(length_as, length_au, length_au/2))
+    # complicated propagation of errors using rules I didn't even know about...
+    x1, ex1 = result.params['x1'].value, result.params['x1'].stderr
+    x2, ex2 = result.params['x2'].value, result.params['x2'].stderr
+    y1, ey1 = result.params['y1'].value, result.params['y1'].stderr
+    y2, ey2 = result.params['y2'].value, result.params['y2'].stderr
+    eA2 = 2*(x2**2*ex2**2 + ex2**2*x1**2 + ex1**2*x2**2 + x1**2*ex1**2)**0.5
+    eB2 = 2*(y2**2*ey2**2 + ey2**2*y1**2 + ey1**2*y2**2 + y1**2*ey1**2)**0.5
+    eW = (eA2**2+eB2**2)**0.5
+    W = ((x2-x1)**2+(y2-y1)**2)
+    elength = (0.5 * W**-0.5 * eW)
+    elength_au = (elength * pixscale * d_orion).to(u.au, u.dimensionless_angles())
+
+    print("Length in arcsec: {0:0.3g}  in AU: {1:0.3g} +/- {3:0.3g}  or radius {2:0.3g}"
+          .format(length_as, length_au, length_au/2, elength_au))
     print()
     print()
 
@@ -561,11 +577,17 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                
     fit_results[freq] = {
                          'Disk FWHM': scaleheight*(8*np.log(2))**0.5,
+                         'eDisk FWHM': scaleheight_error*(8*np.log(2))**0.5,
                          'Disk Radius': length_au/2,
+                         'eDisk Radius': elength_au,
                          'Disk PA': posang,
                          'Pt Position': fitted_ptsrc,
+                         'ePt RA': eptsrc_ra.to(u.arcsec).value*15,
+                         'ePt Dec': eptsrc_dec.to(u.arcsec).value,
                          'Pt Amp': result4.params['ptsrcamp'].value,
+                         'ePt Amp': result4.params['ptsrcamp'].stderr,
                          'Pt Width': (u.Quantity(result4.params['ptsrcwid'], u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
+                         'ePt Width': (u.Quantity(result4.params['ptsrcwid'].stderr, u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
                          'Pt Flux': pointmodel_image.sum() / ppbeam,
                          'Total Flux': bestdiskplussmearedsourcemod.sum() / ppbeam,
                          'Pt \%': pointmodel_image.sum() / bestdiskplussmearedsourcemod.sum(),
@@ -637,7 +659,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     pl.figure(4)
     pl.clf()
-    pl.imshow(data_K, interpolation='none', origin='lower', cmap='viridis')
+    pl.imshow(data_K.value, interpolation='none', origin='lower', cmap='viridis')
     pl.colorbar()
 
     pl.figure(7)
@@ -880,9 +902,13 @@ tabledata += [table.Column(data=crd_or_qty([fit_results[freq][key]
                                             for freq in freqs]),
                            name=key)
               for key in resultkeys]
+fitted_coords = coordinates.SkyCoord([fit_results[freq]['Pt Position'] for freq in freqs])
+
 tbl = table.Table(tabledata)
 tbl['Pt Amp'] *= 1000
 tbl['Pt Amp'].unit = u.mJy
+tbl['ePt Amp'] *= 1000
+tbl['ePt Amp'].unit = u.mJy
 tbl['Total Flux'] *= 1000
 tbl['Total Flux'].unit = u.mJy
 tbl['Pt Width'].unit = u.au
@@ -893,7 +919,12 @@ tbl['Disk PA'] = tbl['Disk PA'].to(u.deg)
 
 
 formats = {'Pt Position': lambda x: "-" if np.isnan(x.ra) else "{0:0.4} {1:0.3}".format(x.ra.hms.s-14, x.dec.dms.s+30),
-           'Pt Amp': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
+           'Pt RA': lambda x: "-" if np.isnan(x) else "{0:0.3}".format(x-14),
+           'Pt Dec': lambda x: "-" if np.isnan(x) else "{0:0.3}".format(x+30),
+           'ePt RA': lambda x: "-" if np.isnan(x) else "{0:0.4}".format(x),
+           'ePt Dec': lambda x: "-" if np.isnan(x) else "{0:0.3}".format(x),
+           'Pt Amp': lambda x: ('{0:0.2f}'.format(round_to_n(x,2))),
+           'ePt Amp': lambda x: ('{0:0.2f}'.format(round_to_n(x,2))),
            'Pt Width': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk PA': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
            'Disk FWHM': lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2))),
@@ -910,24 +941,68 @@ latexdict['caption'] = 'Continuum Fit Parameters'
 latexdict['preamble'] = '\centering'
 latexdict['tablefoot'] = ('\n\par The pointlike source '
                           'position is given as RA seconds and Dec arcseconds '
-                          'offset from ICRS 5h35m14s -5d22m30s.   The disk FWHM'
-                          ' is the vertical full-width half-maximum of the '
-                          'fitted Gaussian profile.  For the 7 mm data, the '
+                          'offset from ICRS 5h35m14s -5d22m30s.  The error on '
+                          'this position is 0.003s (RA) and 0.0003\\arcsec (Dec). '
+                          'For the 7 mm data, the '
                           'position is left blank because we do not have '
                           'astrometric information for those data (they were '
                           'self-calibrated on a bright maser whose position '
-                          'was not well-constrained).'
+                          'was not well-constrained).  '
+                          'The disk FWHM'
+                          ' is the vertical full-width half-maximum of the '
+                          'fitted Gaussian profile.  '
+                          'No formal parameter errors were measured for several of the '
+                          '224.0 GHz fitted quantities because of a linear algebra '
+                          'failure in the fitter; the errors are likely similar to '
+                          'the 93.3 GHz fit errors. '
+                          'The Pt Flux and Total Flux columns report the integrals '
+                          'of the best-fit models.' 
                          )
 
 mask7mm = tbl['Frequency'] == 43.165
 tbl['Pt Position'][mask7mm] = coordinates.SkyCoord(np.nan, np.nan, unit=(u.deg, u.deg), frame='icrs')
 
+tbl['Pt RA'] = table.Column(name='Pt RA', data=fitted_coords.ra.hms.s, unit=u.s)
+tbl['Pt Dec'] = table.Column(name='Pt Dec', data=fitted_coords.dec.hms.s, unit=u.arcsec)
+tbl['Pt RA'][mask7mm] = np.nan
+tbl['Pt Dec'][mask7mm] = np.nan
+tbl.remove_column('Pt Position')
 
-tbl = tbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt Position', 'Pt Amp', 'Pt Width', 'Pt Flux', 'Total Flux', 'Pt \%', ]
 tbl.sort('Frequency')
-tbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
-          formats=formats,
-          latexdict=latexdict, overwrite=True)
+tbl.write('continuum_fit_parameters.txt', format='ascii.ecsv')
+
+ntbl = table.Table.read('continuum_fit_parameters.txt', format='ascii.ecsv')
+newformats = {k:v for k,v in formats.items()}
+
+
+# these don't format well, so let's just skip them
+ntbl.remove_column('ePt RA')
+ntbl.remove_column('ePt Dec')
+#ntbl.remove_column('ePt Amp')
+
+for cn in ntbl.colnames:
+    if 'e'+cn in ntbl.colnames:
+        print("replacing {0}".format(cn))
+        new_col = [("{0} $\pm$ {1}".format(formats[cn](val),
+                                           (formats['e'+cn](err)
+                                            if 'e'+cn in formats else
+                                            formats[cn](err))
+                                          )
+                    if '-' != formats[cn](val) else '-') if err != 0.0
+                   else formats[cn](val)
+                   for val, err in zip(ntbl[cn], ntbl['e'+cn])]
+        unit = ntbl[cn].unit
+        ntbl.remove_column(cn)
+        ntbl.remove_column('e'+cn)
+        ntbl.add_column(table.Column(data=new_col, name=cn, unit=unit))
+        newformats[cn] = lambda x: x
+
+
+ntbl = ntbl['Frequency', 'Disk FWHM', 'Disk Radius', 'Disk PA', 'Pt RA', 'Pt Dec', 'Pt Amp', 'Pt Width', 'Pt Flux', 'Total Flux', 'Pt \%', ]
+ntbl.sort('Frequency')
+ntbl.write(paths.texpath('continuum_fit_parameters.tex'), format='ascii.latex',
+           formats=newformats,
+           latexdict=latexdict, overwrite=True)
 
 
 with open(paths.texpath('continuum_beams.tex'), 'w') as fh:
