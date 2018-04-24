@@ -320,7 +320,7 @@ source, but otherwise is consistent with the 1.3 mm brightness (see Figure
 {figures/OrionSourceI_data_stretched_B6.pdf}
 {The robust -2 continuum image of Orion \sourcei at 3.2 mm (left) and 1.3 mm (right).
 The beam is shown
-in the bottom right, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
+in the bottom left, with size $\Bthreemaj\arcsec\times \Bthreemin\arcsec$ at
 PA$=\Bthreepa\degrees$ (3.2 mm, left) and $\Bsixmaj\arcsec\times \Bsixmin\arcsec$ at
 PA$=\Bsixpa\degrees$ (1.3 mm, right).
 Contours are overlaid at $T_B=$50, 100, 150, 200, 300, 400, and 500 K.
@@ -453,14 +453,19 @@ are the most direct tracers of the disk's kinematics.
 
 
 \FigureThree
-{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+%{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+%{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+%{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_peak_offset_contours}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_peak_offset_contours}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_peak_offset_contours}.pdf}
 {Peak intensity map of an unknown line (U230.322; left) and the \water
 line (middle, right) with continuum overlaid
 in red contours at levels of 
 % robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
-50, 150, 300, and 500 K. %robust -2
+50,  300, and 500 K. %robust -2
+White contours are shown at 50, 100, and 150 K (left), and  500, 750, 1000, and 1250 K
+(middle, right).
 The \water and unknown line clearly trace different physical structures, as
 they exhibit no coincident emission peaks.  The water line does
 not exhibit emission directly along the disk midplane.
@@ -473,7 +478,7 @@ The positions shown are offsets from coordinate ICRS 05:35:14.5184 -05:22:30.619
 % Do we make anything of this?  It becomes fairly significant in the centroid-of-channel
 % analysis in the Appendices.}
 }
-{fig:U1peak}{1}{2.2in}
+{fig:U1peak}{1}{2.4in}
 
 
 \subsection{Kinematics: a Keplerian disk}
@@ -543,7 +548,7 @@ A substantially smaller mass, such as the 5-10 \msun suggested previously
 with such masses, emission is clearly detected outside of the predicted
 Keplerian curve (see, e.g., the green curve in Figure \ref{fig:h2okepler}).  
 
-\Figure%Two
+\Figure
 %{figures/H2O_kepler_SeifriedPlot_0.1arcsec.pdf}
 {figures/H2O_kepler_SeifriedPlot_0.01arcsec.pdf}
 {Position-velocity diagram of \water $5_{5,0}-6_{4,3}$.
@@ -997,15 +1002,20 @@ disk, the velocity curve is consistent with the 15 \msun Keplerian curve
 overlaid.
 
 \FigureFour
-{figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
-{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
-{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+%{figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
+%{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
+%{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
+%{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_B6_robust-2_diskpv_0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.2-0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.3-0.2_withcontour.pdf}
+{figures/keplercurves_sourceI_SiOv=0_5-4_robust-2_diskpv_0.4-0.3_withcontour.pdf}
 {Position-velocity slices of SiO v=0 J=5-4 along the disk direction at four heights:
 (a) $|h|<0.05\arcsec$,
 (b) $0.05\arcsec<|h|<0.1\arcsec$,
 (c) $0.1\arcsec<|h|<0.15\arcsec$,
 (d) $0.15\arcsec<|h|<0.2\arcsec$.
+Contours are overlaid at 5 and 10 $\sigma$.
 These images are produced from the robust -2 weighted cubes.
 The missing emission around $v=0$ \kms is likely caused by image filtering
 effects; at these velocities, there is extended, smooth SiO emission from the
@@ -1014,15 +1024,20 @@ surrounding cloud.
 {fig:siopv}{1}{0.23\textwidth}
 
 \FigureFour
-{figures/keplercurves_sourceI_29SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
-{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
-{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
-{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+%{figures/keplercurves_sourceI_29SiOv=0_5-4_B6_robust-2_diskpv_0.1.pdf}
+%{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.2-0.1.pdf}
+%{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2.pdf}
+%{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_B6_robust-2_diskpv_0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.2-0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.3-0.2_withcontour.pdf}
+{figures/keplercurves_sourceI_29SiOv=0_5-4_robust-2_diskpv_0.4-0.3_withcontour.pdf}
 {Position-velocity slices of $^{29}$SiO v=0 J=5-4 along the disk direction at four heights:
 (a) $|h|<0.05\arcsec$,
 (b) $0.05\arcsec<|h|<0.1\arcsec$,
 (c) $0.1\arcsec<|h|<0.15\arcsec$,
 (d) $0.15\arcsec<|h|<0.2\arcsec$.
+Contours are overlaid at 5, 10, 15, 20, and 25 $\sigma$.
 These images are produced from the robust -2 weighted cubes.
 While similar to the $^{28}$SiO shown in Figure \ref{fig:siopv},
 there is a remarkable position-velocity ring at high elevations
@@ -1076,16 +1091,21 @@ they are observed perpendicular to the disk along the direction of the outflow.
 %`more extended' (in pv space) than the blueshifted?}
 
 \FigureThree
-{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1.pdf}
-{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.2-0.1.pdf}
-{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.3-0.2.pdf}
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1.pdf}
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.2-0.1.pdf}
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.3-0.2.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.2-0.1_withcontour.pdf}
+{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.3-0.2_withcontour.pdf}
 {Position-velocity slices of the \water $5_{5,0}-6_{4,3}$ line at different
 heights above the disk plane from the robust -2 data cube.  The left panel
 shows the inner 0.1\arcsec (i.e., near the midplane, $|h| < 0.05\arcsec$,
 $|h|<20$ AU), the middle shows the range $0.05\arcsec < |h| < 0.1$\arcsec, and
 the right shows the range $0.1\arcsec < |h| < 0.15\arcsec$.  All three panels
 show averages over the specified range, with the colorbar showing intensity in
-mJy \perbeam.  The red solid lines show the Keplerian
+mJy \perbeam.
+Contours are overlaid at 5, 10, 15, and 20 $\sigma$.
+The red solid lines show the Keplerian
 profile for a 15 \msun
 central source, and the purple dashed lines show the orbital
 track for a particle at 30 and 80 AU for such a source; these are included
@@ -1379,16 +1399,20 @@ Figures \ref{fig:U4} and \ref{fig:U5} show peak intensity, moment 0, and
 position-velocity maps of the U232.511 and U217.980 lines.
 
 \FigureThree
-{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
-{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+%{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+%{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+%{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+{{figures/OrionSourceI_Unknown_1_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset_contours}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset_contours}.pdf}
+{{figures/OrionSourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2.maskedclarkclean10000_medsub_K_moment0_offset_contours}.pdf}
 {Moment-0 (integrated intensity) map of the U230.322 (left) and \water (middle,
 right) line with continuum overlaid in contours.  Continuum contours
 from the robust -2 map are shown
 in red at levels of 
 % robust 0.5 1, 5, 10, 20, and 30 mJy \perbeam (15, 75, 150, 300, 450 K).
 %1, 5, 10, and 20 mJy \perbeam (30, 150, 300, 600 K). %robust -2
-50, 150, 300, and 500 K.
+50,  300, and 500 K.
+Contours of the line data are shown at 5, 10, and 15 $\sigma$.
 The left two figures are robust 0.5 weighted images, while the right
 is a robust -2 weighted image with higher resolution and poorer
 sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
@@ -1396,13 +1420,18 @@ sensitivity.  The U230.322 line is not detected in the robust -2 cubes.
 {fig:h2omom0}{1}{2.2in}
 
 \FigureThree
-{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
-{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
-{{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01}.pdf}
+%{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+%{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+%{{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01}.pdf}
+{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset_contours}.pdf}
+{{figures/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K_peak_offset_contours}.pdf}
+{{figures/keplercurves_sourceI_Unknown_4_B6_robust0.5_diskpv_0.01_withcontour}.pdf}
 {Moment 0 and peak intensity map of U232.511, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
 The overlaid  curve shows the Keplerian velocity profiles for a 15 \msun central source in red.
 The dashed magenta lines show the velocity curves at r=30 and 70 AU.
+In the left and right panels, contours of the line data are shown at 5 and 10 $\sigma$,
+and in the center panel, they are at 50, 100, 150, and 200 K.
 %{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
 %guess at the unidentified line's rest velocity.}
 % {\color{red} Note to coauthors: Notice the asymmetry in the blobs
@@ -1414,17 +1443,46 @@ The dashed magenta lines show the velocity curves at r=30 and 70 AU.
 {fig:U4}{1}{2.25in}
 
 \FigureThree
-{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
-{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
-{{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01}.pdf}
+%{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset}.pdf}
+%{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak_offset}.pdf}
+%{{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01}.pdf}
+{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset_contours}.pdf}
+{{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak_offset_contours}.pdf}
+{{figures/keplercurves_sourceI_Unknown_5_B6_robust0.5_diskpv_0.01_withcontour}.pdf}
 {Moment 0 and peak intensity map of U217.980, similar to Figures \ref{fig:U1peak} and \ref{fig:h2omom0}.
 The rightmost panel shows a position-velocity diagram extracted from the disk midplane.
 The overlaid  curve shows the Keplerian velocity profiles for a 15 \msun central source in red.
 The dashed magenta lines show the velocity curves at r=30 and 70 AU.
+In the left and right panels, contours of the line data are shown at 5 and 10 $\sigma$,
+and in the center panel, they are at 50, 100, and 150 K.
 %{\color{red} Note to coauthors: Any asymmetry in the velocity center is likely due to an inaccurate
 %guess at the unidentified line's rest velocity.}
 }
 {fig:U5}{1}{2.25in}
 
+% \FigureThree
+% {{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_moment0_offset_contours_nocont}.pdf}
+% {{figures/OrionSourceI_Unknown_5_robust0.5.maskedclarkclean10000_medsub_K_peak_offset_contours_nocont}.pdf}
+% {{figures/sourceI_Unknown_5_B6_robust0.5_diskpv_0.01_withcontour}.pdf}
+% {Same as Figure \ref{fig:U5contour}, but with contours overlaid to enable quantitative reading of the plot.
+% Panels (a) and (c) have contours at 5, 10, 15, 20, and 25 $\sigma$ and panel
+% (b) at 50, 100, 150, and 200 K.
+% }
+% {fig:U5contour}{1}{2.25in}
+
+%\section{Additional graphics}
+%In this final appendix, we show versions of figures in other appendices and in the main text
+%with contours overlaid to enable better quantitative reading of the plots.  We avoided putting
+%contours in the main document 
+%
+%\FigureThree
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_B6_robust-2_diskpv_0.1_withcontour.pdf}
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.2-0.1_withcontour.pdf}
+%{figures/keplercurves_sourceI_H2Ov2=1_5(5,0)-6(4,3)_robust-2_diskpv_0.3-0.2_withcontour.pdf}
+%{Duplicate of Figure \ref{fig:waterpvheights} with annotations removed and
+%contours (at 5, 10, 15, 20, and 25 $\sigma$) overlaid to enable quantitative
+%reading of the plot.
+%}
+%{fig:waterpvheightscont}{1}{2.2in}
 
 \end{document}

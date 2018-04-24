@@ -48,10 +48,10 @@ includere = re.compile('include{(.*)}')
 bibre = re.compile('bibliography{(.*)}')
 aandare = re.compile("documentclass{aa}")
 #                           \documentclass{aa}
-beginre = re.compile('\\begin{document}')
-endre = re.compile('\\end{document}')
-prefacere = re.compile('\\input{preface.*}')
-solobibre = re.compile("\\input{(solobib)}")
+beginre = re.compile(r'\\begin{document}')
+endre = re.compile(r'\\end{document}')
+prefacere = re.compile(r'\\input{preface.*}')
+solobibre = re.compile(r"\\input{(solobib)}")
 
 def strip_input(list_of_lines):
     # strip out preface, solobib, end{doc}

@@ -118,11 +118,13 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
 
     all_voff_results[savename]['voffs'] = voffs
 
-    fig,ax,cb = show_pv.show_pv(data, ww,
-                                origin, vrange=[-40,55], vcen=vcen,
-                                imvmin=vmin, imvmax=vmax)
+    fig,ax,cb,con = show_pv.show_pv(data, ww, origin, vrange=[-40,55],
+                                    vcen=vcen, imvmin=vmin, imvmax=vmax)
 
     cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
+    bb = ax.bbox._bbox
+    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
 
     ax.plot(xoffs_as, voffs, 'o-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='b',
             zorder=200, alpha=0.9)
@@ -136,6 +138,8 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
     y1,y2 = ww.sub([2]).wcs_world2pix([-45*scalefactor,55*scalefactor],0)[0]
     ax.axis([x1,x2,y1,y2])
 
+    bb = ax.bbox._bbox
+    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
 
     fig.savefig(paths.fpath('pv/{0}'.format(savename)),
                 dpi=200,
@@ -147,6 +151,10 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
     ax.plot(xoffs_as, all_voff_results[savename]['voffs_7'], 'h-', transform=ax.get_transform('world'), markersize=3, markeredgecolor='g',
             markerfacecolor='g',
             zorder=250, alpha=0.9)
+
+    bb = ax.bbox._bbox
+    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
     fig.savefig(paths.fpath('pv/{0}'.format(savename.replace(".pdf","_threshold_comparison.pdf"))),
                 dpi=200,
                 bbox_inches='tight')
@@ -178,6 +186,8 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
                colors=['r','b'], transform=ax.get_transform('world')
               )
 
+    bb = ax.bbox._bbox
+    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
 
     EODsavename = savename.replace('Seifried', 'EdgeOnDiskPV')
     fig.savefig(paths.fpath('pv/{0}'.format(EODsavename)),

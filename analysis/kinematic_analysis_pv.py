@@ -3,9 +3,11 @@ import pvextractor
 import os
 import glob
 import paths
+import json
 from astropy.io import fits
 from astropy import units as u
 from astropy import constants
+from astropy import stats
 from astropy import coordinates
 from astropy import wcs
 from astropy import log
@@ -18,6 +20,7 @@ import show_pv; imp.reload(show_pv)
 import re
 from mpl_plot_templates import adaptive_param_plot
 from constants import vcen as assumed_vcen
+import time
 
 robustnumre = re.compile('robust(0.5|-2|2)')
 bandre = re.compile("\.B([367])\.")
@@ -33,6 +36,9 @@ pl.close(1)
 
 redo = False
 
+errtbl = {}
+
+t0 = time.time()
 
 # just do water (goes faster)
 #disk_lines = {x:y for x,y in disk_lines.items() if 'H2O' in x}
@@ -138,6 +144,8 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
 
 
                 for linename, linefreq in disk_lines.items():
+                    print(linename, width, fnt, spw, time.time() - t0)
+
 
                     pl.close('all')
 
@@ -231,14 +239,27 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                     if 'H2O' in linename and width > 0.05 and robustnum > -2:
                         vmax = 0.1
 
-                    fig,ax,cb = show_pv.show_pv(extracted.data, ww,
-                                                origin, vrange=vrange, vcen=vcen,
-                                                imvmin=vmin, imvmax=vmax)
+                    fig,ax,cb,con = show_pv.show_pv(extracted.data, ww, origin,
+                                                    vrange=vrange, vcen=vcen,
+                                                    imvmin=vmin, imvmax=vmax,
+                                                    contour='b'
+                                                   )
+                    errtbl[(name, linename, width, robustnum)] = stats.mad_std(extracted.data, ignore_nan=True)
 
 
                     ax.set_xlim(good_limits)
 
                     cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
+
+                    bb = ax.bbox._bbox
+                    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
+                    fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
+                                            basename.replace(".fits","_withcontour.pdf")),
+                                dpi=200,
+                                bbox_inches='tight')
+
+                    con.set_alpha(0)
 
                     fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
                                             basename.replace(".fits",".pdf")),
@@ -255,25 +276,26 @@ for width in (0.01, 0.05, 0.1, 0.2, 0.3, 0.4):
                                               colors=['r'],
                                              )
 
+                    bb = ax.bbox._bbox
+                    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
+
                     fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +
                                             basename.replace(".fits",".pdf")),
                                 dpi=200,
                                 bbox_inches='tight')
 
-                    fig,ax,cb = show_pv.show_pv(extracted.data, ww,
-                                                origin, vrange=vrange,
-                                                vcen=vcen, imvmin=vmin,
-                                                imvmax=vmax, contour=True)
+                    bb = ax.bbox._bbox
+                    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
 
-
-                    ax.set_xlim(good_limits)
-
-                    cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
-
-                    fig.savefig(paths.fpath('pv/{0}/'.format(name, linename) +
+                    con.set_alpha(1)
+                    for coll in con.collections:
+                        coll.set_color('w')
+                    fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name, linename) +
                                             basename.replace(".fits","_withcontour.pdf")),
                                 dpi=200,
                                 bbox_inches='tight')
+
 
 
 
@@ -366,10 +388,22 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                 if 'H2O' in linename and owidth > 0.05 and robustnum > -2:
                     vmax = 0.1
 
-                fig,ax,cb = show_pv.show_pv(diff, ww,
-                                            origin, vrange=vrange, vcen=u.Quantity(vcen,u.km/u.s),
-                                            imvmin=vmin, imvmax=vmax)
+                fig,ax,cb,con = show_pv.show_pv(diff, ww, origin,
+                                                vrange=vrange,
+                                                vcen=u.Quantity(vcen,u.km/u.s),
+                                                imvmin=vmin, imvmax=vmax,
+                                                contour='w',
+                                               )
+                errtbl[(name, linename, (iwidth, owidth), robustnum)] = stats.mad_std(diff, ignore_nan=True)
                 cb.set_label("$S_\\nu$ [Jy beam$^{-1}$]")
+                bb = ax.bbox._bbox
+                cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+                fig.savefig(paths.fpath('pv/{0}/'.format(name) +
+                                        outfn.replace(".fits","_withcontour.pdf")),
+                            dpi=200,
+                            bbox_inches='tight')
+
+                con.set_alpha(0)
 
                 kc = show_pv.show_keplercurves(ax, origin, 150*u.au, u.Quantity(vcen,u.km/u.s),
                                                masses=[15,],
@@ -377,10 +411,21 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                                                colors=['r'],
                                               )
 
+                bb = ax.bbox._bbox
+                cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
                 fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +
                                         outfn.replace(".fits",".pdf")),
                             dpi=200,
                             bbox_inches='tight')
+
+                con.set_alpha(1)
+
+                fig.savefig(paths.fpath('pv/{0}/keplercurves_'.format(name) +
+                                        outfn.replace(".fits","_withcontour.pdf")),
+                            dpi=200,
+                            bbox_inches='tight')
+
 
                 if not ('SiO' in linename or 'H2O' in linename):
                     continue
@@ -419,3 +464,7 @@ for owidth,iwidth in ((0.1,0.01), (0.2,0.1), (0.3,0.2), (0.2,0.05), (0.4,0.3)):
                                         outfn.replace(".fits",".pdf")),
                             dpi=200,
                             bbox_inches='tight')
+
+errtbl2 = {key[1]: (key[2], key[3], value) for key, value in errtbl.items()}
+with open('error_estimate_table_pvs.json', 'w') as fh:
+    json.dump(errtbl2, fh)

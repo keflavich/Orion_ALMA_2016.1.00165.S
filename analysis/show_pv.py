@@ -5,6 +5,8 @@ from astropy import stats
 
 import pylab as pl
 from astropy import wcs
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 
 from constants import d_orion
 
@@ -55,8 +57,11 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
     if contour:
         std_est = stats.mad_std(data, ignore_nan=True)
         print("Estimate of standard deviation: {0}".format(std_est))
-        ax.contour(data, colors=['r']*5,
-                   levels=np.array([5,10,15,20,25])*std_est)
+        con = ax.contour(data, colors=[contour]*5,
+                         levels=np.array([5,10,15,20,25])*std_est,
+                         linewidths=0.75)
+    else:
+        con = None
 
 
     trans = ax.get_transform('world')
@@ -90,16 +95,32 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
 
     # ax.set_aspect(4)
     #ax.set_aspect(2*data.shape[1]/data.shape[0])
-    ax.set_aspect(1*data.shape[1]/data.shape[0])
+    aspect = 1*data.shape[1]/data.shape[0]
+    ax.set_aspect(aspect)
+
     #ax.set_aspect('equal')
 
     ax.coords[1].set_format_unit(u.km/u.s)
 
-    cb = pl.colorbar(im)
+
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+    # https://stackoverflow.com/a/18195921/814354
+    #divider = make_axes_locatable(ax)
+    #cax = divider.append_axes("right", size="5%", pad=-0.05)
+
+    #cax = fig.add_axes([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
+
+    #cb = pl.colorbar(im, cax=cax)
+    #cb = pl.colorbar(mappable=im, ax=ax, pad=0.01, aspect=aspect*2)
+    cb = pl.colorbar(mappable=im)
+    pl.draw()
+    bb = ax.bbox._bbox
+    cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
 
     ax.set_xlim(good_limits)
 
-    return fig,ax,cb
+    return fig,ax,cb,con
 
 
 def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],

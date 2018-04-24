@@ -1,14 +1,17 @@
+import numpy as np
 import paths
 import os
 from astropy import constants, units as u, table, stats, coordinates, wcs, log
 from astropy.io import fits
 from spectral_cube import SpectralCube, wcs_utils, tests, Projection
-import pylab as pl
 from lines import disk_lines
 import radio_beam
 from files import b6_hires_cont
 from astropy.nddata import Cutout2D
 import reproject
+
+import pylab as pl
+pl.ioff()
 
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits'))
 #conthdu = fits.open(paths.dpath('Orion_SourceI_B6_continuum_r0.5_SourceIcutout.image.tt0.pbcor.fits'))
@@ -35,6 +38,7 @@ conthdu = fits.PrimaryHDU(data=data, header=new_header)
 
 
 levels = [50, 150, 300, 500]*u.K
+levels = [50, 300, 500]*u.K
 
 for robust in (-2, 0.5):
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
@@ -115,11 +119,16 @@ for robust in (-2, 0.5):
 
                         mx.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
                                      .format(linename, sourcename, robust=robust), aplpy_kwargs={'figure':pl.figure(1)})
+                        mx.FITSFigure.show_grayscale(invert=True)
                         mx.FITSFigure.show_contour(conthdu, levels=cont_levels_Jy,
-                                                   colors=['r']*10)
+                                                   colors=['r']*10, linewidths=0.75)
                         mx.FITSFigure.colorbar.set_axis_label_text("$T_B$ [K]")
                         mx.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak.pdf')
                                            .format(linename, sourcename, robust=robust))
+
+                        mx.FITSFigure.add_beam()
+                        mx.FITSFigure.beam.set_facecolor('none')
+                        mx.FITSFigure.beam.set_edgecolor('b')
 
                         pl.figure(1).clf()
 
@@ -131,12 +140,21 @@ for robust in (-2, 0.5):
                                   mx.shape[0]/2*pixscale.to(u.arcsec).value,]
 
                         ax = pl.figure(1).gca()
-                        im = ax.imshow(mx.value, cmap='gray',
+                        im = ax.imshow(mx.value, cmap='gray_r',
                                        interpolation='none', origin='lower',
                                        extent=extent,
+                                       zorder=0,
                                       )
+
+                        ebm = beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
+                        ebm.set_facecolor('none')
+                        ebm.set_edgecolor('b')
+                        ax.add_patch(ebm)
+
                         con = ax.contour(contdata, levels=cont_levels_Jy.value,
-                                         colors=['r']*10, extent=extent)
+                                         colors=['r']*10, extent=extent, linewidths=0.75,
+                                         zorder=50,
+                                        )
                         cb = pl.colorbar(mappable=im)
                         cb.set_label("$T_B$ [K]")
                         ax.set_xlabel("RA offset (\")")
@@ -145,14 +163,34 @@ for robust in (-2, 0.5):
                         pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak_offset.pdf')
                                    .format(linename, sourcename,
                                            robust=robust))
+                        if mx.value.max() < 250:
+                            line_levels = [50,100,150,200]
+                        elif mx.value.max() > 1000:
+                            line_levels = [500, 750, 1000, 1250]
+                        else:
+                            line_levels = [200, 400, 600, 800]
+                        con2 = ax.contour(mx.value, levels=line_levels,
+                                          zorder=25,
+                                          colors=['w']*5, extent=extent, linewidths=0.75)
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak_offset_contours.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
+                        con.set_alpha(0)
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_peak_offset_contours_nocont.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
 
                         pl.figure(1).clf()
 
                         m0.quicklook(filename=paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0.pdf')
                                      .format(linename, sourcename, robust=robust), aplpy_kwargs={'figure':pl.figure(1)})
+                        m0.FITSFigure.show_grayscale(invert=True)
+                        m0.FITSFigure.add_beam()
+                        m0.FITSFigure.beam.set_facecolor('none')
+                        m0.FITSFigure.beam.set_edgecolor('b')
 
                         m0.FITSFigure.show_contour(conthdu, levels=cont_levels_Jy,
-                                                   colors=['r']*10)
+                                                   colors=['r']*10, linewidths=0.75)
                         m0.FITSFigure.colorbar.set_axis_label_text("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
                         m0.FITSFigure.save(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0.pdf')
                                            .format(linename, sourcename, robust=robust))
@@ -161,12 +199,20 @@ for robust in (-2, 0.5):
 
 
                         ax = pl.figure(1).gca()
-                        im = ax.imshow(m0.value, cmap='gray',
+                        im = ax.imshow(m0.value, cmap='gray_r',
                                        interpolation='none', origin='lower',
                                        extent=extent,
+                                       zorder=0,
                                       )
+
+                        ebm = beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
+                        ebm.set_facecolor('none')
+                        ebm.set_edgecolor('b')
+                        ax.add_patch(ebm)
+
                         con = ax.contour(contdata, levels=cont_levels_Jy.value,
-                                         colors=['r']*10, extent=extent)
+                                         zorder=50,
+                                         colors=['r']*10, extent=extent, linewidths=0.75)
                         cb = pl.colorbar(mappable=im)
                         cb.set_label("$\int T_B \mathrm{d}v$ [K km s$^{-1}$]")
                         ax.set_xlabel("RA offset (\")")
@@ -187,9 +233,28 @@ for robust in (-2, 0.5):
                                      )
                              )
 
+                        stderr = stats.mad_std(m0.value, ignore_nan=True)
+                        con.set_alpha(0)
+                        con2 = ax.contour(m0.value, levels=np.array([5,10,15,20,25])*stderr,
+                                          zorder=25,
+                                          colors=['w']*5, extent=extent, linewidths=0.75)
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0_offset_contours_nocont.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
+
+                        con2.set_alpha(1)
+                        con.set_alpha(1)
+                        for coll in con2.collections:
+                            coll.set_color('w')
+                        pl.savefig(paths.fpath('moments/Orion{1}_{0}_robust{robust}.maskedclarkclean10000_medsub_K_moment0_offset_contours.pdf')
+                                   .format(linename, sourcename,
+                                           robust=robust))
+
+
 
 
                         pl.close('all')
+
 
                         del mx, m0
                     del cube

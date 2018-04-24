@@ -794,17 +794,25 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     #                cmap='gray', vmin=-5, vmax=40,
     #                extent=extent,
     #               )
-    im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='gray',
-                   vmin=-5/jtok.value*1e3, vmax=40/jtok.value*1e3,
+    im = ax.imshow(data*1e3, interpolation='none', origin='lower',
+                   cmap='gray_r', vmin=-5/jtok.value*1e3,
+                   vmax=40/jtok.value*1e3,
                    extent=extent,
                   )
     con = ax.contour(data*jtok.value,
                      levels=[50, 100, 150, 200, 300, 400, 500, 600],
-                     colors=['r']*10,
+                     colors=['w']*10,
+                     linewidths=0.75,
                      extent=extent,
                     )
     #cb2 = fig5.colorbar(mappable=im0)
     # https://stackoverflow.com/questions/27151098/draw-colorbar-with-twin-scales
+
+    ebm = observed_beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
+    ebm.set_facecolor('none')
+    ebm.set_edgecolor('b')
+    ax.add_patch(ebm)
+
     cb = fig5.colorbar(mappable=im)
     cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
     cb.ax.set_aspect('auto')
@@ -836,15 +844,18 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     fig6 = pl.figure(6)
     fig6.clf()
     ax1 = fig6.add_subplot(3,3,1)
-    im = ax1.imshow(bestdiskmod_beam*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax1.imshow(bestdiskmod_beam*jtok.value, interpolation='none',
+                    origin='lower', cmap='viridis',
                     norm=asinh_norm.AsinhNorm())
     vmin,vmax = im.norm.vmin, im.norm.vmax
     ax2 = fig6.add_subplot(3,3,2)
-    im = ax2.imshow(bestdiskmod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax2.imshow(bestdiskmod*jtok.value, interpolation='none',
+                    origin='lower', cmap='viridis',
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     ax3 = fig6.add_subplot(3,3,3)
-    im = ax3.imshow(bestdiskplussmearedsourcemod*jtok.value, interpolation='none', origin='lower', cmap='viridis',
+    im = ax3.imshow(bestdiskplussmearedsourcemod*jtok.value,
+                    interpolation='none', origin='lower', cmap='viridis',
                     norm=asinh_norm.AsinhNorm(),
                     vmin=vmin, vmax=vmax)
     cb = fig6.colorbar(mappable=im)

@@ -18,6 +18,9 @@ sourceImass:
 	python make_apjform.py
 	python make.py --texpath=${texpath}
 	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=sourceImass_compressed.pdf sourceImass.pdf
+	python paper2arxiv.py --apj
+	python paper2arxiv.py
+	python make_apjform.py
 
 .PHONY: diff
 diff:
