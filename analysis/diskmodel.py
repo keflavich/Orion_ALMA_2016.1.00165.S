@@ -576,8 +576,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                         ))
                
     fit_results[freq] = {
-                         'Disk FWHM': scaleheight*(8*np.log(2))**0.5,
-                         'eDisk FWHM': scaleheight_error*(8*np.log(2))**0.5,
+                         'Disk FWHM': scaleheight,
+                         'eDisk FWHM': scaleheight_error,
                          'Disk Radius': length_au/2,
                          'eDisk Radius': elength_au,
                          'Disk PA': posang,

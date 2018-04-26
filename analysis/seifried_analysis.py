@@ -244,8 +244,10 @@ for key,xmin in [('SiS_12-11_kepler_SeifriedPlot.pdf', 25*u.au),
 
     full_xarr = np.linspace(0, 100)*u.au
     pl.figure(1).clf()
-    pl.xlabel("Offset from center (AU)")
-    pl.ylabel("Offset from centroid velocity (km s$^{-1}$)")
+    pl.xlabel("Offset from center (AU)", fontsize=18)
+    pl.ylabel("Offset from centroid velocity (km s$^{-1}$)", fontsize=18)
+    pl.tick_params(axis='both', which='major', labelsize=16)
+    
     pl.plot(xoffs_au_tofit[ok & (xoffs_au>0)], voffs_tofit[ok & (xoffs_au>0)].to(u.km/u.s), 'o', color='r')
     pl.plot(xoffs_au_tofit[ok & (xoffs_au<0)], voffs_tofit[ok & (xoffs_au<0)].to(u.km/u.s), 's', color='b')
     pl.plot(full_xarr, result(full_xarr),
@@ -278,7 +280,7 @@ for key,xmin in [('SiS_12-11_kepler_SeifriedPlot.pdf', 25*u.au),
 
 
     pl.axis([0,90,12,30])
-    pl.legend(loc='best')
+    pl.legend(loc='best', fontsize=18)
     pl.savefig(paths.fpath("pv/bestfit_powerlaw_{0}".format(key)))
 
     pl.figure(2, figsize=(12,6)).clf()
