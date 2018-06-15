@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 from astropy import constants
 from astropy import units as u
 from astropy import stats
@@ -125,6 +126,7 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
 
 def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
                       linestyles='-',
+                      linewidths=None,
                       colors=['r'],
                       radii={15: ([30, 80], ['m', 'm'])},
                       yaxis_unit=u.m/u.s,
@@ -141,16 +143,19 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
     # overlay a Keplerian velocity curve
     positions = u.Quantity(np.linspace(0,maxdist,1000), u.au)
 
-    for mass,color,linestyle in zip(masses,colors,linestyles):
+    if linewidths is None:
+        linewidths = itertools.cycle([1])
+
+    for mass,color,linestyle,linewidth in zip(masses,colors,linestyles,linewidths):
         # this is the 3d velocity, so assumes edge-on
         vel = (((constants.G * mass*u.M_sun)/(positions))**0.5).to(yaxis_unit)
         loc = (positions/(d_orion)).to(u.arcsec, u.dimensionless_angles())
         ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), linestyle=linestyle,
-                color=color, linewidth=1.0, alpha=1.0, transform=trans)
+                color=color, linewidth=linewidth, alpha=1.0, transform=trans)
         #ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), linestyle=linestyle,
-                color=color, linewidth=1.0, alpha=1.0, transform=trans)
+                color=color, linewidth=linewidth, alpha=1.0, transform=trans)
 
         if show_other_powerlaws:
             vcurve = positions**-1 / (positions[200]**-1) * (vel[200])

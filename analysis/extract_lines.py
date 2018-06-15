@@ -41,15 +41,17 @@ levels = [50, 150, 300, 500]*u.K
 levels = [50, 300, 500]*u.K
 
 for robust in (-2, 0.5):
-    ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
+    ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.{infix}robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
 
     cont_levels_Jy = levels.to(u.Jy, beam.jtok_equiv(224*u.GHz))
     #print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
     #                             0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
 
-    for band,suffix in (('B3', 'clarkclean10000'),
-                        ('B6', 'maskedclarkclean10000')):
+    for band,suffix, infix in (#('B3', 'clarkclean10000', ''),
+                               #('B6', 'maskedclarkclean10000', ''),
+                               ('B7', 'maskedclarkclean10000', 'lb.'),
+                              ):
         for sourcename in ('SourceI',):# 'BN'):
             for linename, linefreq in disk_lines.items():
                 if 'H30a' in linename:
@@ -60,7 +62,9 @@ for robust in (-2, 0.5):
                     vrange = [-30,40]
 
                 for spw in (0,1,2,3):
-                    filename = ftemplate.format(spw, sourcename, band, suffix=suffix, robust=robust)
+                    filename = ftemplate.format(spw, sourcename, band,
+                                                suffix=suffix, robust=robust,
+                                                infix=infix)
 
                     if os.path.exists(filename):
                         cube = SpectralCube.read(filename)

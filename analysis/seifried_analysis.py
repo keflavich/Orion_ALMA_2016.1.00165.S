@@ -130,7 +130,8 @@ for fn, vmin, vmax, savename, rms, radii, start_dv in [
             zorder=200, alpha=0.9)
     maxdist=150*u.au
     lines = show_pv.show_keplercurves(ax, origin, maxdist, vcen, masses=[15, 10],
-                                      linestyles=['-',':'], colors=['r','g'],
+                                      linestyles=['-',':'], colors=['r','orange'],
+                                      linewidths=[1,3],
                                       radii={15: (radii, ('m','m'))})
     ax.set_aspect(2)
 

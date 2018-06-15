@@ -18,8 +18,7 @@ def makefits(myimagebase, cleanup=True):
 
 
 
-mslist = ['uid___A001_X88e_X1d3_calibrated.ms',
-          'uid___A002_Xb925ef_X4334_calibrated.ms']
+mslist = ['band7.ms', 'band7_lb.ms']
 
 for ms in mslist:
     print("Listing {0}".format(ms))
@@ -27,7 +26,14 @@ for ms in mslist:
     print("Done listing {0}".format(ms))
     assert result,"Listing {0} failed".format(ms)
 
-for spw,spws in enumerate([(0,), (1,), (2,), (3,)]):
+target_lines = {'SiOv=1_J=8-7': 344.916543,
+               }
+
+raise NotImplementedError
+for spw,spws in enumerate([["25","25"],
+                           ["27","27"],
+                           ["29","29"],
+                           ["31","31"]]):
 
     for suffix, niter in (('maskedclarkclean1000', 1000), ):
         
