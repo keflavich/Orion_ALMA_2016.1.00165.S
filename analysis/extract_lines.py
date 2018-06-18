@@ -48,8 +48,8 @@ for robust in (-2, 0.5):
     #print("Levels: {0}".format(([0.001, 0.005, 0.01, 0.02, 0.03, 0.04,
     #                             0.05]*u.Jy).to(u.K, beam.jtok_equiv(224*u.GHz))))
 
-    for band,suffix, infix in (#('B3', 'clarkclean10000', ''),
-                               #('B6', 'maskedclarkclean10000', ''),
+    for band,suffix, infix in (('B3', 'clarkclean10000', ''),
+                               ('B6', 'maskedclarkclean10000', ''),
                                ('B7', 'maskedclarkclean10000', 'lb.'),
                               ):
         for sourcename in ('SourceI',):# 'BN'):
