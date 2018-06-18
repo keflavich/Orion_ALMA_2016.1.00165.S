@@ -53,7 +53,7 @@ for spw,spws in enumerate([["25","25"], ["27","27"], ["29","29"], ["31","31"]]):
                    # clean only Source I and BN
                    mask=['circle[[5h35m14.520s,-5d22m30.636s],0.222arcsec]',
                          'circle[[5h35m14.108s,-5d22m22.669s],0.066arcsec]'],
-                   imsize=[6500, 6500],
+                   imsize=[6720, 6720],
                    cell=['0.004arcsec'],
                    niter=niter,
                    deconvolver='clark',
