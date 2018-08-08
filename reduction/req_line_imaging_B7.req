@@ -6,7 +6,7 @@
 #
 # These are required
 #
-MEM="16gb"
+PMEM="16gb"
 #VMEM="100gb"
 WORK_DIR='/lustre/aginsbur/orion/2016.1.00165.S/imaging'
 COMMAND=$WORK_DIR/'run_line_imaging_B7.sh'
