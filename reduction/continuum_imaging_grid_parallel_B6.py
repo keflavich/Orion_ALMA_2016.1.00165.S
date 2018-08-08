@@ -32,6 +32,7 @@ if not os.path.exists(nocal_vis):
 
 
 for uvrange, uvrangename in (('50~300000m', '50mplus'),
+                             ('825~10000klambda', '825to10000kl'),
                              ('150~300000m', '150mplus'),
                              ('200~300000m', '200mplus'),
                              ('500~300000klambda', '500klplus'),
