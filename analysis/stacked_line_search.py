@@ -23,7 +23,7 @@ if not os.path.exists(vmap_name):
     vmap = m1
     vmap[~mask] = np.nan
 
-    r =regions.read_ds9('../regions/sourceI_enclosing_ellipse.reg')[0]
+    r =regions.read_ds9(paths.rpath('sourceI_enclosing_ellipse.reg'))[0]
     rp = r.to_pixel(vmap.wcs)
     mask = rp.to_mask()
 
@@ -43,9 +43,14 @@ for band in ('B3', 'B6', 'B7'):
     for spw in (0,1,2,3):
         for robust in (-2, 0.5, 2):
 
-            fn = fcp('OrionSourceI_only.{1}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
-                     .format(spw, band, robust))
-            fullcube = (SpectralCube.read(fn))
+            try:
+                fn = fcp('OrionSourceI_only.{1}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
+                         .format(spw, band, robust))
+                fullcube = (SpectralCube.read(fn))
+            except FileNotFoundError:
+                fn = fcp('OrionSourceI_only.{1}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.fits'
+                         .format(spw, band, robust))
+                fullcube = (SpectralCube.read(fn))
             print(fn,fullcube.spectral_extrema)
             fullcube = fullcube.with_spectral_unit(u.km/u.s,
                                                    velocity_convention='radio',
