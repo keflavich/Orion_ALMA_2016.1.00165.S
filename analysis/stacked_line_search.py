@@ -43,12 +43,14 @@ for band in ('B3', 'B6', 'B7'):
     for spw in (0,1,2,3):
         for robust in (-2, 0.5, 2):
 
+            suffix = '.lb' if band == 'B7' else ''
+
             try:
-                fn = fcp('OrionSourceI_only.{1}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
-                         .format(spw, band, robust))
+                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
+                         .format(spw, band, robust, suffix))
                 fullcube = (SpectralCube.read(fn))
             except FileNotFoundError:
-                fn = fcp('OrionSourceI_only.{1}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.fits'
+                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.fits'
                          .format(spw, band, robust))
                 fullcube = (SpectralCube.read(fn))
             print(fn,fullcube.spectral_extrema)
@@ -65,10 +67,10 @@ for band in ('B3', 'B6', 'B7'):
                                                                    v0=0.0*u.km/u.s)
             fstack = stack.with_spectral_unit(u.GHz)
 
-            fstack.write(paths.dpath('stacked_spectra/OrionSourceI_{1}_spw{0}_robust{2}.fits'
-                                     .format(spw, band, robust)),
+            fstack.write(paths.dpath('stacked_spectra/OrionSourceI_{1}{3}_spw{0}_robust{2}.fits'
+                                     .format(spw, band, robust, suffix)),
                          overwrite=True)
 
             pl.clf()
-            fstack.quicklook(filename=paths.fpath('stacked_spectra/OrionSourceI_{1}_spw{0}_robust{2}.pdf')
-                             .format(spw, band, robust))
+            fstack.quicklook(filename=paths.fpath('stacked_spectra/OrionSourceI_{1}{3}_spw{0}_robust{2}.pdf')
+                             .format(spw, band, robust, suffix))
