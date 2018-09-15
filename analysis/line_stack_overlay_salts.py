@@ -35,7 +35,7 @@ def freq(row):
 
 linenames = [linename(row) for tbl in tables for row in tbl]
 linetexnames = [linename(row) for tbl in tables for row in tbl]
-linefreqs = [freq(row) for tbl in tables for row in tbl]
+linefreqs = u.Quantity([freq(row) for tbl in tables for row in tbl])
 
 for fn in glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust*fits')):
     print(fn)
@@ -53,8 +53,8 @@ for fn in glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust*fits')):
 
     sp_st.plotter(ymin=-0.01, ymax=0.01)
     sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen)
-    sp_st.plotter.line_ids(ided_linetexnames, ided_linefreqs, velocity_offset=-vcen,
-                           plot_kwargs=dict(color='b'))
+    #sp_st.plotter.line_ids(ided_linetexnames, ided_linefreqs, velocity_offset=-vcen,
+    #                       plot_kwargs=dict(color='b'))
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))
                          )

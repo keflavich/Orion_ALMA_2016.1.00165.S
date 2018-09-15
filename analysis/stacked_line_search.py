@@ -51,7 +51,7 @@ for band in ('B3', 'B6', 'B7'):
                 fullcube = (SpectralCube.read(fn))
             except FileNotFoundError:
                 fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.fits'
-                         .format(spw, band, robust))
+                         .format(spw, band, robust, suffix))
                 fullcube = (SpectralCube.read(fn))
             print(fn,fullcube.spectral_extrema)
             fullcube = fullcube.with_spectral_unit(u.km/u.s,
