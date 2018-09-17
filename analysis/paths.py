@@ -17,6 +17,8 @@ figurepath = os.path.join(root, 'figures/')
 reductionpath = os.path.join(root, 'reduction/')
 paperpath = os.path.join(root, 'paper_sourceImass')
 paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
+paperpath2 = os.path.join(root, 'paper_salts')
+tablepath = os.path.join(root, 'tables')
 
 
 
@@ -29,10 +31,16 @@ def rpath(x, regpath=regpath):
 def fpath(x, figurepath=figurepath):
     return os.path.join(figurepath, x)
 
+def tpath(x, figurepath=tablepath):
+    return os.path.join(tablepath, x)
+
 def redpath(x, redpath=reductionpath):
     return os.path.join(redpath, x)
 
 def texpath(x, paperpath=paperpath):
+    return os.path.join(paperpath, x)
+
+def texpath2(x, paperpath=paperpath2):
     return os.path.join(paperpath, x)
 
 def texfpath(x, paperfigpath=paperfigpath):
