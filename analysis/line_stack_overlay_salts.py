@@ -25,11 +25,17 @@ KCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' KCl'))
 K37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' K37Cl'))
 K41Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='41KCl'))
 AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
+#AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
+#NaF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaF'))
+#NaO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO'))
+#NaOH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaOH'))
+#NaCH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCH'))
+CaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' CaCl'))
 AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
 #AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
 NaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCl'))
 Na37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' Na37Cl'))
-#MgCl = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl')
+MgCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl'))
 #MgCl = [row for row in MgCl if len(row['Resolved QNs']) < 20]
 #not detected:
 # HCl = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' HCl')
@@ -104,7 +110,7 @@ for fn in flist:
                                       -0.05, 0.10,
                                       colors='r', linestyles=':')
 
-    for row in AlO:
+    for row in MgCl:
         frq = u.Quantity(row['Freq'], u.GHz).value
         if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
             sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,

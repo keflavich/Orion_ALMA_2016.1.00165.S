@@ -8,6 +8,7 @@ import paths
 
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
+from astropy.io import fits
 
 from astropy import table
 from astropy import units as u
@@ -21,7 +22,7 @@ dv = 15 * u.km/u.s
 v = 5.5 * u.km/u.s
 dv_linesearch = 2.5*u.km/u.s
 
-fits = {}
+linefits = {}
 
 bad_fits = ['Unknown_8', # only half the line is detected
            ]
@@ -37,8 +38,15 @@ if doplot:
 
 for spw in (0,1,2,3):
     for band in ('B3', 'B6', 'B7.lb'):
-        sp = pyspeckit.Spectrum(paths.dpath('stacked_spectra/OrionSourceI_{band}_spw{0}_robust0.5.fits'
-                                            .format(spw, band=band)),)
+        fn = paths.dpath('stacked_spectra/OrionSourceI_{band}_spw{0}_robust0.5.fits'
+                         .format(spw, band=band))
+        sp = pyspeckit.Spectrum(fn)
+
+        beams = fits.open(fn)[1]
+        beam_area = np.median(beams.data['BMAJ'] * beams.data['BMIN'] * np.pi *
+                              u.arcsec**2)
+        jtok = u.brightness_temperature(frequency=sp.xarr.mean(),
+                                        beam_area=beam_area)
 
         for linename, freq in lines.disk_lines.items():
 
@@ -94,33 +102,36 @@ for spw in (0,1,2,3):
             #result.add_column(table.Column(name='velocity', data=-((frq-ref)/(ref) * constants.c).to(u.km/u.s)))
             linesearch = result#['Species','Chemical Name','Resolved QNs','Freq-GHz','Meas Freq-GHz','velocity', 'E_U (K)']
 
-            fits[linename] = {'pars': slc.specfit.parinfo,
-                              'vel':
-                              ((u.Quantity(slc.specfit.parinfo['SHIFT0'].value,
-                                           u.GHz) - freq) / freq *
-                               constants.c.to(u.km/u.s)),
-                              'vwidth':
-                              ((u.Quantity(slc.specfit.parinfo['WIDTH0'].value,
-                                           u.GHz)) / freq *
-                               constants.c.to(u.km/u.s)),
-                              'linesearch': linesearch,
-                              'freq': freq,
-                              'spectrum': slc,
-                              'EU_K': eu,
-                              'species': species,
-                              'qn': qn,
-                             }
+            linefits[linename] = {'pars': slc.specfit.parinfo,
+                                  'vel':
+                                  ((u.Quantity(slc.specfit.parinfo['SHIFT0'].value,
+                                               u.GHz) - freq) / freq *
+                                   constants.c.to(u.km/u.s)),
+                                  'vwidth':
+                                  ((u.Quantity(slc.specfit.parinfo['WIDTH0'].value,
+                                               u.GHz)) / freq *
+                                   constants.c.to(u.km/u.s)),
+                                  'linesearch': linesearch,
+                                  'freq': freq,
+                                  'spectrum': slc,
+                                  'EU_K': eu,
+                                  'species': species,
+                                  'qn': qn,
+                                  'jtok': (1*u.Jy).to(u.K, equivalencies=jtok)
+                                 }
 
-linenames = table.Column(name='Line Name', data=sorted(fits.keys()))
-freqs = table.Column(name='Frequency', data=u.Quantity([fits[ln]['freq'] for ln in linenames]))
-velos = table.Column(name='Fitted velocity', data=u.Quantity([fits[ln]['vel'] for ln in linenames]))
-vwidths = table.Column(name='Fitted Width', data=u.Quantity([fits[ln]['vwidth'] for ln in linenames]))
-ampls = table.Column(name='Fitted Amplitude', data=u.Quantity([fits[ln]['pars']['AMPLITUDE0'].value*1e3 for ln in linenames], u.mJy))
-eu = table.Column(name='EU_K', data=u.Quantity([fits[ln]['EU_K'] for ln in linenames], u.K))
-species = table.Column(name='Species', data=[fits[ln]['species'] for ln in linenames])
-qn = table.Column(name='QNs', data=[fits[ln]['qn'] for ln in linenames])
+linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
+freqs = table.Column(name='Frequency', data=u.Quantity([linefits[ln]['freq'] for ln in linenames]))
+velos = table.Column(name='Fitted velocity', data=u.Quantity([linefits[ln]['vel'] for ln in linenames]))
+vwidths = table.Column(name='Fitted Width', data=u.Quantity([linefits[ln]['vwidth'] for ln in linenames]))
+ampls = table.Column(name='Fitted Amplitude', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*1e3 for ln in linenames], u.mJy))
+amplsK = table.Column(name='Fitted Amplitude K', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*linefits[ln]['jtok'].value for ln in linenames], u.K))
+jtok = table.Column(name='Jy/K', data=u.Quantity([linefits[ln]['jtok'].value for ln in linenames], u.Jy/u.K))
+eu = table.Column(name='EU_K', data=u.Quantity([linefits[ln]['EU_K'] for ln in linenames], u.K))
+species = table.Column(name='Species', data=[linefits[ln]['species'] for ln in linenames])
+qn = table.Column(name='QNs', data=[linefits[ln]['qn'] for ln in linenames])
 
-tbl1 = table.Table([linenames, species, qn, freqs, velos, vwidths, ampls, eu])
+tbl1 = table.Table([linenames, species, qn, freqs, velos, vwidths, ampls, amplsK, jtok, eu])
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
