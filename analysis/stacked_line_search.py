@@ -58,6 +58,9 @@ for band in ('B3', 'B6', 'B7'):
                                                    velocity_convention='radio',
                                                    rest_value=fullcube.spectral_axis.mean())
 
+            # mask out super bright SiO masers; they break the FFT shifting tool
+            fullcube = fullcube.with_mask(fullcube < 0.5*u.Jy/u.beam)
+
             vmap_proj,_ = reproject.reproject_interp(vmap.hdu,
                                                      fullcube.wcs.celestial,
                                                      shape_out=fullcube.shape[1:])
