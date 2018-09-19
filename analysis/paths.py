@@ -19,6 +19,7 @@ paperpath = os.path.join(root, 'paper_sourceImass')
 paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
 paperpath2 = os.path.join(root, 'paper_salts')
 tablepath = os.path.join(root, 'tables')
+saltpath = os.path.join(root, 'salt_data')
 
 
 
@@ -52,3 +53,6 @@ def imagingpath(x, imagingpath=imagingpath):
 def fcp(x):
     # "full cube path"
     return imagingpath(x)
+
+def salty(x, path=saltpath):
+    return os.path.join(path, x)

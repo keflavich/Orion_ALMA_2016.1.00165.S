@@ -367,7 +367,8 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     kcl35mask = np.array([(not hasattr(row['Species'], 'mask')) and
-                         ('KCl' == row['Species'][:3]) for row in tbl])
+                         ('KCl' == row['Species'][:3] or
+                          '39K-35Cl' in row['Species']) for row in tbl])
 
     bad = np.zeros_like(kcl35mask, dtype='bool')
 
@@ -382,10 +383,12 @@ if __name__ == "__main__":
                                     kcl35tbl['Fitted Width']**2 *
                                     kcl35tbl['Fitted Amplitude error K']**2)**0.5
     #kkms_kcl35 = (2*np.pi*(4)**2)**0.5 * kcl35tbl['Fitted Amplitude K']
-    Aul = u.Quantity(list(map(get_Aul_(frqs), kcl35freqs)), u.Hz)
-    deg = u.Quantity(list(map(get_deg_(frqs), kcl35freqs)))
-    kcl35tbl.add_column(table.Column(name='Aul', data=Aul))
-    kcl35tbl.add_column(table.Column(name='Degeneracy', data=deg))
+    #Aul = u.Quantity(list(map(get_Aul_(frqs), kcl35freqs)), u.Hz)
+    #deg = u.Quantity(list(map(get_deg_(frqs), kcl35freqs)))
+    #kcl35tbl.add_column(table.Column(name='Aul', data=Aul))
+    #kcl35tbl.add_column(table.Column(name='Degeneracy', data=deg))
+    Aul = kcl35tbl['Aij']
+    deg = kcl35tbl['deg']
     kcl35_nu = nupper_of_kkms(kkms=kkms_kcl35,
                               freq=kcl35freqs,
                               Aul=Aul,
@@ -400,6 +403,10 @@ if __name__ == "__main__":
     v0 = np.array(['v=0' in row['Species'] for row in kcl35tbl])
     v1 = np.array(['v=1' in row['Species'] for row in kcl35tbl])
     v2 = np.array(['v=2' in row['Species'] for row in kcl35tbl])
+    v3 = np.array(['v=3' in row['Species'] for row in kcl35tbl])
+    v4 = np.array(['v=4' in row['Species'] for row in kcl35tbl])
+    v5 = np.array(['v=5' in row['Species'] for row in kcl35tbl])
+    v6 = np.array(['v=6' in row['Species'] for row in kcl35tbl])
 
     pl.figure(1).clf()
     print("KCl")
@@ -420,7 +427,7 @@ if __name__ == "__main__":
 
 
     pl.figure(1).clf()
-    vstate = 0*v0 + 1*v1 + 2*v2
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6
 
     print(fit_multi_tex(eupper=u.Quantity(kcl35tbl['EU_K'], u.K),
                         nupperoverg=kcl35_nu,
@@ -556,6 +563,8 @@ if __name__ == "__main__":
     v2 = np.array(['v=2' in row['Species'] for row in nacltbl])
     v3 = np.array(['v=3' in row['Species'] for row in nacltbl])
     v4 = np.array(['v=4' in row['Species'] for row in nacltbl])
+    v5 = np.array(['v=5' in row['Species'] for row in nacltbl])
+    v6 = np.array(['v=6' in row['Species'] for row in nacltbl])
 
     pl.figure(3).clf()
     print("NaCl")
@@ -574,13 +583,13 @@ if __name__ == "__main__":
                    errors=enacl_nu[v4], plot=True,
                    verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
     pl.legend(loc='best')
-    pl.axis([300,1600,9.0,13])
+    pl.axis([300,2100,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
 
 
     pl.figure(3).clf()
-    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6
 
     print(fit_multi_tex(eupper=u.Quantity(nacltbl['EU_K'], u.K),
                         nupperoverg=nacl_nu,
@@ -591,7 +600,7 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m'),)
          )
     pl.legend(loc='best')
-    pl.axis([300,1600,9.0,13])
+    pl.axis([300,2100,9.0,13])
     pl.title("NaCl")
 
     pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))

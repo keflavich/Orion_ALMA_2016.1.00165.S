@@ -17,6 +17,8 @@ from astropy import constants
 
 import pylab as pl
 
+from salt_tables import salt_tables
+
 import latex_info
 
 dv = 15 * u.km/u.s
@@ -90,18 +92,34 @@ for spw in (0,1,2,3):
                                              freq + (dv_linesearch)/constants.c*freq,
                                              chemical_name=chem_re
                                             )
-            if len(result) > 0:
-                result = mt(result)
+            for tbl in salt_tables:
+                match = ((tbl['Freq'].quantity > freq - (dv_linesearch)/constants.c*freq) &
+                         (tbl['Freq'].quantity < freq + (dv_linesearch)/constants.c*freq))
+                result = tbl[match]
+                #print(match.any())
+                if match.any():
+                    #print("Matched {0}".format(linename))
+                    break
+
+            #if len(result) > 0:
+            #    result = mt(result)
             if len(result) >= 1:
                 if len(result) > 1:
                     print(result)
-                eu = result[0]['EU_K']
+                #eu = u.Quantity(result[0]['E_U (cm^-1)'], u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()).value
+                eu = u.Quantity(result[0]['E_U'], u.K)
                 species = result[0]['Species']
+                #qn = result[0]['Resolved QNs']
                 qn = result[0]['QNs']
+                aul = result[0]['Aij']
+                deg = result[0]['gu']
             else:
-                eu = np.nan
+                #print("No match for {0}".format(linename))
+                eu = u.Quantity(np.nan, u.K)
                 species = ''
                 qn = ''
+                aul = 0
+                deg = 0
 
             #ref = np.array(result['Freq'])*u.GHz
             #result.add_column(table.Column(name='velocity', data=-((frq-ref)/(ref) * constants.c).to(u.km/u.s)))
@@ -130,7 +148,9 @@ for spw in (0,1,2,3):
                                   'EU_K': eu,
                                   'species': species,
                                   'qn': qn,
-                                  'jtok': (1*u.Jy).to(u.K, equivalencies=jtok)
+                                  'jtok': (1*u.Jy).to(u.K, equivalencies=jtok),
+                                  'aul': aul,
+                                  'deg': deg,
                                  }
 
 linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
@@ -147,8 +167,10 @@ jtok = table.Column(name='Jy/K', data=u.Quantity([linefits[ln]['jtok'].value for
 eu = table.Column(name='EU_K', data=u.Quantity([linefits[ln]['EU_K'] for ln in linenames], u.K))
 species = table.Column(name='Species', data=[linefits[ln]['species'] for ln in linenames])
 qn = table.Column(name='QNs', data=[linefits[ln]['qn'] for ln in linenames])
+deg = table.Column(name='deg', data=[linefits[ln]['deg'] for ln in linenames])
+Aij = table.Column(name='Aij', data=[linefits[ln]['aul'] for ln in linenames])
 
-tbl1 = table.Table([linenames, species, qn, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu])
+tbl1 = table.Table([linenames, species, qn, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij])
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 

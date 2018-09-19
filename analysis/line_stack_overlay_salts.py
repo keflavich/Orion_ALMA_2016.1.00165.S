@@ -9,6 +9,7 @@ from constants import vcen
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
+from salt_tables import salt_tables
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -21,46 +22,7 @@ ided_linetexnames = [lines.texnames[x] if x in lines.texnames else x
                      #if 'U' not in x
                     ]
 
-KCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' KCl'))
-K37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' K37Cl'))
-K41Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='41KCl'))
-AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
-#AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
-#NaF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaF'))
-#NaO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO'))
-#NaOH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaOH'))
-#NaCH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCH'))
-NaCN = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCN'))
-CaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' CaCl'))
-AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
-#AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
-NaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCl'))
-Na37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' Na37Cl'))
-MgCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl'))
-#MgCl = [row for row in MgCl if len(row['Resolved QNs']) < 20]
-#not detected:
-# HCl = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' HCl')
-#NaCN = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCN')
-#NaO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO')
-#FeCO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' FeCO')
-#whiffs at 230 GHz:
-# MgCCH = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='MgCCH')
-#too many isotopologues don't have anything
-# SiS = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='Silicon monosulfide')
-#LOTS of lines.  No way.
-# MnO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='MnO')
-# SO is real, but only the main isotopologue?
-#SO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='Sulfur Monoxide')
-SO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' SO '))
-S34O = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' 34SO '))
-# only low-J lines of SO2...
-# no, SO2 isn't really believable.
-SO2 = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' SO2',
-                                 energy_max=500, energy_type='eu_k'))
-
-
-salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c']
-salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl,]
+salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
 tables = []
 
 def linename(row):
