@@ -467,13 +467,19 @@ if __name__ == "__main__":
                        for row in tbl])
     v2mask = np.array([(not hasattr(row['Species'], 'mask')) and ('v=2' in row['Species'])
                        for row in tbl])
+    v3mask = np.array([(not hasattr(row['Species'], 'mask')) and ('v=3' in row['Species'])
+                       for row in tbl])
+    v4mask = np.array([(not hasattr(row['Species'], 'mask')) and ('v=4' in row['Species'])
+                       for row in tbl])
 
     kcl37mask = np.array([(not hasattr(row['Species'], 'mask')) and
-                          ('K37Cl' == row['Species'][:5])
+                          ('K37Cl' == row['Species'][:5] or
+                           '39K-37Cl' in row['Species'])
                           for row in tbl])
 
     # mask out a bad fit
-    bad = (tbl['Species'] == 'K37Clv=1') & (tbl['QNs'] == '29-28')
+    bad = (tbl['Species'] == 'K37Clv=1') & ((tbl['QNs'] == '29-28') |
+                                            (tbl['QNs'] == 'v=1-1 J=29-28'))
 
     print("K37Cl: {0} in-band, {1} detected".format(kcl37mask.sum(),
                                                     (kcl37mask & (~bad)).sum()))
@@ -485,8 +491,10 @@ if __name__ == "__main__":
                                     kcl37tbl['Fitted Amplitude K']**2 +
                                     kcl37tbl['Fitted Width']**2 *
                                     kcl37tbl['Fitted Amplitude error K']**2)**0.5
-    Aul = u.Quantity(list(map(get_Aul_(frqs), kcl37freqs)), u.Hz)
-    deg = u.Quantity(list(map(get_deg_(frqs), kcl37freqs)))
+    #Aul = u.Quantity(list(map(get_Aul_(frqs), kcl37freqs)), u.Hz)
+    #deg = u.Quantity(list(map(get_deg_(frqs), kcl37freqs)))
+    Aul = kcl37tbl['Aij']
+    deg = kcl37tbl['deg']
     kcl37_nu = nupper_of_kkms(kkms=kkms_kcl37,
                               freq=kcl37freqs,
                               Aul=Aul,
@@ -530,7 +538,9 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     naclmask = np.array([(not hasattr(row['Species'], 'mask')) and
-                         ('NaCl' == row['Species'][:4]) for row in tbl])
+                         ('NaCl' == row['Species'][:4] or
+                         '23Na-35Cl' in row['Species'])
+                         for row in tbl])
 
     # mask out a bad fit
     # on edge of absorption feature
@@ -546,8 +556,10 @@ if __name__ == "__main__":
                                    nacltbl['Fitted Amplitude K']**2 +
                                    nacltbl['Fitted Width']**2 *
                                    nacltbl['Fitted Amplitude error K']**2)**0.5
-    Aul = u.Quantity(list(map(get_Aul_(frqs), naclfreqs)), u.Hz)
-    deg = u.Quantity(list(map(get_deg_(frqs), naclfreqs)))
+    #Aul = u.Quantity(list(map(get_Aul_(frqs), naclfreqs)), u.Hz)
+    #deg = u.Quantity(list(map(get_deg_(frqs), naclfreqs)))
+    Aul = nacltbl['Aij']
+    deg = nacltbl['deg']
     nacl_nu = nupper_of_kkms(kkms=kkms_nacl,
                              freq=naclfreqs,
                              Aul=Aul,
@@ -582,8 +594,11 @@ if __name__ == "__main__":
     tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4],
                    errors=enacl_nu[v4], plot=True,
                    verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
+    tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v4],
+                   errors=enacl_nu[v5], plot=True,
+                   verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
     pl.legend(loc='best')
-    pl.axis([300,2100,9.0,13])
+    pl.axis([300,2600,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
 
@@ -600,7 +615,7 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m'),)
          )
     pl.legend(loc='best')
-    pl.axis([300,2100,9.0,13])
+    pl.axis([300,2600,9.0,13])
     pl.title("NaCl")
 
     pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))
@@ -628,7 +643,9 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     nacl37mask = np.array([(not hasattr(row['Species'], 'mask')) and
-                          ('Na37Cl' == row['Species'][:6]) for row in tbl])
+                          ('Na37Cl' == row['Species'][:6] or
+                           '23Na-37Cl' in row['Species'])
+                          for row in tbl])
 
     bad = np.zeros_like(naclmask, dtype='bool')
 
@@ -642,8 +659,10 @@ if __name__ == "__main__":
                                      nacl37tbl['Fitted Amplitude K']**2 +
                                      nacl37tbl['Fitted Width']**2 *
                                      nacl37tbl['Fitted Amplitude error K']**2)**0.5
-    Aul = u.Quantity(list(map(get_Aul_(frqs), nacl37freqs)), u.Hz)
-    deg = u.Quantity(list(map(get_deg_(frqs), nacl37freqs)))
+    #Aul = u.Quantity(list(map(get_Aul_(frqs), nacl37freqs)), u.Hz)
+    #deg = u.Quantity(list(map(get_deg_(frqs), nacl37freqs)))
+    Aul = nacl37tbl['Aij']
+    deg = nacl37tbl['deg']
     nacl37_nu = nupper_of_kkms(kkms=kkms_nacl37,
                                freq=nacl37freqs,
                                Aul=Aul,
@@ -656,9 +675,9 @@ if __name__ == "__main__":
 
     v0 = np.array(['v=0' in row['Species'] for row in nacl37tbl])
     v1 = np.array(['v=1' in row['Species'] for row in nacl37tbl])
-    #v2 = np.array(['v=2' in row['Species'] for row in nacl37tbl])
-    #v3 = np.array(['v=3' in row['Species'] for row in nacl37tbl])
-    #v4 = np.array(['v=4' in row['Species'] for row in nacl37tbl])
+    v2 = np.array(['v=2' in row['Species'] for row in nacl37tbl])
+    v3 = np.array(['v=3' in row['Species'] for row in nacl37tbl])
+    v4 = np.array(['v=4' in row['Species'] for row in nacl37tbl])
 
     pl.figure(4).clf()
     print("Na37Cl")

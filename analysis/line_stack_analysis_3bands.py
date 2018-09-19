@@ -23,7 +23,7 @@ import latex_info
 
 dv = 15 * u.km/u.s
 v = 5.5 * u.km/u.s
-dv_linesearch = 2.5*u.km/u.s
+dv_linesearch = 10.0*u.km/u.s
 
 linefits = {}
 

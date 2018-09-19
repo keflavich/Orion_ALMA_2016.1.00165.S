@@ -11,18 +11,21 @@ def load_barton(species):
     tbl = tbl[(tbl['Freq']>80) & (tbl['Freq']<400) & (tbl['E_U'] < 1e4) & (tbl['vu']<=7)]
     return tbl
 
+kcl_offset = (1+17*u.km/u.s/constants.c).decompose()
+nacl_offset = (1+3.*u.km/u.s/constants.c).decompose()
+
 KCls = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' KCl'))
 KCl = load_barton('39K-35Cl')
-KCl['Freq'] = KCl['Freq']+0.017
+KCl['Freq'] = KCl['Freq']*kcl_offset
 
 #K37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' K37Cl'))
 K37Cl = load_barton('39K-37Cl')
-K37Cl['Freq'] = K37Cl['Freq']+0.017
+K37Cl['Freq'] = K37Cl['Freq']*kcl_offset
 #K41Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name='41KCl'))
 K41Cl = load_barton('41K-35Cl')
-K41Cl['Freq'] = K41Cl['Freq']+0.017
+K41Cl['Freq'] = K41Cl['Freq']*kcl_offset
 K41Cl37 = load_barton('41K-37Cl')
-K41Cl37['Freq'] = K41Cl37['Freq']+0.017
+K41Cl37['Freq'] = K41Cl37['Freq']*kcl_offset
 AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
 #AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
 #NaF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaF'))
@@ -35,8 +38,11 @@ AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
 #AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
 #NaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCl'))
 NaCl = load_barton('23Na-35Cl')
+NaCl['Freq'] = NaCl['Freq']*nacl_offset
 #Na37Cl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' Na37Cl'))
 Na37Cl = load_barton('23Na-37Cl')
+Na37Cl['Freq'] = Na37Cl['Freq']*nacl_offset
+
 MgCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl'))
 #MgCl = [row for row in MgCl if len(row['Resolved QNs']) < 20]
 #not detected:
