@@ -30,6 +30,7 @@ AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
 #NaO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO'))
 #NaOH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaOH'))
 #NaCH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCH'))
+NaCN = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCN'))
 CaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' CaCl'))
 AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
 #AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
@@ -58,6 +59,7 @@ SO2 = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' SO2',
                                  energy_max=500, energy_type='eu_k'))
 
 
+salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c']
 salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl,]
 tables = []
 
@@ -88,34 +90,37 @@ for fn in flist:
                                       .format(basefn.replace("fits","pdf")))
                           )
 
-    sp_st.plotter(ymin=-0.005, ymax=0.01)
-    sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen)
+    sp_st.plotter(ymin=-0.0025, ymax=0.01)
+    sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
+                           auto_yloc_fraction=0.8)
+    for txt in sp_st.plotter.axis.texts:
+        txt.set_backgroundcolor((1,1,1,0.9))
     #sp_st.plotter.line_ids(ided_linetexnames, ided_linefreqs, velocity_offset=-vcen,
     #                       plot_kwargs=dict(color='b'))
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))
                          )
-    for tbl in salt_tables:
+    for tbl,color in zip(salt_tables, salt_colors):
         for row in tbl:
             frq = u.Quantity(row['Freq'], u.GHz).value
             if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
                 sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
                                           -0.05, 0.10,
-                                          colors='b', linestyles=':')
+                                          colors=color, linestyles=':')
 
-    for row in AlCl:
-        frq = u.Quantity(row['Freq'], u.GHz).value
-        if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
-            sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
-                                      -0.05, 0.10,
-                                      colors='r', linestyles=':')
+    #for row in AlCl:
+    #    frq = u.Quantity(row['Freq'], u.GHz).value
+    #    if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
+    #        sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
+    #                                  -0.05, 0.10,
+    #                                  colors='r', linestyles='--')
 
-    for row in MgCl:
-        frq = u.Quantity(row['Freq'], u.GHz).value
-        if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
-            sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
-                                      -0.05, 0.10,
-                                      colors='g', linestyles=':')
+    #for row in NaCN:
+    #    frq = u.Quantity(row['Freq'], u.GHz).value
+    #    if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
+    #        sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
+    #                                  -0.05, 0.10,
+    #                                  colors='g', linestyles='--')
 
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/diagnostic_lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))

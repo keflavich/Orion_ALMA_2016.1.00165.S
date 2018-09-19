@@ -5,6 +5,8 @@ from astropy import constants
 from astropy import log
 from astropy import table
 from astropy import modeling
+from astropy.modeling.models import custom_model
+
 
 from astroquery.vamdc import Vamdc
 from vamdclib import specmodel
@@ -12,6 +14,11 @@ from vamdclib import specmodel
 import pylab as pl
 
 import lines
+
+vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
+                 'NaCl': (366*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
+                }
+
 
 def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
     """ Derived directly from pyspeckit eqns..."""
@@ -30,6 +37,159 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
     # kelvin-hertz
     Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
     return (nline * Khz / degeneracies).to(u.cm**-2)
+
+
+def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
+                  uplims=None, errors=None, min_nupper=1,
+                  replace_errors_with_uplims=False, molecule=None, colors='rgbcmyk',
+                  molname=None,
+                  marker='o', max_uplims='half'):
+    """
+    Fit the Boltzmann diagram with a vibrational and a rotational temperature
+
+    Parameters
+    ----------
+    max_uplims: str or number
+        The maximum number of upper limits before the fit is ignored completely
+        and instead zeros are returned
+    """
+
+    nupperoverg_tofit = nupperoverg.copy().to(u.cm**-2).value
+    if errors is not None:
+        errors = errors.to(u.cm**-2).value
+
+    if uplims is not None:
+        upperlim_mask = nupperoverg < uplims
+
+        # allow this magical keyword 'half'
+        max_uplims = len(nupperoverg)/2. if max_uplims == 'half' else max_uplims
+
+        if upperlim_mask.sum() > max_uplims:
+            # too many upper limits = bad idea to fit.
+            return 0*u.cm**-2, 0*u.K, 0, 0
+
+        if errors is None:
+            # if errors are not specified, we set the upper limits as values to
+            # be fitted
+            # (which gives a somewhat useful upper limit on the temperature)
+            nupperoverg_tofit[upperlim_mask] = uplims[upperlim_mask]
+        else:
+            # otherwise, we set the values to zero-column and set the errors to
+            # be whatever the upper limits are (hopefully a 1-sigma upper
+            # limit)
+            # 1.0 here becomes 0.0 in log and makes the relative errors meaningful
+            nupperoverg_tofit[upperlim_mask] = 1.0
+            if replace_errors_with_uplims:
+                errors[upperlim_mask] = uplims[upperlim_mask]
+    else:
+        upperlim_mask = np.ones_like(nupperoverg_tofit, dtype='bool')
+
+    # always ignore negatives & really low values
+    good = nupperoverg_tofit > min_nupper
+    # skip any fits that have fewer than 50% good values
+    if good.sum() < len(nupperoverg_tofit)/2.:
+        return 0*u.cm**-2, 0*u.K, 0, 0
+
+    if errors is not None:
+        rel_errors = errors / nupperoverg_tofit
+        weights = 1. / rel_errors**2
+        log.debug("Fitting with data = {0}, weights = {1}, errors = {2},"
+                  "relative_errors = {3}"
+                  .format(np.log(nupperoverg_tofit[good]),
+                          np.log(weights[good]),
+                          errors[good],
+                          rel_errors[good],
+                         ))
+    else:
+        # want log(weight) = 1
+        weights = np.exp(np.ones_like(nupperoverg_tofit))
+
+    @custom_model
+    def model(eupper, vstate, column=np.log(1e11), rottem=100, vibtem=300):
+        result = -1/rottem * eupper + column + (1/vibtem * vstate *
+                                                vib_constants[molname].to(u.K).value)
+        return result
+
+    fitter = modeling.fitting.LevMarLSQFitter()
+    #fitter = modeling.fitting.LinearLSQFitter()
+
+    init = model()
+    #init.rottem.fixed = True
+    result = fitter(init, eupper[good].to(u.K).value,
+                    vstate[good], np.log(nupperoverg_tofit[good]),
+                    weights=np.log(weights[good]))
+    print(result)
+    tex = result.rottem #u.Quantity(-1./result.slope, u.K)
+    tvib = result.vibtem
+
+    partition_func = specmodel.calculate_partitionfunction(molecule.data['States'],
+                                                           temperature=tex.value)
+    assert len(partition_func) == 1
+    Q_rot = tuple(partition_func.values())[0]
+
+    Ntot = np.exp(result.column + np.log(Q_rot)) * u.cm**-2
+
+    if verbose:
+        print(("Tex={0}, Ntot={1}, log(Ntot)={4}, Q_rot={2}, "
+               "nuplim={3}".format(tex, Ntot, Q_rot, upperlim_mask.sum(),
+                                   np.log10(Ntot.value),
+                                  )))
+
+    if plot:
+        import pylab as pl
+        for vib,color in zip(np.unique(vstate), colors):
+            mask = vstate == vib
+            L, = pl.plot(eupper[mask], np.log10(nupperoverg_tofit[mask]),
+                         marker=marker,
+                         color=color, markeredgecolor='none', alpha=0.5,
+                         linestyle='none',
+                         #markersize=2,
+                        )
+            if uplims is not None:
+                L, = pl.plot(eupper[upperlim_mask & mask],
+                             np.log10(uplims)[upperlim_mask & mask], 'bv', alpha=0.2,
+                             markersize=2)
+                #L, = pl.plot(eupper[upperlim_mask],
+                #             np.log10(nupperoverg)[upperlim_mask], 'bv', alpha=0.2)
+            if errors is not None:
+                yerr = np.array([np.log10(nupperoverg_tofit)-np.log10(nupperoverg_tofit-errors),
+                                 np.log10(nupperoverg_tofit+errors)-np.log10(nupperoverg_tofit)])
+                # if lower limit is nan, set to zero
+                yerr[0,:] = np.nan_to_num(yerr[0,:])
+                if np.any(np.isnan(yerr[1,:])):
+                    raise ValueError("*** Some upper limits are NAN")
+                # use 'good' to exclude plotting errorbars for upper limits
+                pl.errorbar(eupper.value[good & mask],
+                            np.log10(nupperoverg_tofit)[good & mask],
+                            yerr=yerr[:,good & mask],
+                            linestyle='none',
+                            linewidth=0.5,
+                            color='k',
+                            marker='.', zorder=-5,
+                            markersize=2)
+            xax = np.array([0, eupper.max().value])
+            line = (xax*-1/result.rottem.value +
+                    result.column.value +
+                    1/result.vibtem.value*vib*vib_constants[molname].to(u.K).value)
+            pl.plot(xax, np.log10(np.exp(line)), '--',
+                    color=color,
+                    alpha=0.6,
+                    linewidth=1.0,
+                    label=('v={2}$T_R={0:0.1f}$ $T_v={3:0.1f}$ $\log(N)={1:0.1f}$'
+                           .format(tex.value, np.log10(Ntot.value), vib,
+                                   tvib.value
+                                  ))
+                   )
+        pl.ylabel("log N$_u$ (cm$^{-2}$)")
+        pl.xlabel("E$_u$ (K)")
+
+        if (uplims is not None) and ((errors is None) or replace_errors_with_uplims):
+            # if errors are specified, their errorbars will be better
+            # representations of what's actually being fit
+            pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
+                    linestyle='none', color='k')
+
+    return Ntot, tex, result.rottem, result.vibtem, result.column
 
 def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
             errors=None, min_nupper=1,
@@ -54,6 +214,8 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
     fitter = modeling.fitting.LinearLSQFitter()
 
     nupperoverg_tofit = nupperoverg.copy().to(u.cm**-2).value
+    if errors is not None:
+        errors = errors.to(u.cm**-2).value
 
     if uplims is not None:
         upperlim_mask = nupperoverg < uplims
@@ -191,7 +353,7 @@ if __name__ == "__main__":
     kcl35 = Vamdc.query_molecule('KCl-35')
     rt35 = kcl35.data['RadiativeTransitions']
     frqs = u.Quantity([(float(rt35[key].FrequencyValue)*u.MHz).to(u.GHz,
-                                                                u.spectral())
+                                                                  u.spectral())
                        for key in rt35])
 
 
@@ -205,20 +367,35 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     kcl35mask = np.array([(not hasattr(row['Species'], 'mask')) and
-                        ('KCl' == row['Species'][:3]) for row in tbl])
+                         ('KCl' == row['Species'][:3]) for row in tbl])
+
+    bad = np.zeros_like(kcl35mask, dtype='bool')
+
+    print("KCl: {0} in-band, {1} detected".format(kcl35mask.sum(),
+                                                  (kcl35mask & (~bad)).sum()))
+
     kcl35tbl = tbl[kcl35mask]
     kcl35freqs = u.Quantity(kcl35tbl['Frequency'], u.GHz)
     kkms_kcl35 = (2*np.pi*kcl35tbl['Fitted Width']**2)**0.5 * kcl35tbl['Fitted Amplitude K']
+    ekkms_kcl35 = (2*np.pi)**0.5 * (kcl35tbl['Fitted Width error']**2 *
+                                    kcl35tbl['Fitted Amplitude K']**2 +
+                                    kcl35tbl['Fitted Width']**2 *
+                                    kcl35tbl['Fitted Amplitude error K']**2)**0.5
     #kkms_kcl35 = (2*np.pi*(4)**2)**0.5 * kcl35tbl['Fitted Amplitude K']
     Aul = u.Quantity(list(map(get_Aul_(frqs), kcl35freqs)), u.Hz)
     deg = u.Quantity(list(map(get_deg_(frqs), kcl35freqs)))
     kcl35tbl.add_column(table.Column(name='Aul', data=Aul))
     kcl35tbl.add_column(table.Column(name='Degeneracy', data=deg))
     kcl35_nu = nupper_of_kkms(kkms=kkms_kcl35,
-                            freq=kcl35freqs,
-                            Aul=Aul,
-                            degeneracies=deg)
-    kcl35tbl.add_column(table.Column(name='N_U', data=kcl35_nu))
+                              freq=kcl35freqs,
+                              Aul=Aul,
+                              degeneracies=deg)
+    ekcl35_nu = nupper_of_kkms(kkms=ekkms_kcl35,
+                               freq=kcl35freqs,
+                               Aul=Aul,
+                               degeneracies=deg)
+    kcl35tbl.add_column(table.Column(name='N_U', data=kcl35_nu,
+                                     ))
 
     v0 = np.array(['v=0' in row['Species'] for row in kcl35tbl])
     v1 = np.array(['v=1' in row['Species'] for row in kcl35tbl])
@@ -226,15 +403,37 @@ if __name__ == "__main__":
 
     pl.figure(1).clf()
     print("KCl")
-    tex0 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu[v0], plot=True,
-                   verbose=True, molecule=kcl35, marker='o', color='r', label='v=0 ')
-    tex1 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v1], u.K), kcl35_nu[v1], plot=True,
-                   verbose=True, molecule=kcl35, marker='s', color='b', label='v=1 ')
-    tex2 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v2], u.K), kcl35_nu[v2], plot=True,
-                   verbose=True, molecule=kcl35, marker='^', color='g', label='v=2 ')
+
+
+    tex0 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu[v0],
+                   errors=ekcl35_nu[v0], plot=True, verbose=True,
+                   molecule=kcl35, marker='o', color='r', label='v=0 ')
+    tex1 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v1], u.K), kcl35_nu[v1],
+                   errors=ekcl35_nu[v1], plot=True, verbose=True,
+                   molecule=kcl35, marker='s', color='b', label='v=1 ')
+    tex2 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v2], u.K), kcl35_nu[v2],
+                   errors=ekcl35_nu[v2], plot=True, verbose=True,
+                   molecule=kcl35, marker='^', color='g', label='v=2 ')
     pl.legend(loc='best')
     pl.title("KCl")
     pl.savefig(paths.fpath("KCl_rotational_diagrams.pdf"))
+
+
+    pl.figure(1).clf()
+    vstate = 0*v0 + 1*v1 + 2*v2
+
+    print(fit_multi_tex(eupper=u.Quantity(kcl35tbl['EU_K'], u.K),
+                        nupperoverg=kcl35_nu,
+                        vstate=vstate,
+                        errors=ekcl35_nu,
+                        plot=True, verbose=True, molecule=kcl35, marker='o',
+                        molname='KCl',
+                        colors=('r','g','b','orange','m'), )
+         )
+    pl.legend(loc='best')
+    pl.title("KCl")
+
+    pl.savefig(paths.fpath("KCl_rotational-vibrational_fit_diagrams.pdf"))
 
 
 
@@ -269,25 +468,38 @@ if __name__ == "__main__":
     # mask out a bad fit
     bad = (tbl['Species'] == 'K37Clv=1') & (tbl['QNs'] == '29-28')
 
+    print("K37Cl: {0} in-band, {1} detected".format(kcl37mask.sum(),
+                                                    (kcl37mask & (~bad)).sum()))
+
     kcl37tbl = tbl[kcl37mask & (v0mask | v1mask) & (~bad)]
     kcl37freqs = u.Quantity(kcl37tbl['Frequency'], u.GHz)
     kkms_kcl37 = (2*np.pi*kcl37tbl['Fitted Width']**2)**0.5 * kcl37tbl['Fitted Amplitude K']
+    ekkms_kcl37 = (2*np.pi)**0.5 * (kcl37tbl['Fitted Width error']**2 *
+                                    kcl37tbl['Fitted Amplitude K']**2 +
+                                    kcl37tbl['Fitted Width']**2 *
+                                    kcl37tbl['Fitted Amplitude error K']**2)**0.5
     Aul = u.Quantity(list(map(get_Aul_(frqs), kcl37freqs)), u.Hz)
     deg = u.Quantity(list(map(get_deg_(frqs), kcl37freqs)))
     kcl37_nu = nupper_of_kkms(kkms=kkms_kcl37,
                               freq=kcl37freqs,
                               Aul=Aul,
                               degeneracies=deg)
+    ekcl37_nu = nupper_of_kkms(kkms=ekkms_kcl37,
+                               freq=kcl37freqs,
+                               Aul=Aul,
+                               degeneracies=deg)
 
     v0 = np.array(['v=0' in row['Species'] for row in kcl37tbl])
     v1 = np.array(['v=1' in row['Species'] for row in kcl37tbl])
 
     pl.figure(2).clf()
     print("K 37Cl")
-    tex0 = fit_tex(u.Quantity(kcl37tbl['EU_K'][v0], u.K), kcl37_nu[v0], plot=True,
-                   verbose=True, molecule=kcl37, marker='o', color='r', label='v=0 ')
-    tex1 = fit_tex(u.Quantity(kcl37tbl['EU_K'][v1], u.K), kcl37_nu[v1], plot=True,
-                   verbose=True, molecule=kcl37, marker='s', color='b', label='v=1 ')
+    tex0 = fit_tex(u.Quantity(kcl37tbl['EU_K'][v0], u.K), kcl37_nu[v0],
+                   errors=ekcl37_nu[v0], plot=True, verbose=True,
+                   molecule=kcl37, marker='o', color='r', label='v=0 ')
+    tex1 = fit_tex(u.Quantity(kcl37tbl['EU_K'][v1], u.K), kcl37_nu[v1],
+                   errors=ekcl37_nu[v1], plot=True, verbose=True,
+                   molecule=kcl37, marker='s', color='b', label='v=1 ')
     pl.legend(loc='best')
     pl.title("K$^{37}$Cl")
     pl.savefig(paths.fpath("KCl37_rotational_diagrams.pdf"))
@@ -317,19 +529,29 @@ if __name__ == "__main__":
     # on edge of absorption feature
     bad = (tbl['Species'] == 'NaClv=4') & (tbl['QNs'] == '17-16')
 
+    print("NaCl: {0} in-band, {1} detected".format(naclmask.sum(),
+                                                   (naclmask & (~bad)).sum()))
 
     nacltbl = tbl[naclmask & (~bad)]
     naclfreqs = u.Quantity(nacltbl['Frequency'], u.GHz)
     kkms_nacl = (2*np.pi*nacltbl['Fitted Width']**2)**0.5 * nacltbl['Fitted Amplitude K']
+    ekkms_nacl = (2*np.pi)**0.5 * (nacltbl['Fitted Width error']**2 *
+                                   nacltbl['Fitted Amplitude K']**2 +
+                                   nacltbl['Fitted Width']**2 *
+                                   nacltbl['Fitted Amplitude error K']**2)**0.5
     Aul = u.Quantity(list(map(get_Aul_(frqs), naclfreqs)), u.Hz)
     deg = u.Quantity(list(map(get_deg_(frqs), naclfreqs)))
     nacl_nu = nupper_of_kkms(kkms=kkms_nacl,
                              freq=naclfreqs,
                              Aul=Aul,
                              degeneracies=deg)
+    enacl_nu = nupper_of_kkms(kkms=ekkms_nacl,
+                              freq=naclfreqs,
+                              Aul=Aul,
+                              degeneracies=deg)
 
 
-    #v0 = np.array(['v=0' in row['Species'] for row in nacltbl])
+    v0 = np.array(['v=0' in row['Species'] for row in nacltbl])
     v1 = np.array(['v=1' in row['Species'] for row in nacltbl])
     v2 = np.array(['v=2' in row['Species'] for row in nacltbl])
     v3 = np.array(['v=3' in row['Species'] for row in nacltbl])
@@ -339,19 +561,40 @@ if __name__ == "__main__":
     print("NaCl")
     #tex0 = fit_tex(u.Quantity(nacltbl['EU_K'][v0], u.K), nacl_nu[v0], plot=True,
     #               verbose=True, molecule=nacl, marker='o', color='r')
-    tex1 = fit_tex(u.Quantity(nacltbl['EU_K'][v1], u.K), nacl_nu[v1], plot=True,
+    tex1 = fit_tex(u.Quantity(nacltbl['EU_K'][v1], u.K), nacl_nu[v1],
+                   errors=enacl_nu[v1], plot=True,
                    verbose=True, molecule=nacl, marker='s', color='b', label='v=1 ')
-    tex2 = fit_tex(u.Quantity(nacltbl['EU_K'][v2], u.K), nacl_nu[v2], plot=True,
+    tex2 = fit_tex(u.Quantity(nacltbl['EU_K'][v2], u.K), nacl_nu[v2],
+                   errors=enacl_nu[v2], plot=True,
                    verbose=True, molecule=nacl, marker='^', color='g', label='v=2 ')
-    tex3 = fit_tex(u.Quantity(nacltbl['EU_K'][v3], u.K), nacl_nu[v3], plot=True,
+    tex3 = fit_tex(u.Quantity(nacltbl['EU_K'][v3], u.K), nacl_nu[v3],
+                   errors=enacl_nu[v3], plot=True,
                    verbose=True, molecule=nacl, marker='o', color='r', label='v=3 ')
-    tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4], plot=True,
+    tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4],
+                   errors=enacl_nu[v4], plot=True,
                    verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
     pl.legend(loc='best')
     pl.axis([300,1600,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
 
+
+    pl.figure(3).clf()
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4
+
+    print(fit_multi_tex(eupper=u.Quantity(nacltbl['EU_K'], u.K),
+                        nupperoverg=nacl_nu,
+                        vstate=vstate,
+                        errors=enacl_nu,
+                        plot=True, verbose=True, molecule=nacl, marker='o',
+                        molname='NaCl',
+                        colors=('r','g','b','orange','m'),)
+         )
+    pl.legend(loc='best')
+    pl.axis([300,1600,9.0,13])
+    pl.title("NaCl")
+
+    pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))
 
 
 
@@ -362,7 +605,7 @@ if __name__ == "__main__":
     nacl37 = Vamdc.query_molecule('NaCl-37')
     rt_nacl37 = nacl37.data['RadiativeTransitions']
     frqs = u.Quantity([(float(rt_nacl37[key].FrequencyValue)*u.MHz).to(u.GHz,
-                                                                     u.spectral())
+                                                                       u.spectral())
                        for key in rt_nacl37])
 
 
@@ -376,16 +619,30 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     nacl37mask = np.array([(not hasattr(row['Species'], 'mask')) and
-                         ('Na37Cl' == row['Species'][:6]) for row in tbl])
+                          ('Na37Cl' == row['Species'][:6]) for row in tbl])
+
+    bad = np.zeros_like(naclmask, dtype='bool')
+
+    print("Na37Cl: {0} in-band, {1} detected".format(nacl37mask.sum(),
+                                                     (nacl37mask & (~bad)).sum()))
+
     nacl37tbl = tbl[nacl37mask & (v0mask | v1mask)]
     nacl37freqs = u.Quantity(nacl37tbl['Frequency'], u.GHz)
     kkms_nacl37 = (2*np.pi*nacl37tbl['Fitted Width']**2)**0.5 * nacl37tbl['Fitted Amplitude K']
+    ekkms_nacl37 = (2*np.pi)**0.5 * (nacl37tbl['Fitted Width error']**2 *
+                                     nacl37tbl['Fitted Amplitude K']**2 +
+                                     nacl37tbl['Fitted Width']**2 *
+                                     nacl37tbl['Fitted Amplitude error K']**2)**0.5
     Aul = u.Quantity(list(map(get_Aul_(frqs), nacl37freqs)), u.Hz)
     deg = u.Quantity(list(map(get_deg_(frqs), nacl37freqs)))
     nacl37_nu = nupper_of_kkms(kkms=kkms_nacl37,
                                freq=nacl37freqs,
                                Aul=Aul,
                                degeneracies=deg)
+    enacl37_nu = nupper_of_kkms(kkms=ekkms_nacl37,
+                                freq=nacl37freqs,
+                                Aul=Aul,
+                                degeneracies=deg)
 
 
     v0 = np.array(['v=0' in row['Species'] for row in nacl37tbl])
@@ -396,9 +653,11 @@ if __name__ == "__main__":
 
     pl.figure(4).clf()
     print("Na37Cl")
-    tex0 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v0], u.K), nacl37_nu[v0], plot=True,
+    tex0 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v0], u.K), nacl37_nu[v0],
+                   errors=enacl37_nu[v0], plot=True,
                    verbose=True, molecule=nacl37, marker='o', color='r')
-    tex1 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v1], u.K), nacl37_nu[v1], plot=True,
+    tex1 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v1], u.K), nacl37_nu[v1],
+                   errors=enacl37_nu[v1], plot=True,
                    verbose=True, molecule=nacl37, marker='s', color='b', label='v=1 ')
     #tex2 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v2], u.K), nacl37_nu[v2], plot=True,
     #               verbose=True, molecule=nacl37, marker='^', color='g', label='v=2 ')
@@ -437,26 +696,41 @@ if __name__ == "__main__":
                           for row in tbl])
 
     bad = (((tbl['Species'] == '41KClv=2') & (tbl['QNs'] == '29-28')) | # absorption
-           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '31-30'))) # wing of NaCl
+           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '31-30')) |# wing of NaCl
+           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '46-45'))) # absorption
+
+
+    print("41KCl: {0} in-band, {1} detected".format(k41clmask.sum(),
+                                                    (k41clmask & (~bad)).sum()))
 
     k41cltbl = tbl[k41clmask & (v0mask | v1mask) & (~bad)]
     k41clfreqs = u.Quantity(k41cltbl['Frequency'], u.GHz)
     kkms_k41cl = (2*np.pi*k41cltbl['Fitted Width']**2)**0.5 * k41cltbl['Fitted Amplitude K']
+    ekkms_k41cl = (2*np.pi)**0.5 * (k41cltbl['Fitted Width error']**2 *
+                                    k41cltbl['Fitted Amplitude K']**2 +
+                                    k41cltbl['Fitted Width']**2 *
+                                    k41cltbl['Fitted Amplitude error K']**2)**0.5
     Aul = u.Quantity(list(map(get_Aul_(frqs), k41clfreqs)), u.Hz)
     deg = u.Quantity(list(map(get_deg_(frqs), k41clfreqs)))
     k41cl_nu = nupper_of_kkms(kkms=kkms_k41cl,
                               freq=k41clfreqs,
                               Aul=Aul,
                               degeneracies=deg)
+    ek41cl_nu = nupper_of_kkms(kkms=ekkms_k41cl,
+                               freq=k41clfreqs,
+                               Aul=Aul,
+                               degeneracies=deg)
 
     v0 = np.array(['v=0' in row['Species'] for row in k41cltbl])
     v1 = np.array(['v=1' in row['Species'] for row in k41cltbl])
 
     pl.figure(5).clf()
     print("41KCl")
-    tex0 = fit_tex(u.Quantity(k41cltbl['EU_K'][v0], u.K), k41cl_nu[v0], plot=True,
+    tex0 = fit_tex(u.Quantity(k41cltbl['EU_K'][v0], u.K), k41cl_nu[v0],
+                   errors=ek41cl_nu[v0], plot=True,
                    verbose=True, molecule=k41cl, marker='o', color='r', label='v=0 ')
-    tex1 = fit_tex(u.Quantity(k41cltbl['EU_K'][v1], u.K), k41cl_nu[v1], plot=True,
+    tex1 = fit_tex(u.Quantity(k41cltbl['EU_K'][v1], u.K), k41cl_nu[v1],
+                   errors=ek41cl_nu[v1], plot=True,
                    verbose=True, molecule=k41cl, marker='s', color='b', label='v=1 ')
     pl.legend(loc='best')
     pl.title("$^{41}$KCl")
