@@ -16,7 +16,12 @@ import pylab as pl
 import lines
 
 vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
+                 'K37Cl': (275.87497*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
+                 '41KCl': (276.639613*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                  'NaCl': (366*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
+                 # couldn't find numbers; assume it's reduced by mass (which
+                 # isn't a good assumption)
+                 'Na37Cl': (35+23)/(37+23)*(366*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                 }
 
 
@@ -114,6 +119,9 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
     #fitter = modeling.fitting.LinearLSQFitter()
 
     init = model()
+    init.column.bounds = np.log(1e9), np.log(1e17)
+    init.rottem.bounds = 10,800
+    init.vibtem.bounds = 10,800
     #init.rottem.fixed = True
     result = fitter(init, eupper[good].to(u.K).value,
                     vstate[good], np.log(nupperoverg_tofit[good]),
@@ -370,7 +378,7 @@ if __name__ == "__main__":
                          ('KCl' == row['Species'][:3] or
                           '39K-35Cl' in row['Species']) for row in tbl])
 
-    bad = np.zeros_like(kcl35mask, dtype='bool')
+    bad = (tbl['Line Name'] == 'KClv=4_13-12')
 
     print("KCl: {0} in-band, {1} detected".format(kcl35mask.sum(),
                                                   (kcl35mask & (~bad)).sum()))
@@ -480,13 +488,13 @@ if __name__ == "__main__":
                           for row in tbl])
 
     # mask out a bad fit
-    bad = (tbl['Species'] == 'K37Clv=1') & ((tbl['QNs'] == '29-28') |
-                                            (tbl['QNs'] == 'v=1-1 J=29-28'))
+    bad = ((tbl['Line Name'] == 'K37Clv=1_29-28') | 
+           (tbl['Line Name'] == '41KClv=0 46-45'))
 
     print("K37Cl: {0} in-band, {1} detected".format(kcl37mask.sum(),
                                                     (kcl37mask & (~bad)).sum()))
 
-    kcl37tbl = tbl[kcl37mask & (v0mask | v1mask) & (~bad)]
+    kcl37tbl = tbl[kcl37mask & (~bad)]
     kcl37freqs = u.Quantity(kcl37tbl['Frequency'], u.GHz)
     kkms_kcl37 = (2*np.pi*kcl37tbl['Fitted Width']**2)**0.5 * kcl37tbl['Fitted Amplitude K']
     ekkms_kcl37 = (2*np.pi)**0.5 * (kcl37tbl['Fitted Width error']**2 *
@@ -521,6 +529,21 @@ if __name__ == "__main__":
     pl.title("K$^{37}$Cl")
     pl.savefig(paths.fpath("KCl37_rotational_diagrams.pdf"))
 
+    pl.figure(2).clf()
+    vstate = 0*v0 + 1*v1
+
+    print(fit_multi_tex(eupper=u.Quantity(kcl37tbl['EU_K'], u.K),
+                        nupperoverg=kcl37_nu,
+                        vstate=vstate,
+                        errors=ekcl37_nu,
+                        plot=True, verbose=True, molecule=kcl37, marker='o',
+                        molname='K37Cl',
+                        colors=('r','g','b','orange','m'), )
+         )
+    pl.legend(loc='best')
+    pl.title("K$^{37}$Cl")
+
+    pl.savefig(paths.fpath("KCl37_rotational-vibrational_fit_diagrams.pdf"))
 
 
     nacl = Vamdc.query_molecule('NaCl$')
@@ -546,7 +569,7 @@ if __name__ == "__main__":
 
     # mask out a bad fit
     # on edge of absorption feature
-    bad = (tbl['Species'] == 'NaClv=4') & (tbl['QNs'] == '17-16')
+    bad = (tbl['Line Name'] == 'NaClv=4_17-16')
 
     print("NaCl: {0} in-band, {1} detected".format(naclmask.sum(),
                                                    (naclmask & (~bad)).sum()))
@@ -596,8 +619,11 @@ if __name__ == "__main__":
     tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4],
                    errors=enacl_nu[v4], plot=True,
                    verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
-    tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v4],
+    tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v5],
                    errors=enacl_nu[v5], plot=True,
+                   verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
+    tex6 = fit_tex(u.Quantity(nacltbl['EU_K'][v6], u.K), nacl_nu[v6],
+                   errors=enacl_nu[v6], plot=True,
                    verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
     pl.legend(loc='best')
     pl.axis([300,2600,9.0,13])
@@ -649,12 +675,12 @@ if __name__ == "__main__":
                            '23Na-37Cl' in row['Species'])
                           for row in tbl])
 
-    bad = np.zeros_like(naclmask, dtype='bool')
+    bad = (tbl['Line Name'] == 'Na37Clv=6_8-7') # tabulated velocity too far off
 
     print("Na37Cl: {0} in-band, {1} detected".format(nacl37mask.sum(),
                                                      (nacl37mask & (~bad)).sum()))
 
-    nacl37tbl = tbl[nacl37mask & (v0mask | v1mask)]
+    nacl37tbl = tbl[nacl37mask & (~bad)]
     nacl37freqs = u.Quantity(nacl37tbl['Frequency'], u.GHz)
     kkms_nacl37 = (2*np.pi*nacl37tbl['Fitted Width']**2)**0.5 * nacl37tbl['Fitted Amplitude K']
     ekkms_nacl37 = (2*np.pi)**0.5 * (nacl37tbl['Fitted Width error']**2 *
@@ -680,6 +706,8 @@ if __name__ == "__main__":
     v2 = np.array(['v=2' in row['Species'] for row in nacl37tbl])
     v3 = np.array(['v=3' in row['Species'] for row in nacl37tbl])
     v4 = np.array(['v=4' in row['Species'] for row in nacl37tbl])
+    v5 = np.array(['v=5' in row['Species'] for row in nacl37tbl])
+    v6 = np.array(['v=6' in row['Species'] for row in nacl37tbl])
 
     pl.figure(4).clf()
     print("Na37Cl")
@@ -701,6 +729,22 @@ if __name__ == "__main__":
     pl.savefig(paths.fpath("NaCl37_rotational_diagrams.pdf"))
 
 
+    pl.figure(4).clf()
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6
+
+    print(fit_multi_tex(eupper=u.Quantity(nacl37tbl['EU_K'], u.K),
+                        nupperoverg=nacl37_nu,
+                        vstate=vstate,
+                        errors=enacl37_nu,
+                        plot=True, verbose=True, molecule=nacl37, marker='o',
+                        molname='Na37Cl',
+                        colors=('r','g','b','orange','m'), )
+         )
+    pl.legend(loc='best')
+    pl.title("Na$^{37}$Cl")
+    pl.axis((0,2400,6.5,13.5))
+
+    pl.savefig(paths.fpath("NaCl37_rotational-vibrational_fit_diagrams.pdf"))
 
 
 
@@ -727,14 +771,21 @@ if __name__ == "__main__":
                           for row in tbl])
 
     bad = (((tbl['Species'] == '41KClv=2') & (tbl['QNs'] == '29-28')) | # absorption
-           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '31-30')) |# wing of NaCl
-           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '46-45'))) # absorption
+           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '31-30')) | # wing of NaCl
+           ((tbl['Species'] == '41KClv=0') & (tbl['QNs'] == '46-45')) | # absorption
+           (tbl['Line Name'] == 'NaClv=4_7-6') |
+           (tbl['Line Name'] == '41KClv=2_29-28') |
+           (tbl['Line Name'] == '41KClv=2 29-28') |
+           (tbl['Line Name'] == '41KClv=0_31-30') |
+           (tbl['Line Name'] == '41KClv=0 31-30') |
+           (tbl['Line Name'] == '41KClv=0_46-45')
+          )
 
 
     print("41KCl: {0} in-band, {1} detected".format(k41clmask.sum(),
                                                     (k41clmask & (~bad)).sum()))
 
-    k41cltbl = tbl[k41clmask & (v0mask | v1mask) & (~bad)]
+    k41cltbl = tbl[k41clmask & (~bad)]
     k41clfreqs = u.Quantity(k41cltbl['Frequency'], u.GHz)
     kkms_k41cl = (2*np.pi*k41cltbl['Fitted Width']**2)**0.5 * k41cltbl['Fitted Amplitude K']
     ekkms_k41cl = (2*np.pi)**0.5 * (k41cltbl['Fitted Width error']**2 *
@@ -756,6 +807,8 @@ if __name__ == "__main__":
 
     v0 = np.array(['v=0' in row['Species'] for row in k41cltbl])
     v1 = np.array(['v=1' in row['Species'] for row in k41cltbl])
+    v2 = np.array(['v=2' in row['Species'] for row in k41cltbl])
+    v3 = np.array(['v=3' in row['Species'] for row in k41cltbl])
 
     pl.figure(5).clf()
     print("41KCl")
@@ -768,3 +821,18 @@ if __name__ == "__main__":
     pl.legend(loc='best')
     pl.title("$^{41}$KCl")
     pl.savefig(paths.fpath("K41Cl_rotational_diagrams.pdf"))
+
+    pl.figure(5).clf()
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3
+    print(fit_multi_tex(eupper=u.Quantity(k41cltbl['EU_K'], u.K),
+                        nupperoverg=k41cl_nu,
+                        vstate=vstate,
+                        errors=ek41cl_nu,
+                        plot=True, verbose=True, molecule=k41cl, marker='o',
+                        molname='41KCl',
+                        colors=('r','g','b','orange','m'), )
+         )
+    pl.legend(loc='best')
+    pl.title("$^{41}$KCl")
+
+    pl.savefig(paths.fpath("41KCl_rotational-vibrational_fit_diagrams.pdf"))
