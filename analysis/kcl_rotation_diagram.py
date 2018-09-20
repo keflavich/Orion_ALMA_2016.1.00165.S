@@ -423,6 +423,7 @@ if __name__ == "__main__":
                    molecule=kcl35, marker='^', color='g', label='v=2 ')
     pl.legend(loc='best')
     pl.title("KCl")
+    pl.axis((0, 2000, 8, 10.5))
     pl.savefig(paths.fpath("KCl_rotational_diagrams.pdf"))
 
 
@@ -439,6 +440,7 @@ if __name__ == "__main__":
          )
     pl.legend(loc='best')
     pl.title("KCl")
+    pl.axis((0, 2000, 7.5, 10.5))
 
     pl.savefig(paths.fpath("KCl_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -720,7 +722,8 @@ if __name__ == "__main__":
     tbl = table.Table.read(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
     k41clmask = np.array([(not hasattr(row['Species'], 'mask')) and
-                          ('41KCl' == row['Species'][:5])
+                          ('41KCl' == row['Species'][:5] or
+                           '41K-35Cl' in row['Species'])
                           for row in tbl])
 
     bad = (((tbl['Species'] == '41KClv=2') & (tbl['QNs'] == '29-28')) | # absorption
@@ -738,8 +741,10 @@ if __name__ == "__main__":
                                     k41cltbl['Fitted Amplitude K']**2 +
                                     k41cltbl['Fitted Width']**2 *
                                     k41cltbl['Fitted Amplitude error K']**2)**0.5
-    Aul = u.Quantity(list(map(get_Aul_(frqs), k41clfreqs)), u.Hz)
-    deg = u.Quantity(list(map(get_deg_(frqs), k41clfreqs)))
+    #Aul = u.Quantity(list(map(get_Aul_(frqs), k41clfreqs)), u.Hz)
+    #deg = u.Quantity(list(map(get_deg_(frqs), k41clfreqs)))
+    Aul = k41cltbl['Aij']
+    deg = k41cltbl['deg']
     k41cl_nu = nupper_of_kkms(kkms=kkms_k41cl,
                               freq=k41clfreqs,
                               Aul=Aul,
