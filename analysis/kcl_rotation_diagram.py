@@ -48,6 +48,9 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
                   uplims=None, errors=None, min_nupper=1,
                   replace_errors_with_uplims=False, molecule=None, colors='rgbcmyk',
                   molname=None,
+                  collims=(np.log(1e9), np.log(1e17)),
+                  rottemlims=(10,800),
+                  vibtemlims=(10,800),
                   marker='o', max_uplims='half'):
     """
     Fit the Boltzmann diagram with a vibrational and a rotational temperature
@@ -119,9 +122,9 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
     #fitter = modeling.fitting.LinearLSQFitter()
 
     init = model()
-    init.column.bounds = np.log(1e9), np.log(1e17)
-    init.rottem.bounds = 10,800
-    init.vibtem.bounds = 10,800
+    init.column.bounds = collims
+    init.rottem.bounds = rottemlims
+    init.vibtem.bounds = vibtemlims
     #init.rottem.fixed = True
     result = fitter(init, eupper[good].to(u.K).value,
                     vstate[good], np.log(nupperoverg_tofit[good]),
@@ -134,6 +137,7 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
                                                            temperature=tex.value)
     assert len(partition_func) == 1
     Q_rot = tuple(partition_func.values())[0]
+    print("Q_rot:", Q_rot)
 
     Ntot = np.exp(result.column + np.log(Q_rot)) * u.cm**-2
 
@@ -378,7 +382,9 @@ if __name__ == "__main__":
                          ('KCl' == row['Species'][:3] or
                           '39K-35Cl' in row['Species']) for row in tbl])
 
-    bad = (tbl['Line Name'] == 'KClv=4_13-12')
+    bad = ((tbl['Line Name'] == 'KClv=4_13-12') |
+           (tbl['Line Name'] == 'KClv=6_31-30') |
+           (tbl['Line Name'] == 'KClv=8_27-26'))
 
     print("KCl: {0} in-band, {1} detected".format(kcl35mask.sum(),
                                                   (kcl35mask & (~bad)).sum()))
@@ -415,6 +421,8 @@ if __name__ == "__main__":
     v4 = np.array(['v=4' in row['Species'] for row in kcl35tbl])
     v5 = np.array(['v=5' in row['Species'] for row in kcl35tbl])
     v6 = np.array(['v=6' in row['Species'] for row in kcl35tbl])
+    v7 = np.array(['v=7' in row['Species'] for row in kcl35tbl])
+    v8 = np.array(['v=8' in row['Species'] for row in kcl35tbl])
 
     pl.figure(1).clf()
     print("KCl")
@@ -431,24 +439,27 @@ if __name__ == "__main__":
                    molecule=kcl35, marker='^', color='g', label='v=2 ')
     pl.legend(loc='best')
     pl.title("KCl")
-    pl.axis((0, 2000, 8, 10.5))
+    pl.axis((0, 2500, 8, 10.5))
     pl.savefig(paths.fpath("KCl_rotational_diagrams.pdf"))
 
 
     pl.figure(1).clf()
-    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6 + 7*v7 + 8*v8
 
     print(fit_multi_tex(eupper=u.Quantity(kcl35tbl['EU_K'], u.K),
                         nupperoverg=kcl35_nu,
                         vstate=vstate,
                         errors=ekcl35_nu,
+                        rottemlims=(50,95),
+                        collims=(np.log(1e10), np.log(1e12)),
                         plot=True, verbose=True, molecule=kcl35, marker='o',
                         molname='KCl',
-                        colors=('r','g','b','orange','m'), )
+                        colors=('r','g','b','orange','m','c','darkred','darkgreen',
+                                'purple'), )
          )
     pl.legend(loc='best')
     pl.title("KCl")
-    pl.axis((0, 2000, 7.5, 10.5))
+    pl.axis((0, 3600, 8.0, 11.5))
 
     pl.savefig(paths.fpath("KCl_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -538,7 +549,7 @@ if __name__ == "__main__":
                         errors=ekcl37_nu,
                         plot=True, verbose=True, molecule=kcl37, marker='o',
                         molname='K37Cl',
-                        colors=('r','g','b','orange','m'), )
+                        colors=('r','g','b','orange','m','c'), )
          )
     pl.legend(loc='best')
     pl.title("K$^{37}$Cl")
@@ -602,6 +613,8 @@ if __name__ == "__main__":
     v4 = np.array(['v=4' in row['Species'] for row in nacltbl])
     v5 = np.array(['v=5' in row['Species'] for row in nacltbl])
     v6 = np.array(['v=6' in row['Species'] for row in nacltbl])
+    v7 = np.array(['v=7' in row['Species'] for row in nacltbl])
+    v8 = np.array(['v=8' in row['Species'] for row in nacltbl])
 
     pl.figure(3).clf()
     print("NaCl")
@@ -626,13 +639,13 @@ if __name__ == "__main__":
                    errors=enacl_nu[v6], plot=True,
                    verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
     pl.legend(loc='best')
-    pl.axis([300,2600,9.0,13])
+    pl.axis([300,3200,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
 
 
     pl.figure(3).clf()
-    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6
+    vstate = 0*v0 + 1*v1 + 2*v2 + 3*v3 + 4*v4 + 5*v5 + 6*v6 + 7*v7 + 8*v8
 
     print(fit_multi_tex(eupper=u.Quantity(nacltbl['EU_K'], u.K),
                         nupperoverg=nacl_nu,
@@ -640,10 +653,11 @@ if __name__ == "__main__":
                         errors=enacl_nu,
                         plot=True, verbose=True, molecule=nacl, marker='o',
                         molname='NaCl',
-                        colors=('r','g','b','orange','m'),)
+                        colors=('r','g','b','orange','m','c','darkred','darkgreen',
+                                'purple'), )
          )
     pl.legend(loc='best')
-    pl.axis([300,2600,9.0,13])
+    pl.axis([300,3300,8.8,13])
     pl.title("NaCl")
 
     pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))
@@ -736,13 +750,14 @@ if __name__ == "__main__":
                         nupperoverg=nacl37_nu,
                         vstate=vstate,
                         errors=enacl37_nu,
+                        rottemlims=(50,125),
                         plot=True, verbose=True, molecule=nacl37, marker='o',
                         molname='Na37Cl',
-                        colors=('r','g','b','orange','m'), )
+                        colors=('r','g','b','orange','m','c'), )
          )
     pl.legend(loc='best')
     pl.title("Na$^{37}$Cl")
-    pl.axis((0,2400,6.5,13.5))
+    pl.axis((0,2700,6.5,13.5))
 
     pl.savefig(paths.fpath("NaCl37_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -830,7 +845,7 @@ if __name__ == "__main__":
                         errors=ek41cl_nu,
                         plot=True, verbose=True, molecule=k41cl, marker='o',
                         molname='41KCl',
-                        colors=('r','g','b','orange','m'), )
+                        colors=('r','g','b','orange','m','c',), )
          )
     pl.legend(loc='best')
     pl.title("$^{41}$KCl")

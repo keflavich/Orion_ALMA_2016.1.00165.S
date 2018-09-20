@@ -27,9 +27,6 @@ dv_linesearch = 10.0*u.km/u.s
 
 linefits = {}
 
-bad_fits = ['Unknown_8', # only half the line is detected
-           ]
-
 chem_re = "KCl|NaCl|K37Cl|Na37Cl"
 
 
@@ -174,39 +171,80 @@ tbl1 = table.Table([linenames, species, qn, freqs, velos, evelos, vwidths, evwid
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
-badmask = np.array([ln in bad_fits for ln in linenames], dtype='bool')
 
-linenames = table.Column(["U{0:0.3f}".format(freq) if 'Unknown' in ln else ln
-                          for ln, freq in zip(linenames, freqs)],
+
+# create a subtable for the paper
+
+linenames = table.Column([lines.texnames[ln]
+                          if ln in lines.texnames
+                          else ln
+                          for ln, freq in zip(linenames, freqs)
+                         ],
                          name='Line Name',
                         )
 
 
-tbl = table.Table([linenames, species, qn, freqs, velos, vwidths, ampls, eu])
-tbl['Fitted Width'][badmask] = np.nan
-tbl['Fitted Amplitude'][badmask] = np.nan
-ulines = np.array(['U' in ln for ln in linenames], dtype='bool')
-tbl = tbl[ulines]['Line Name', 'Species', 'QNs', 'Frequency', 'Fitted Width', 'Fitted Amplitude', 'EU_K']
+tbl = table.Table([linenames, qn, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu])
 
 tbl.sort('Frequency')
 
+bad_fits = []
+
+badmask = np.array([ln in bad_fits for ln in linenames], dtype='bool')
+badmask |= (tbl['Fitted Width error'] > tbl['Fitted Width']) | (tbl['Fitted Velocity error'] > 5)
+
+
 tbl.write(paths.tpath('line_fits.txt'), format='ascii.fixed_width')
 
-
-latexdict = latex_info.latexdict.copy()
-latexdict['header_start'] = '\label{tab:unknown_line_frequencies}'
-latexdict['caption'] = 'Unknown Line Frequencies'
-latexdict['preamble'] = '\centering'
-latexdict['tablefoot'] = ('\n\par '
-                         )
-formats = {'Frequency': lambda x: "{0:0.3f}".format(x),
+formats = {'Frequency': lambda x: "{0:0.5f}".format(x),
            'Fitted Width': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
-           'Fitted Amplitude': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Fitted Width error': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Fitted Velocity': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Fitted Velocity error': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Fitted Amplitude K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Fitted Amplitude error K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'EU_K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
           }
-tbl.write(paths.texpath2('line_parameters.tex'),
-          formats=formats,
-          latexdict=latexdict,
-          overwrite=True)
+rename = {'Fitted Width':'Width',
+          'Fitted Width error':'Width error',
+          'Fitted Velocity':'Velocity',
+          'Fitted Velocity error':'Velocity error',
+          'Fitted Amplitude error K':'Amplitude error',
+          'Fitted Amplitude K':'Amplitude',
+          'EU_K': 'E$_U$',
+         }
+maskcols = ['Fitted Width',
+            'Fitted Width error',
+            'Fitted Velocity',
+            'Fitted Velocity error',
+            'Fitted Amplitude error K',
+            'Fitted Amplitude K', ]
+
+for msk in maskcols:
+    tbl[msk][badmask] = np.nan
+    tbl[badmask][msk] = np.nan
+
+for old, new in rename.items():
+    if old in tbl.columns:
+        tbl.rename_column(old, new)
+    formats[new] = formats[old]
+
+#for salt in ('NaCl', 'Na$^{37}Cl', 'KCl', 'K$^{37}$Cl', '$^{41}$KCl',
+#             '$^{41}$K$^{37}$Cl'):
+for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
+    texsalt = salt.replace("37","$^{37}$").replace("41","$^{41}$")
+    latexdict = latex_info.latexdict.copy()
+    latexdict['header_start'] = '\label{{tab:{0}_salt_lines}}'.format(salt)
+    latexdict['caption'] = '{0} Lines'.format(texsalt)
+    latexdict['preamble'] = '\centering'
+    latexdict['tablefoot'] = ('\n\par '
+                             )
+    mask = np.array([texsalt in ln for ln in tbl['Line Name']])
+    columns = tbl.colnames[1:] # drop Line Name
+    tbl[mask][columns].write(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
+                             formats=formats,
+                             latexdict=latexdict,
+                             overwrite=True)
 
 
 

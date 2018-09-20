@@ -22,6 +22,7 @@ ided_linetexnames = [lines.texnames[x] if x in lines.texnames else x
                      #if 'U' not in x
                     ]
 
+#salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
 tables = []
 
