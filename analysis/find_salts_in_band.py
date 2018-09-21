@@ -1,3 +1,4 @@
+import os
 import json
 import pyspeckit
 
@@ -7,6 +8,8 @@ from astropy.table import Table,Column
 
 import paths
 from salt_tables import salt_tables
+
+salttablepath = paths.tpath('salts_in_band.ipac')
 
 salts_in_band = {}
 
@@ -34,4 +37,5 @@ tbl = Table([Column(name='Species', data=list(salts_in_band.keys())),
             ])
 
 tbl.sort('Frequency')
-tbl.write(paths.tpath('salts_in_band.ipac'), format='ascii.ipac')
+if not os.path.exists(salttablepath):
+    tbl.write(salttablepath, format='ascii.ipac', overwrite=False)
