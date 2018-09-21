@@ -149,8 +149,10 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
 
     if plot:
         import pylab as pl
-        for vib,color in zip(np.unique(vstate), colors):
+        for vib,color in zip(np.arange(vstate.max()+1), colors):
             mask = vstate == vib
+            if mask.sum() == 0:
+                continue
             L, = pl.plot(eupper[mask], np.log10(nupperoverg_tofit[mask]),
                          marker=marker,
                          color=color, markeredgecolor='none', alpha=0.5,
@@ -179,7 +181,7 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
                             color='k',
                             marker='.', zorder=-5,
                             markersize=2)
-            xax = np.array([0, eupper.max().value])
+            xax = np.array([0, eupper.max().value+500])
             line = (xax*-1/result.rottem.value +
                     result.column.value +
                     1/result.vibtem.value*vib*vib_constants[molname].to(u.K).value)
@@ -321,7 +323,7 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
                         color='k',
                         marker='.', zorder=-5,
                         markersize=2)
-        xax = np.array([0, eupper.max().value])
+        xax = np.array([0, eupper.max().value+500])
         line = (xax*result.slope.value +
                 result.intercept.value)
         pl.plot(xax, np.log10(np.exp(line)), '--',
@@ -437,6 +439,12 @@ if __name__ == "__main__":
     tex2 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v2], u.K), kcl35_nu[v2],
                    errors=ekcl35_nu[v2], plot=True, verbose=True,
                    molecule=kcl35, marker='^', color='g', label='v=2 ')
+    tex3 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v3], u.K), kcl35_nu[v3],
+                   errors=ekcl35_nu[v3], plot=True, verbose=True,
+                   molecule=kcl35, marker='v', color='orange', label='v=3 ')
+    tex4 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v4], u.K), kcl35_nu[v4],
+                   errors=ekcl35_nu[v4], plot=True, verbose=True,
+                   molecule=kcl35, marker='d', color='m', label='v=4 ')
     pl.legend(loc='best')
     pl.title("KCl")
     pl.axis((0, 2500, 8, 10.5))
@@ -458,7 +466,7 @@ if __name__ == "__main__":
                                 'purple'), )
          )
     pl.legend(loc='best')
-    pl.title("KCl")
+    pl.title("KCl - I'm 90% sure this is wrong")
     pl.axis((0, 3600, 8.0, 11.5))
 
     pl.savefig(paths.fpath("KCl_rotational-vibrational_fit_diagrams.pdf"))
@@ -552,7 +560,7 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m','c'), )
          )
     pl.legend(loc='best')
-    pl.title("K$^{37}$Cl")
+    pl.title("K$^{37}$Cl - I'm 90% sure this is wrong")
 
     pl.savefig(paths.fpath("KCl37_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -626,20 +634,20 @@ if __name__ == "__main__":
     tex2 = fit_tex(u.Quantity(nacltbl['EU_K'][v2], u.K), nacl_nu[v2],
                    errors=enacl_nu[v2], plot=True,
                    verbose=True, molecule=nacl, marker='^', color='g', label='v=2 ')
-    tex3 = fit_tex(u.Quantity(nacltbl['EU_K'][v3], u.K), nacl_nu[v3],
-                   errors=enacl_nu[v3], plot=True,
-                   verbose=True, molecule=nacl, marker='o', color='r', label='v=3 ')
-    tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4],
-                   errors=enacl_nu[v4], plot=True,
-                   verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
-    tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v5],
-                   errors=enacl_nu[v5], plot=True,
-                   verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
+    #tex3 = fit_tex(u.Quantity(nacltbl['EU_K'][v3], u.K), nacl_nu[v3],
+    #               errors=enacl_nu[v3], plot=True,
+    #               verbose=True, molecule=nacl, marker='o', color='r', label='v=3 ')
+    #tex4 = fit_tex(u.Quantity(nacltbl['EU_K'][v4], u.K), nacl_nu[v4],
+    #               errors=enacl_nu[v4], plot=True,
+    #               verbose=True, molecule=nacl, marker='d', color='orange', label='v=4 ')
+    #tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v5],
+    #               errors=enacl_nu[v5], plot=True,
+    #               verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
     tex6 = fit_tex(u.Quantity(nacltbl['EU_K'][v6], u.K), nacl_nu[v6],
                    errors=enacl_nu[v6], plot=True,
-                   verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
+                   verbose=True, molecule=nacl, marker='v', color='m', label='v=6 ')
     pl.legend(loc='best')
-    pl.axis([300,3200,9.0,13])
+    pl.axis([300,3300,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
 
@@ -658,7 +666,7 @@ if __name__ == "__main__":
          )
     pl.legend(loc='best')
     pl.axis([300,3300,8.8,13])
-    pl.title("NaCl")
+    pl.title("NaCl - I'm 90% sure this is wrong")
 
     pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -731,15 +739,19 @@ if __name__ == "__main__":
     tex1 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v1], u.K), nacl37_nu[v1],
                    errors=enacl37_nu[v1], plot=True,
                    verbose=True, molecule=nacl37, marker='s', color='b', label='v=1 ')
-    #tex2 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v2], u.K), nacl37_nu[v2], plot=True,
-    #               verbose=True, molecule=nacl37, marker='^', color='g', label='v=2 ')
-    #tex3 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v3], u.K), nacl37_nu[v3], plot=True,
-    #               verbose=True, molecule=nacl37, marker='o', color='r', label='v=3 ')
-    #tex4 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v4], u.K), nacl37_nu[v4], plot=True,
-    #               verbose=True, molecule=nacl37, marker='d', color='orange', label='v=4 ')
+    tex2 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v2], u.K), nacl37_nu[v2], plot=True,
+                   verbose=True, molecule=nacl37, marker='^', color='g', label='v=2 ')
+    tex3 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v3], u.K), nacl37_nu[v3], plot=True,
+                   verbose=True, molecule=nacl37, marker='o', color='r', label='v=3 ')
+    tex4 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v4], u.K), nacl37_nu[v4], plot=True,
+                   verbose=True, molecule=nacl37, marker='d', color='orange', label='v=4 ')
+    tex5 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v5], u.K), nacl37_nu[v5],
+                   errors=enacl37_nu[v5], plot=True,
+                   verbose=True, molecule=nacl37, marker='v', color='m', label='v=5 ')
+
     pl.legend(loc='best')
     pl.title("Na$^{37}$Cl")
-    pl.axis([-50,650,10.5,12.15])
+    pl.axis([-50,3000,9.0,12.25])
     pl.savefig(paths.fpath("NaCl37_rotational_diagrams.pdf"))
 
 
@@ -756,7 +768,7 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m','c'), )
          )
     pl.legend(loc='best')
-    pl.title("Na$^{37}$Cl")
+    pl.title("Na$^{37}$Cl - I'm 90% sure this is wrong")
     pl.axis((0,2700,6.5,13.5))
 
     pl.savefig(paths.fpath("NaCl37_rotational-vibrational_fit_diagrams.pdf"))
@@ -848,6 +860,6 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m','c',), )
          )
     pl.legend(loc='best')
-    pl.title("$^{41}$KCl")
+    pl.title("$^{41}$KCl - I'm 90% sure this is wrong")
 
     pl.savefig(paths.fpath("41KCl_rotational-vibrational_fit_diagrams.pdf"))

@@ -36,6 +36,7 @@ if 'doplot' not in locals():
 if doplot:
     pl.figure(0).clf()
 
+
 for spw in (0,1,2,3):
     for band in ('B3', 'B6', 'B7.lb'):
         fn = paths.dpath('stacked_spectra/OrionSourceI_{band}_spw{0}_robust0.5.fits'
@@ -51,6 +52,7 @@ for spw in (0,1,2,3):
                               u.arcsec**2)
         jtok = u.brightness_temperature(frequency=sp.xarr.mean(),
                                         beam_area=beam_area)
+
 
         for linename, freq in lines.disk_lines.items():
 
@@ -229,6 +231,8 @@ for old, new in rename.items():
         tbl.rename_column(old, new)
     formats[new] = formats[old]
 
+print(tbl)
+
 #for salt in ('NaCl', 'Na$^{37}Cl', 'KCl', 'K$^{37}$Cl', '$^{41}$KCl',
 #             '$^{41}$K$^{37}$Cl'):
 for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
@@ -239,7 +243,7 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     latexdict['preamble'] = '\centering'
     latexdict['tablefoot'] = ('\n\par '
                              )
-    mask = np.array([texsalt in ln for ln in tbl['Line Name']])
+    mask = np.array([ln.startswith(texsalt) for ln in tbl['Line Name']])
     columns = tbl.colnames[1:] # drop Line Name
     tbl[mask][columns].write(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                              formats=formats,
