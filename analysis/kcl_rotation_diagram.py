@@ -171,7 +171,7 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
                 # if lower limit is nan, set to zero
                 yerr[0,:] = np.nan_to_num(yerr[0,:])
                 if np.any(np.isnan(yerr[1,:])):
-                    raise ValueError("*** Some upper limits are NAN")
+                    print(ValueError("*** Some upper limits are NAN"))
                 # use 'good' to exclude plotting errorbars for upper limits
                 pl.errorbar(eupper.value[good & mask],
                             np.log10(nupperoverg_tofit)[good & mask],
@@ -313,7 +313,8 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
             # if lower limit is nan, set to zero
             yerr[0,:] = np.nan_to_num(yerr[0,:])
             if np.any(np.isnan(yerr[1,:])):
-                raise ValueError("*** Some upper limits are NAN")
+                #raise ValueError("*** Some upper limits are NAN")
+                print(ValueError("*** Some upper limits are NAN"))
             # use 'good' to exclude plotting errorbars for upper limits
             pl.errorbar(eupper.value[good],
                         np.log10(nupperoverg_tofit)[good],
@@ -842,9 +843,9 @@ if __name__ == "__main__":
     tex0 = fit_tex(u.Quantity(k41cltbl['EU_K'][v0], u.K), k41cl_nu[v0],
                    errors=ek41cl_nu[v0], plot=True,
                    verbose=True, molecule=k41cl, marker='o', color='r', label='v=0 ')
-    tex1 = fit_tex(u.Quantity(k41cltbl['EU_K'][v1], u.K), k41cl_nu[v1],
-                   errors=ek41cl_nu[v1], plot=True,
-                   verbose=True, molecule=k41cl, marker='s', color='b', label='v=1 ')
+    #tex1 = fit_tex(u.Quantity(k41cltbl['EU_K'][v1], u.K), k41cl_nu[v1],
+    #               errors=ek41cl_nu[v1], plot=True,
+    #               verbose=True, molecule=k41cl, marker='s', color='b', label='v=1 ')
     pl.legend(loc='best')
     pl.title("$^{41}$KCl")
     pl.savefig(paths.fpath("K41Cl_rotational_diagrams.pdf"))

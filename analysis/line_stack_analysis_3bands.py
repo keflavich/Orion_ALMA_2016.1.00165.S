@@ -9,6 +9,7 @@ import paths
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 from astropy.io import fits
+from astropy.table import Table
 
 from astropy import table
 from astropy import stats
@@ -29,6 +30,7 @@ linefits = {}
 
 chem_re = "KCl|NaCl|K37Cl|Na37Cl"
 
+detection_table = Table.read(paths.tpath('salts_in_band.ipac'), format='ascii.ipac')
 
 if 'doplot' not in locals():
     doplot = False
@@ -54,7 +56,14 @@ for spw in (0,1,2,3):
                                         beam_area=beam_area)
 
 
-        for linename, freq in lines.disk_lines.items():
+        #for linename, freq in lines.disk_lines.items():
+        for row in detection_table:
+
+            linename = row['Species']
+            freq = u.Quantity(row['Frequency'], u.GHz)
+            detection = row['Flag'][1] == 'd'
+            if not detection:
+                continue
 
             xmin = freq*(1+(v-dv)/constants.c)
             xmax = freq*(1+(v+dv)/constants.c)
@@ -235,6 +244,12 @@ print(tbl)
 
 #for salt in ('NaCl', 'Na$^{37}Cl', 'KCl', 'K$^{37}$Cl', '$^{41}$KCl',
 #             '$^{41}$K$^{37}$Cl'):
+salt_to_barton = {'NaCl': '23Na-35Cl',
+                  'Na37Cl': '23Na-37Cl',
+                  'KCl': '39K-35Cl',
+                  'K37Cl': '39K-37Cl',
+                  '41KCl': '41K-35Cl',
+                  '41K37Cl': '41K-37Cl'}
 for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     texsalt = salt.replace("37","$^{37}$").replace("41","$^{41}$")
     latexdict = latex_info.latexdict.copy()
@@ -243,7 +258,8 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     latexdict['preamble'] = '\centering'
     latexdict['tablefoot'] = ('\n\par '
                              )
-    mask = np.array([ln.startswith(texsalt) for ln in tbl['Line Name']])
+    mask = np.array([ln.startswith(salt_to_barton[salt]) for ln in tbl['Line Name']])
+    print("{0} matches for {1}".format(mask.sum(), salt))
     columns = tbl.colnames[1:] # drop Line Name
     tbl[mask][columns].write(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                              formats=formats,

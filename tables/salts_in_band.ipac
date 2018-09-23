@@ -1,6 +1,6 @@
 |                 Species|         Frequency|               E_U| Band| SPW|Flag|
 |                    char|            double|            double| char|long|char|
-|                        |                  |                  |     |    |    |
+|                        |               GHz|                 K|     |    |    |
 |                    null|              null|              null| null|null|null|
     41K-35Clv=8-8 J=12-11  85.81356173495953  3092.427013815512    B3    0   -n
      23Na-35Clv=8-8 J=7-6  85.86636579624647 4031.8623294381086    B3    0   -n

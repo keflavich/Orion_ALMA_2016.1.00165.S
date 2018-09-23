@@ -39,3 +39,7 @@ tbl = Table([Column(name='Species', data=list(salts_in_band.keys())),
 tbl.sort('Frequency')
 if not os.path.exists(salttablepath):
     tbl.write(salttablepath, format='ascii.ipac', overwrite=False)
+else:
+    tbl_ = Table.read(salttablepath, format='ascii.ipac')
+    tbl.add_column(tbl_['Flag'])
+    tbl.write(salttablepath, format='ascii.ipac', overwrite=True)
