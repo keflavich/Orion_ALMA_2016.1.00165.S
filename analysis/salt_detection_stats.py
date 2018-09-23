@@ -74,6 +74,9 @@ for species in ('23Na-35Cl', '23Na-37Cl', '39K-35Cl', '41K-35Cl', '39K-37Cl', '4
 
 
 
+# reload the unmasked table
+tbl = Table.read(paths.tpath('salts_in_band.ipac'), format='ascii.ipac')
+
 vre = re.compile('v=([0-9]+)')
 vstate = [int(vre.search(row['Species']).groups()[0]) for row in tbl]
 jre = re.compile('J=([0-9]+)-([0-9]+)')
@@ -104,6 +107,7 @@ for band in ('B3','B6','B7.lb'):
     latexdict['header_start'] = '\label{{tab:all_detections_B{0}}}'.format(band[1])
     latexdict['caption'] = 'All detected lines in Band {0}'.format(band[1])
     cols = ['Species', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'Frequency', 'Flag']
+    print("{1}: nmatch = {0}".format(match.sum(), band))
     tbl[cols][match].write(paths.texpath2('lines_in_band{0}.tex'.format(band[1])),
                            formats=formats, latexdict=latexdict,
                            overwrite=True)

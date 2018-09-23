@@ -41,5 +41,6 @@ if not os.path.exists(salttablepath):
     tbl.write(salttablepath, format='ascii.ipac', overwrite=False)
 else:
     tbl_ = Table.read(salttablepath, format='ascii.ipac')
+    tbl.remove_column('Flag')
     tbl.add_column(tbl_['Flag'])
     tbl.write(salttablepath, format='ascii.ipac', overwrite=True)
