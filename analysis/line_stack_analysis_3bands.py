@@ -252,7 +252,7 @@ for old, new in rename.items():
         tbl.rename_column(old, new)
     formats[new] = formats[old]
 
-print(tbl)
+#print(tbl)
 
 
 def label_by_vstate(tablepath, ncols):
@@ -268,6 +268,15 @@ def label_by_vstate(tablepath, ncols):
                 started_data = True
             elif line.startswith(r'\end{tabular}'):
                 started_data = False
+
+                headerstring = (r"&\vspace{{-0.75em}}\\""\n"
+                                r"\multicolumn{{{ncol}}}{{c}}{{$v = {vstate}$}} \\""\n"
+                                r"\vspace{{-0.75em}}\\""\n").format(ncol=ncols-1,
+                                                                    vstate=current_vstate)
+                if len(vstate_lines) > 0:
+                    fh.write(headerstring)
+                    for ll in vstate_lines:
+                        fh.write(ll)
             elif line.startswith('v &') or (not started_data and line.startswith(r' &')):
                 fh.write("&".join(line.split("&")[1:]))
                 continue
@@ -281,6 +290,8 @@ def label_by_vstate(tablepath, ncols):
                 vstate = int(line[0])
                 if current_vstate is None:
                     current_vstate = vstate
+                    line = "&".join(line.split("&")[1:])
+                    vstate_lines.append(line)
                 elif current_vstate == vstate:
                     # drop v= part
                     line = "&".join(line.split("&")[1:])
@@ -294,6 +305,8 @@ def label_by_vstate(tablepath, ncols):
                         fh.write(headerstring)
                         for ll in vstate_lines:
                             fh.write(ll)
+                    else:
+                        print("For v={0}, no lines are found.".format(current_vstate))
 
                     # reset
                     vstate_lines = []
@@ -336,15 +349,19 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     latexdict['preamble'] = '\centering'
     latexdict['tablefoot'] = ('\n\par '
                              )
+    tbl.sort('v')
     mask = np.array([ln.startswith(salt_to_barton[salt]) for ln in tbl['Line Name']])
     mask &= ~badmask
     print("{0} matches for {1}".format(mask.sum(), salt))
+    for row in tbl[mask]:
+        assert row['Line Name'].startswith(salt_to_barton[salt])
     columns = tbl.colnames[1:] # drop Line Name
-    tbl.sort('v')
     tbl[mask][columns].write(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                              formats=formats,
                              latexdict=latexdict,
                              overwrite=True)
+    #print(tbl[mask][columns])
+    assert len(tbl[mask][columns]) == mask.sum()
     label_by_vstate(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                     ncols=len(columns)
                    )
