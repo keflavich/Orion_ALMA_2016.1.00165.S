@@ -1,6 +1,7 @@
 """
 Determine the line parameters for each of the lines
 """
+import re
 import numpy as np
 import pyspeckit
 import lines
@@ -9,7 +10,7 @@ import paths
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 from astropy.io import fits
-from astropy.table import Table
+from astropy.table import Table, Column
 
 from astropy import table
 from astropy import stats
@@ -178,7 +179,16 @@ qn = table.Column(name='QNs', data=[linefits[ln]['qn'] for ln in linenames])
 deg = table.Column(name='deg', data=[linefits[ln]['deg'] for ln in linenames])
 Aij = table.Column(name='Aij', data=[linefits[ln]['aul'] for ln in linenames])
 
-tbl1 = table.Table([linenames, species, qn, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij])
+vre = re.compile('v=([0-9]+)')
+vstate = [int(vre.search(ss).groups()[0]) for ss in species]
+jre = re.compile('J=([0-9]+)-([0-9]+)')
+Ju,Jl = zip(*[map(int, jre.search(ss).groups()) for ss in species])
+qnv = (Column(name='v', data=vstate))
+qnju = (Column(name='J$_u$', data=Ju))
+qnjl = (Column(name='J$_l$', data=Jl))
+
+
+tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij, ])
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
@@ -195,14 +205,16 @@ linenames = table.Column([lines.texnames[ln]
                         )
 
 
-tbl = table.Table([linenames, qn, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu])
+tbl = table.Table([linenames, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu])
 
 tbl.sort('Frequency')
 
 bad_fits = []
 
 badmask = np.array([ln in bad_fits for ln in linenames], dtype='bool')
-badmask |= (tbl['Fitted Width error'] > tbl['Fitted Width']) | (tbl['Fitted Velocity error'] > 5)
+badmask |= ((tbl['Fitted Width error'] > tbl['Fitted Width']) |
+            (tbl['Fitted Velocity error'] > 5)
+           )
 
 
 tbl.write(paths.tpath('line_fits.txt'), format='ascii.fixed_width')
@@ -242,6 +254,72 @@ for old, new in rename.items():
 
 print(tbl)
 
+
+def label_by_vstate(tablepath, ncols):
+    with open(tablepath, 'r') as fh:
+        lines = fh.readlines()
+
+    started_data = False
+    current_vstate = None
+    vstate_lines = []
+    with open(tablepath, 'w') as fh:
+        for line in lines:
+            if line.startswith(r'\hline'):
+                started_data = True
+            elif line.startswith(r'\end{tabular}'):
+                started_data = False
+            elif line.startswith('v &') or (not started_data and line.startswith(r' &')):
+                fh.write("&".join(line.split("&")[1:]))
+                continue
+            elif line.startswith(r'\begin{tabular}'):
+                # strip out one column
+                # (last character is \n)
+                line = line[:-3] + line[-2:]
+                fh.write(line)
+                continue
+            elif line[0].isdigit() and started_data:
+                vstate = int(line[0])
+                if current_vstate is None:
+                    current_vstate = vstate
+                elif current_vstate == vstate:
+                    # drop v= part
+                    line = "&".join(line.split("&")[1:])
+                    vstate_lines.append(line)
+                else:
+                    headerstring = (r"&\vspace{{-0.75em}}\\""\n"
+                                    r"\multicolumn{{{ncol}}}{{c}}{{$v = {vstate}$}} \\""\n"
+                                    r"\vspace{{-0.75em}}\\""\n").format(ncol=ncols-1,
+                                                                        vstate=current_vstate)
+                    if len(vstate_lines) > 0:
+                        fh.write(headerstring)
+                        for ll in vstate_lines:
+                            fh.write(ll)
+
+                    # reset
+                    vstate_lines = []
+                    current_vstate = vstate
+                continue
+
+            fh.write(line)
+
+def merge_errors(tbl, datacol, errorcol):
+    new_col = ["{0} ({1})".format(formats[datacol](row[datacol]),
+                                  formats[errorcol](row[errorcol]))
+               for row in tbl]
+    tbl.rename_column(datacol, '_'+datacol)
+    tbl.add_column(Column(data=new_col, name=datacol, unit=tbl['_'+datacol].unit))
+
+merge_errors(tbl, 'Width', 'Width error')
+merge_errors(tbl, 'Amplitude', 'Amplitude error')
+merge_errors(tbl, 'Velocity', 'Velocity error')
+del formats['Velocity']
+del formats['Width']
+del formats['Amplitude']
+
+tbl = tbl['Line Name', 'v', 'J$_u$', 'J$_l$', 'Frequency', 'Velocity',
+          'Width', 'Amplitude', 'E$_U$', ]
+
+
 #for salt in ('NaCl', 'Na$^{37}Cl', 'KCl', 'K$^{37}$Cl', '$^{41}$KCl',
 #             '$^{41}$K$^{37}$Cl'):
 salt_to_barton = {'NaCl': '23Na-35Cl',
@@ -259,12 +337,17 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     latexdict['tablefoot'] = ('\n\par '
                              )
     mask = np.array([ln.startswith(salt_to_barton[salt]) for ln in tbl['Line Name']])
+    mask &= ~badmask
     print("{0} matches for {1}".format(mask.sum(), salt))
     columns = tbl.colnames[1:] # drop Line Name
+    tbl.sort('v')
     tbl[mask][columns].write(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                              formats=formats,
                              latexdict=latexdict,
                              overwrite=True)
+    label_by_vstate(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
+                    ncols=len(columns)
+                   )
 
 
 
@@ -272,9 +355,9 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
 
 pl.figure(1).clf()
 
-kclmask = np.array(['KCl' in row['Species'] for row in tbl1])
-k41clmask = np.array(['41KCl' in row['Species'] for row in tbl1])
-k37clmask = np.array(['K37Cl' in row['Species'] for row in tbl1])
+kclmask = np.array(['K-35Cl' in row['Species'] for row in tbl1])
+k41clmask = np.array(['41K-35Cl' in row['Species'] for row in tbl1])
+k37clmask = np.array(['K-37Cl' in row['Species'] for row in tbl1])
 pl.plot(tbl1['EU_K'][kclmask], tbl1['Fitted Amplitude'][kclmask], 'o', label='KCl')
 pl.plot(tbl1['EU_K'][k37clmask], tbl1['Fitted Amplitude'][k37clmask], 's', label='K$^{37}$Cl')
 pl.plot(tbl1['EU_K'][k41clmask], tbl1['Fitted Amplitude'][k41clmask], 'd', label='$^{41}$KCl')
@@ -284,8 +367,8 @@ pl.legend(loc='best')
 pl.savefig(paths.fpath('KCl_amp_vs_eu.pdf'))
 
 pl.figure(2).clf()
-naclmask = np.array(['NaCl' in row['Species'] for row in tbl1])
-na37clmask = np.array(['Na37Cl' in row['Species'] for row in tbl1])
+naclmask = np.array(['Na-35Cl' in row['Species'] for row in tbl1])
+na37clmask = np.array(['Na-37Cl' in row['Species'] for row in tbl1])
 pl.plot(tbl1['EU_K'][naclmask], tbl1['Fitted Amplitude'][naclmask], 'o', label='NaCl')
 pl.plot(tbl1['EU_K'][na37clmask], tbl1['Fitted Amplitude'][na37clmask], 's', label='Na$^{37}$Cl')
 pl.xlabel("E$_U$ [K]")
