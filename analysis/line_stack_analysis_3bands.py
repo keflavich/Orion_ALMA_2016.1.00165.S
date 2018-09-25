@@ -19,19 +19,26 @@ from astropy import constants
 
 import pylab as pl
 
-from salt_tables import salt_tables
+from salt_tables import KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37
 
 import latex_info
 
+# Filter out the high-v lines; they result in confusion in some cases (there
+# are some v=10 lines really close to v=8 lines...)
+salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
+salt_tables = [tbl[tbl['vu']<9] for tbl in salt_tables]
+
 dv = 15 * u.km/u.s
 v = 5.5 * u.km/u.s
-dv_linesearch = 10.0*u.km/u.s
+dv_linesearch = 5.0*u.km/u.s
 
 linefits = {}
 
 chem_re = "KCl|NaCl|K37Cl|Na37Cl"
 
 detection_table = Table.read(paths.tpath('salts_in_band.ipac'), format='ascii.ipac')
+nondetections = (detection_table['Flag'] == '-n') | (detection_table['Flag'] == 'cn')
+detection_table = detection_table[~nondetections]
 
 if 'doplot' not in locals():
     doplot = False
