@@ -167,6 +167,7 @@ for spw in (0,1,2,3):
                                   'jtok': (1*u.Jy).to(u.K, equivalencies=jtok),
                                   'aul': aul,
                                   'deg': deg,
+                                  'flag': row['Flag'],
                                  }
 
 linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
@@ -185,6 +186,7 @@ species = table.Column(name='Species', data=[linefits[ln]['species'] for ln in l
 qn = table.Column(name='QNs', data=[linefits[ln]['qn'] for ln in linenames])
 deg = table.Column(name='deg', data=[linefits[ln]['deg'] for ln in linenames])
 Aij = table.Column(name='Aij', data=[linefits[ln]['aul'] for ln in linenames])
+flag = table.Column(name='Flag', data=[linefits[ln]['flag'] for ln in linenames])
 
 vre = re.compile('v=([0-9]+)')
 vstate = [int(vre.search(ss).groups()[0]) for ss in species]
@@ -195,7 +197,7 @@ qnju = (Column(name='J$_u$', data=Ju))
 qnjl = (Column(name='J$_l$', data=Jl))
 
 
-tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij, ])
+tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij, flag, ])
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
@@ -212,7 +214,7 @@ linenames = table.Column([lines.texnames[ln]
                         )
 
 
-tbl = table.Table([linenames, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu])
+tbl = table.Table([linenames, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu, flag])
 
 tbl.sort('Frequency')
 
@@ -220,7 +222,8 @@ bad_fits = []
 
 badmask = np.array([ln in bad_fits for ln in linenames], dtype='bool')
 badmask |= ((tbl['Fitted Width error'] > tbl['Fitted Width']) |
-            (tbl['Fitted Velocity error'] > 5)
+            (tbl['Fitted Velocity error'] > 5) |
+            np.array([flg[1] in 'nq' for flg in tbl['Flag']])
            )
 
 
