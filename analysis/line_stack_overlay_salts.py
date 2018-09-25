@@ -9,7 +9,7 @@ from constants import vcen
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
-from salt_tables import salt_tables
+from salt_tables import salt_tables, SO2
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -37,6 +37,10 @@ linefreqs = np.hstack([u.Quantity([freq(row) for tbl in tables for row in tbl], 
                        ided_linefreqs.value])
 linefreqs = u.Quantity(linefreqs, u.GHz)
 
+detection_table = table.Table.read(paths.tpath('salts_in_band.ipac'), format='ascii.ipac')
+nondetections = (detection_table['Flag'] == '-n') | (detection_table['Flag'] == 'cn')
+detection_table = detection_table[~nondetections]
+
 flist = [fn] if 'fn' in locals() else glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust0.5.fits'))
 for fn in flist:
     print(fn)
@@ -54,8 +58,11 @@ for fn in flist:
                           )
 
     sp_st.plotter(ymin=-0.0025, ymax=0.01)
+
+    # uses lines.py
     sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
                            auto_yloc_fraction=0.8)
+
     for txt in sp_st.plotter.axis.texts:
         txt.set_backgroundcolor((1,1,1,0.9))
     #sp_st.plotter.line_ids(ided_linetexnames, ided_linefreqs, velocity_offset=-vcen,
@@ -63,6 +70,13 @@ for fn in flist:
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))
                          )
+
+    sp_st.plotter(ymin=-0.0025, ymax=0.01)
+    sp_st.plotter.line_ids(detection_table['Species'],
+                           u.Quantity(detection_table['Frequency'], u.GHz),
+                           velocity_offset=-vcen,
+                           auto_yloc_fraction=0.8)
+
     for tbl,color in zip(salt_tables, salt_colors):
         for row in tbl:
             frq = u.Quantity(row['Freq'], u.GHz).value
@@ -78,7 +92,7 @@ for fn in flist:
     #                                  -0.05, 0.10,
     #                                  colors='r', linestyles='--')
 
-    #for row in NaCN:
+    #for row in SO2:
     #    frq = u.Quantity(row['Freq'], u.GHz).value
     #    if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
     #        sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
