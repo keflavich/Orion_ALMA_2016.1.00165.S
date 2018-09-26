@@ -14,6 +14,7 @@ from vamdclib import specmodel
 import pylab as pl
 
 import lines
+import salt_tables
 
 vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                  'K37Cl': (275.87497*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
@@ -23,6 +24,21 @@ vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperat
                  # isn't a good assumption)
                  'Na37Cl': (35+23)/(37+23)*(366*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                 }
+
+def get_vib_energies(moltbl):
+    return {v: moltbl['E_L'][(moltbl['vu'] == v) & (moltbl['Jl'] == 0)].quantity[0].value
+            for v in np.unique(moltbl['vu'])}
+
+def get_rot_energies(moltbl):
+    def matchJu(ju):
+        rslt = moltbl['E_U'][(moltbl['vu'] == 0) & (moltbl['Ju'] == ju)].quantity
+        if len(rslt) == 1:
+            return rslt
+    return {ju: matchJu(ju)[0].value
+            for ju in np.unique(moltbl['Ju'])
+            if matchJu(ju)
+           }
+
 
 
 def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
@@ -44,13 +60,15 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
     return (nline * Khz / degeneracies).to(u.cm**-2)
 
 
-def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
-                  uplims=None, errors=None, min_nupper=1,
+def fit_multi_tex(eupper, nupperoverg, vstate, jstate, vibenergies,
+                  rotenergies, verbose=False, plot=False, uplims=None,
+                  errors=None,
+                  min_nupper=1,
                   replace_errors_with_uplims=False, molecule=None, colors='rgbcmyk',
                   molname=None,
                   collims=(np.log(1e9), np.log(1e17)),
-                  rottemlims=(10,800),
-                  vibtemlims=(10,800),
+                  rottemlims=(10,300),
+                  vibtemlims=(500,16000),
                   marker='o', max_uplims='half'):
     """
     Fit the Boltzmann diagram with a vibrational and a rotational temperature
@@ -113,21 +131,41 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
         weights = np.exp(np.ones_like(nupperoverg_tofit))
 
     @custom_model
-    def model(eupper, vstate, column=np.log(1e11), rottem=100, vibtem=300):
-        result = -1/rottem * eupper + column + (1/vibtem * vstate *
-                                                vib_constants[molname].to(u.K).value)
+    def model(jstate, vstate, column=np.log(1e13), rottem=100, vibtem=2000):
+        elower_vib = np.array([vibenergies[int(v)] for v in vstate])
+        eupper_j = np.array([rotenergies[ju] for ju in jstate])
+        #result = -1/rottem * (eupper - elower_vib) + column - 1/vibtem * eupper
+
+        # these are the populations of states in the v=0 state at a given
+        # J-level.
+        result_v0 = -1/rottem * eupper_j + column
+
+        # Then, for each of these, we determine the levels in the vibrationally
+        # excited state by adding e^-hnu/kt, where t is a different temperature
+        # (t_v) and nu is now just the nu provided by the vibrations
+        result = result_v0 - 1/vibtem * elower_vib
+
         return result
+
+    #print('vibenergies:',vibenergies, '\nrotenergies:', rotenergies)
 
     fitter = modeling.fitting.LevMarLSQFitter()
     #fitter = modeling.fitting.LinearLSQFitter()
 
-    init = model()
-    init.column.bounds = collims
-    init.rottem.bounds = rottemlims
-    init.vibtem.bounds = vibtemlims
-    #init.rottem.fixed = True
-    result = fitter(init, eupper[good].to(u.K).value,
-                    vstate[good], np.log(nupperoverg_tofit[good]),
+    model_to_fit = model()
+    model_to_fit.column.bounds = collims
+    model_to_fit.rottem.bounds = rottemlims
+    model_to_fit.vibtem.bounds = vibtemlims
+    #model_to_fit.rottem.fixed = True
+
+    # check that the model works
+    #first_check = model_to_fit(eupper[good].to(u.K).value)
+    #print("Result of first check: ",first_check)
+
+    result = fitter(model_to_fit,
+                    jstate[good].astype('int'),
+                    vstate[good].astype('int'),
+                    np.log(nupperoverg_tofit[good]),
                     weights=np.log(weights[good]))
     print(result)
     tex = result.rottem #u.Quantity(-1./result.slope, u.K)
@@ -178,24 +216,73 @@ def fit_multi_tex(eupper, nupperoverg, vstate, verbose=False, plot=False,
                             yerr=yerr[:,good & mask],
                             linestyle='none',
                             linewidth=0.5,
-                            color='k',
+                            color=L.get_color(),
                             marker='.', zorder=-5,
                             markersize=2)
-            xax = np.array([0, eupper.max().value+500])
-            line = (xax*-1/result.rottem.value +
-                    result.column.value +
-                    1/result.vibtem.value*vib*vib_constants[molname].to(u.K).value)
+            #xax = np.array([0, eupper.max().value+500])
+
+            jstates = np.arange(1,np.max(list(rotenergies.keys()))+1)
+            vstates = np.ones(np.max(list(rotenergies.keys())))*vib
+            line = result(jstates, vstates)
+            xax = np.array([rotenergies[ju] + vibenergies[vib]
+                            for ju in jstates])
+
+            for marker, mask in (('.', (jstates>-1) & (jstates <= 10)),
+                                 ('s', (jstates>10) & (jstates <= 20)),
+                                 ('o', (jstates>20) & (jstates <= 30)),
+                                 ('D', (jstates>30) & (jstates <= 40)),
+                                 ('p', (jstates>40) & (jstates <= 50))):
+                pl.plot(xax[mask],
+                        np.log10(np.exp(line))[mask],
+                        marker=marker,
+                        linestyle='none',
+                        color=color,
+                        alpha=0.3,
+                        linewidth=1.0,
+                        markersize=4,
+                       )
+                    #label='v={0}'.format(vib),
+                    #label=('v={2}$T_R={0:0.1f}$ $T_v={3:0.1f}$ $\log(N)={1:0.1f}$'
+                    #       .format(tex.value, np.log10(Ntot.value), vib,
+                    #               tvib.value
+                    #              ))
+
+        for jj in np.unique(jstate):
+            #jstates = np.arange(1,np.max(list(rotenergies.keys()))+1)
+            #vstates = np.ones(np.max(list(rotenergies.keys())))*vib
+            vstates = np.arange(10)
+            jstates = np.ones(10)*jj
+            line = result(jstates, vstates)
+            xax = np.array([rotenergies[jj] + vibenergies[vv]
+                            for vv in vstates])
+
             pl.plot(xax, np.log10(np.exp(line)), '--',
-                    color=color,
-                    alpha=0.6,
+                    color='k',
+                    alpha=0.1,
                     linewidth=1.0,
-                    label=('v={2}$T_R={0:0.1f}$ $T_v={3:0.1f}$ $\log(N)={1:0.1f}$'
-                           .format(tex.value, np.log10(Ntot.value), vib,
-                                   tvib.value
-                                  ))
                    )
+                    #label="Ju={0}".format(jj),
+                    #label=('v={2}$T_R={0:0.1f}$ $T_v={3:0.1f}$ $\log(N)={1:0.1f}$'
+                    #       .format(tex.value, np.log10(Ntot.value), vib,
+                    #               tvib.value
+                    #              ))
+
+        for eu, nu, jj, vv in zip(eupper, nupperoverg_tofit, jstate, vstate):
+            model_nu = result(jj, vv)
+            #print("POINT MATCHING: ",eu, model_nu, np.log(nu), jj, vv)
+            pl.plot(u.Quantity([eu, eu]),
+                    np.log10(np.exp([np.log(nu), model_nu])),
+                    linestyle='-', alpha=0.3,
+                    color='k',
+                    linewidth=0.5)
+
+
         pl.ylabel("log N$_u$ (cm$^{-2}$)")
         pl.xlabel("E$_u$ (K)")
+
+        pl.plot([], [], linestyle='-', color='k',
+                label=('$T_R={0:0.1f}$ $T_v={2:0.1f}$ $\log(N)={1:0.1f}$'
+                       .format(tex.value, np.log10(Ntot.value), tvib.value)))
 
         if (uplims is not None) and ((errors is None) or replace_errors_with_uplims):
             # if errors are specified, their errorbars will be better
@@ -223,9 +310,6 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         The maximum number of upper limits before the fit is ignored completely
         and instead zeros are returned
     """
-    model = modeling.models.Linear1D()
-    #fitter = modeling.fitting.LevMarLSQFitter()
-    fitter = modeling.fitting.LinearLSQFitter()
 
     nupperoverg_tofit = nupperoverg.copy().to(u.cm**-2).value
     if errors is not None:
@@ -277,16 +361,28 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         # want log(weight) = 1
         weights = np.exp(np.ones_like(nupperoverg_tofit))
 
-    result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]),
-                    weights=np.log(weights[good]))
-    tex = u.Quantity(-1./result.slope, u.K)
+    model = modeling.models.Linear1D()
+    #fitter = modeling.fitting.LevMarLSQFitter()
+    fitter = modeling.fitting.LinearLSQFitter()
+    #model.slope.bounds = [0, -1000]
+    if good.sum() >= 0:
+        result = fitter(model, eupper[good], np.log(nupperoverg_tofit[good]),
+                        weights=np.log(weights[good]))
+        tex = u.Quantity(-1./result.slope, u.K)
+        if tex < 0*u.K:
+            tex = 100 * u.K
 
-    partition_func = specmodel.calculate_partitionfunction(molecule.data['States'],
-                                                           temperature=tex.value)
-    assert len(partition_func) == 1
-    Q_rot = tuple(partition_func.values())[0]
+        partition_func = specmodel.calculate_partitionfunction(molecule.data['States'],
+                                                               temperature=tex.value)
+        assert len(partition_func) == 1
+        Q_rot = tuple(partition_func.values())[0]
 
-    Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
+        Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
+    else:
+        Ntot = 1e10*u.cm**-2
+        tex = 100*u.K
+        Q_rot = 1
+        result = model
 
     if verbose:
         print(("Tex={0}, Ntot={1}, log(Ntot)={4}, Q_rot={2}, "
@@ -426,6 +522,9 @@ if __name__ == "__main__":
     v6 = np.array(['v=6' in row['Species'] for row in kcl35tbl])
     v7 = np.array(['v=7' in row['Species'] for row in kcl35tbl])
     v8 = np.array(['v=8' in row['Species'] for row in kcl35tbl])
+    j13 = np.array(['J=13' in row['Species'] for row in kcl35tbl])
+    j29 = np.array(['J=29' in row['Species'] for row in kcl35tbl])
+    j31 = np.array(['J=31' in row['Species'] for row in kcl35tbl])
 
     pl.figure(1).clf()
     print("KCl")
@@ -434,19 +533,29 @@ if __name__ == "__main__":
     tex0 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu[v0],
                    errors=ekcl35_nu[v0], plot=True, verbose=True,
                    molecule=kcl35, marker='o', color='r', label='v=0 ')
-    tex1 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v1], u.K), kcl35_nu[v1],
-                   errors=ekcl35_nu[v1], plot=True, verbose=True,
-                   molecule=kcl35, marker='s', color='b', label='v=1 ')
-    tex2 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v2], u.K), kcl35_nu[v2],
-                   errors=ekcl35_nu[v2], plot=True, verbose=True,
-                   molecule=kcl35, marker='^', color='g', label='v=2 ')
-    tex3 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v3], u.K), kcl35_nu[v3],
-                   errors=ekcl35_nu[v3], plot=True, verbose=True,
-                   molecule=kcl35, marker='v', color='orange', label='v=3 ')
-    tex4 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v4], u.K), kcl35_nu[v4],
-                   errors=ekcl35_nu[v4], plot=True, verbose=True,
-                   molecule=kcl35, marker='d', color='m', label='v=4 ')
-    pl.legend(loc='best')
+    #tex1 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v1], u.K), kcl35_nu[v1],
+    #               errors=ekcl35_nu[v1], plot=True, verbose=True,
+    #               molecule=kcl35, marker='s', color='b', label='v=1 ')
+    #tex2 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v2], u.K), kcl35_nu[v2],
+    #               errors=ekcl35_nu[v2], plot=True, verbose=True,
+    #               molecule=kcl35, marker='^', color='g', label='v=2 ')
+    #tex3 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v3], u.K), kcl35_nu[v3],
+    #               errors=ekcl35_nu[v3], plot=True, verbose=True,
+    #               molecule=kcl35, marker='v', color='orange', label='v=3 ')
+    #tex4 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v4], u.K), kcl35_nu[v4],
+    #               errors=ekcl35_nu[v4], plot=True, verbose=True,
+    #               molecule=kcl35, marker='d', color='m', label='v=4 ')
+    texJ13 = fit_tex(u.Quantity(kcl35tbl['EU_K'][j13], u.K), kcl35_nu[j13],
+                     errors=ekcl35_nu[j13], plot=True, verbose=True,
+                     molecule=kcl35, marker='h', color='k', label='J=13 ')
+    texJ29 = fit_tex(u.Quantity(kcl35tbl['EU_K'][j29], u.K), kcl35_nu[j29],
+                     errors=ekcl35_nu[j29], plot=True, verbose=True,
+                     molecule=kcl35, marker='o', color='b', label='J=29 ')
+    texJ31 = fit_tex(u.Quantity(kcl35tbl['EU_K'][j31], u.K), kcl35_nu[j31],
+                     errors=ekcl35_nu[j31], plot=True, verbose=True,
+                     molecule=kcl35, marker='P', color='navy', label='J=31 ')
+
+    pl.legend(loc='lower right')
     pl.title("KCl")
     pl.axis((0, 2500, 8, 10.5))
     pl.savefig(paths.fpath("KCl_rotational_diagrams.pdf"))
@@ -458,17 +567,21 @@ if __name__ == "__main__":
     print(fit_multi_tex(eupper=u.Quantity(kcl35tbl['EU_K'], u.K),
                         nupperoverg=kcl35_nu,
                         vstate=vstate,
+                        jstate=np.array(kcl35tbl['J$_u$'], dtype='int'),
+                        vibenergies=get_vib_energies(salt_tables.KCl),
+                        rotenergies=get_rot_energies(salt_tables.KCl),
                         errors=ekcl35_nu,
-                        rottemlims=(50,95),
-                        collims=(np.log(1e10), np.log(1e12)),
+                        rottemlims=(30,150),
+                        vibtemlims=(2500,5000),
+                        collims=(np.log(1e8), np.log(1e16)),
                         plot=True, verbose=True, molecule=kcl35, marker='o',
                         molname='KCl',
                         colors=('r','g','b','orange','m','c','darkred','darkgreen',
                                 'purple'), )
          )
-    pl.legend(loc='best')
-    pl.title("KCl - I'm 90% sure this is wrong")
-    pl.axis((0, 3600, 8.0, 11.5))
+    pl.legend(loc='lower right')
+    pl.title("KCl")
+    pl.axis((0, 4000, 8.0, 10.5))
 
     pl.savefig(paths.fpath("KCl_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -545,7 +658,7 @@ if __name__ == "__main__":
     tex1 = fit_tex(u.Quantity(kcl37tbl['EU_K'][v1], u.K), kcl37_nu[v1],
                    errors=ekcl37_nu[v1], plot=True, verbose=True,
                    molecule=kcl37, marker='s', color='b', label='v=1 ')
-    pl.legend(loc='best')
+    pl.legend(loc='lower right')
     pl.title("K$^{37}$Cl")
     pl.savefig(paths.fpath("KCl37_rotational_diagrams.pdf"))
 
@@ -555,13 +668,16 @@ if __name__ == "__main__":
     print(fit_multi_tex(eupper=u.Quantity(kcl37tbl['EU_K'], u.K),
                         nupperoverg=kcl37_nu,
                         vstate=vstate,
+                        jstate=np.array(kcl37tbl['J$_u$'], dtype='int'),
+                        vibenergies=get_vib_energies(salt_tables.K37Cl),
+                        rotenergies=get_rot_energies(salt_tables.K37Cl),
                         errors=ekcl37_nu,
                         plot=True, verbose=True, molecule=kcl37, marker='o',
                         molname='K37Cl',
                         colors=('r','g','b','orange','m','c'), )
          )
-    pl.legend(loc='best')
-    pl.title("K$^{37}$Cl - I'm 90% sure this is wrong")
+    pl.legend(loc='lower right')
+    pl.title("K$^{37}$Cl")
 
     pl.savefig(paths.fpath("KCl37_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -624,6 +740,8 @@ if __name__ == "__main__":
     v6 = np.array(['v=6' in row['Species'] for row in nacltbl])
     v7 = np.array(['v=7' in row['Species'] for row in nacltbl])
     v8 = np.array(['v=8' in row['Species'] for row in nacltbl])
+    j7 = np.array(['J=7' in row['Species'] for row in nacltbl])
+    j8 = np.array(['J=8' in row['Species'] for row in nacltbl])
 
     pl.figure(3).clf()
     print("NaCl")
@@ -644,10 +762,16 @@ if __name__ == "__main__":
     #tex5 = fit_tex(u.Quantity(nacltbl['EU_K'][v5], u.K), nacl_nu[v5],
     #               errors=enacl_nu[v5], plot=True,
     #               verbose=True, molecule=nacl, marker='v', color='m', label='v=5 ')
-    tex6 = fit_tex(u.Quantity(nacltbl['EU_K'][v6], u.K), nacl_nu[v6],
-                   errors=enacl_nu[v6], plot=True,
-                   verbose=True, molecule=nacl, marker='v', color='m', label='v=6 ')
-    pl.legend(loc='best')
+    #tex6 = fit_tex(u.Quantity(nacltbl['EU_K'][v6], u.K), nacl_nu[v6],
+    #               errors=enacl_nu[v6], plot=True,
+    #               verbose=True, molecule=nacl, marker='v', color='m', label='v=6 ')
+    texJ8 = fit_tex(u.Quantity(nacltbl['EU_K'][j8], u.K), nacl_nu[j8],
+                    errors=enacl_nu[j8], plot=True, verbose=True,
+                    molecule=nacl, marker='h', color='k', label='J=8 ')
+    texJ7 = fit_tex(u.Quantity(nacltbl['EU_K'][j7], u.K), nacl_nu[j7],
+                    errors=enacl_nu[j7], plot=True, verbose=True,
+                    molecule=nacl, marker='>', color='c', label='J=7 ')
+    pl.legend(loc='lower right')
     pl.axis([300,3300,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
@@ -659,15 +783,21 @@ if __name__ == "__main__":
     print(fit_multi_tex(eupper=u.Quantity(nacltbl['EU_K'], u.K),
                         nupperoverg=nacl_nu,
                         vstate=vstate,
+                        jstate=np.array(nacltbl['J$_u$'], dtype='int'),
+                        vibenergies=get_vib_energies(salt_tables.NaCl),
+                        rotenergies=get_rot_energies(salt_tables.NaCl),
                         errors=enacl_nu,
+                        rottemlims=(20,175),
+                        vibtemlims=(500,8000),
+                        collims=(np.log(1e10), np.log(1e16)),
                         plot=True, verbose=True, molecule=nacl, marker='o',
                         molname='NaCl',
                         colors=('r','g','b','orange','m','c','darkred','darkgreen',
                                 'purple'), )
          )
-    pl.legend(loc='best')
-    pl.axis([300,3300,8.8,13])
-    pl.title("NaCl - I'm 90% sure this is wrong")
+    pl.legend(loc='lower right')
+    pl.axis([300,4000,8.8,10.8])
+    pl.title("NaCl")
 
     pl.savefig(paths.fpath("NaCl_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -731,6 +861,8 @@ if __name__ == "__main__":
     v4 = np.array(['v=4' in row['Species'] for row in nacl37tbl])
     v5 = np.array(['v=5' in row['Species'] for row in nacl37tbl])
     v6 = np.array(['v=6' in row['Species'] for row in nacl37tbl])
+    j7 = np.array(['J=7' in row['Species'] for row in nacl37tbl])
+    j8 = np.array(['J=8' in row['Species'] for row in nacl37tbl])
 
     pl.figure(4).clf()
     print("Na37Cl")
@@ -742,15 +874,21 @@ if __name__ == "__main__":
                    verbose=True, molecule=nacl37, marker='s', color='b', label='v=1 ')
     tex2 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v2], u.K), nacl37_nu[v2], plot=True,
                    verbose=True, molecule=nacl37, marker='^', color='g', label='v=2 ')
-    tex3 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v3], u.K), nacl37_nu[v3], plot=True,
-                   verbose=True, molecule=nacl37, marker='o', color='r', label='v=3 ')
-    tex4 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v4], u.K), nacl37_nu[v4], plot=True,
-                   verbose=True, molecule=nacl37, marker='d', color='orange', label='v=4 ')
-    tex5 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v5], u.K), nacl37_nu[v5],
-                   errors=enacl37_nu[v5], plot=True,
-                   verbose=True, molecule=nacl37, marker='v', color='m', label='v=5 ')
+    #tex3 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v3], u.K), nacl37_nu[v3], plot=True,
+    #               verbose=True, molecule=nacl37, marker='o', color='r', label='v=3 ')
+    #tex4 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v4], u.K), nacl37_nu[v4], plot=True,
+    #               verbose=True, molecule=nacl37, marker='d', color='orange', label='v=4 ')
+    #tex5 = fit_tex(u.Quantity(nacl37tbl['EU_K'][v5], u.K), nacl37_nu[v5],
+    #               errors=enacl37_nu[v5], plot=True,
+    #               verbose=True, molecule=nacl37, marker='v', color='m', label='v=5 ')
+    texJ8 = fit_tex(u.Quantity(nacl37tbl['EU_K'][j8], u.K), nacl37_nu[j8],
+                    errors=enacl37_nu[j8], plot=True, verbose=True,
+                    molecule=nacl37, marker='h', color='k', label='J=8 ')
+    texJ7 = fit_tex(u.Quantity(nacl37tbl['EU_K'][j7], u.K), nacl37_nu[j7],
+                    errors=enacl37_nu[j7], plot=True, verbose=True,
+                    molecule=nacl37, marker='>', color='c', label='J=7 ')
 
-    pl.legend(loc='best')
+    pl.legend(loc='lower right')
     pl.title("Na$^{37}$Cl")
     pl.axis([-50,3000,9.0,12.25])
     pl.savefig(paths.fpath("NaCl37_rotational_diagrams.pdf"))
@@ -762,15 +900,18 @@ if __name__ == "__main__":
     print(fit_multi_tex(eupper=u.Quantity(nacl37tbl['EU_K'], u.K),
                         nupperoverg=nacl37_nu,
                         vstate=vstate,
+                        jstate=np.array(nacl37tbl['J$_u$'], dtype='int'),
+                        vibenergies=get_vib_energies(salt_tables.Na37Cl),
+                        rotenergies=get_rot_energies(salt_tables.Na37Cl),
                         errors=enacl37_nu,
-                        rottemlims=(50,125),
+                        rottemlims=(20,225),
                         plot=True, verbose=True, molecule=nacl37, marker='o',
                         molname='Na37Cl',
                         colors=('r','g','b','orange','m','c'), )
          )
-    pl.legend(loc='best')
-    pl.title("Na$^{37}$Cl - I'm 90% sure this is wrong")
-    pl.axis((0,2700,6.5,13.5))
+    pl.legend(loc='lower right')
+    pl.title("Na$^{37}$Cl")
+    pl.axis((-50,3700,8,11.0))
 
     pl.savefig(paths.fpath("NaCl37_rotational-vibrational_fit_diagrams.pdf"))
 
@@ -846,7 +987,7 @@ if __name__ == "__main__":
     #tex1 = fit_tex(u.Quantity(k41cltbl['EU_K'][v1], u.K), k41cl_nu[v1],
     #               errors=ek41cl_nu[v1], plot=True,
     #               verbose=True, molecule=k41cl, marker='s', color='b', label='v=1 ')
-    pl.legend(loc='best')
+    pl.legend(loc='lower right')
     pl.title("$^{41}$KCl")
     pl.savefig(paths.fpath("K41Cl_rotational_diagrams.pdf"))
 
@@ -855,12 +996,15 @@ if __name__ == "__main__":
     print(fit_multi_tex(eupper=u.Quantity(k41cltbl['EU_K'], u.K),
                         nupperoverg=k41cl_nu,
                         vstate=vstate,
+                        jstate=np.array(k41cltbl['J$_u$'], dtype='int'),
+                        vibenergies=get_vib_energies(salt_tables.K41Cl),
+                        rotenergies=get_rot_energies(salt_tables.K41Cl),
                         errors=ek41cl_nu,
                         plot=True, verbose=True, molecule=k41cl, marker='o',
                         molname='41KCl',
                         colors=('r','g','b','orange','m','c',), )
          )
-    pl.legend(loc='best')
-    pl.title("$^{41}$KCl - I'm 90% sure this is wrong")
+    pl.legend(loc='lower right')
+    pl.title("$^{41}$KCl")
 
     pl.savefig(paths.fpath("41KCl_rotational-vibrational_fit_diagrams.pdf"))

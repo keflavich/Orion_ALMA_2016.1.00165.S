@@ -10,7 +10,7 @@ def load_barton(species):
                            format='ascii.ipac')
     tbl.add_column(table.Column(name='Species', data=[species+row['QNs'] for row in tbl]))
     tbl.rename_column('Frequency', 'Freq')
-    tbl = tbl[(tbl['Freq']>10) & (tbl['Freq']<400) & (tbl['E_U'] < 1e4) & (tbl['vu']<=10)]
+    tbl = tbl[(tbl['Freq']>1) & (tbl['Freq']<400) & (tbl['E_U'] < 1e4) & (tbl['vu']<=10)]
     return tbl
 
 kcl_offset = (1+17*u.km/u.s/constants.c).decompose()

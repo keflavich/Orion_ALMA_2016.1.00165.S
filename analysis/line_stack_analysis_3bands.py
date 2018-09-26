@@ -288,6 +288,7 @@ def label_by_vstate(tablepath, ncols):
                     for ll in vstate_lines:
                         fh.write(ll)
             elif line.startswith('v &') or (not started_data and line.startswith(r' &')):
+                # this is the header line or unit line
                 fh.write("&".join(line.split("&")[1:]))
                 continue
             elif line.startswith(r'\begin{tabular}'):
@@ -307,6 +308,8 @@ def label_by_vstate(tablepath, ncols):
                     line = "&".join(line.split("&")[1:])
                     vstate_lines.append(line)
                 else:
+                    line = "&".join(line.split("&")[1:])
+                    vstate_lines.append(line)
                     headerstring = (r"&\vspace{{-0.75em}}\\""\n"
                                     r"\multicolumn{{{ncol}}}{{c}}{{$v = {vstate}$}} \\""\n"
                                     r"\vspace{{-0.75em}}\\""\n").format(ncol=ncols-1,
