@@ -117,6 +117,8 @@ class ExoMol(object):
         log.info("Populating Table w/E_U, E_L, frequency")
         self.transitions.add_column(Column(name='Frequency', unit=u.GHz,
                                            data=np.zeros(len(self.transitions)) + np.nan))
+        self.transitions.add_column(Column(name='Wavelength', unit=u.um,
+                                           data=np.zeros(len(self.transitions)) + np.nan))
         self.transitions.add_column(Column(name='E_U', unit=u.K,
                                            data=np.zeros(len(self.transitions)) + np.nan))
         self.transitions.add_column(Column(name='E_L', unit=u.K,
@@ -171,16 +173,17 @@ class ExoMol(object):
             row['gu'] = int(self.states[upperstate]['degeneracy'])
             row['gl'] = int(self.states[lowerstate]['degeneracy'])
 
+        self.transitions['Wavelength'] = self.transitions['Frequency'].quantity.to(u.um, u.spectral())
         self.transitions = self.transitions[self.transitions['E_U'] < max_energy.value]
 
 
 if __name__ == "__main__":
 
-    k39cl35_exo = ExoMol('KCl', '39K-35Cl')
+    #k39cl35_exo = ExoMol('KCl', '39K-35Cl')
     #k39cl35_exo = ExoMol('KCl', '39K-35Cl', max_energy=None, load_raw=True,
     #                     populate_transitions=False)
-    na23cl35_exo = ExoMol('NaCl', '23Na-35Cl')
-    na23cl37_exo = ExoMol('NaCl', '23Na-37Cl')
-    k41cl35_exo = ExoMol('KCl', '41K-35Cl')
-    k41cl37_exo = ExoMol('KCl', '41K-37Cl')
-    k39cl37_exo = ExoMol('KCl', '39K-37Cl')
+    na23cl35_exo = ExoMol('NaCl', '23Na-35Cl', max_energy=100000*u.K, load_raw=True)
+    #na23cl37_exo = ExoMol('NaCl', '23Na-37Cl')
+    #k41cl35_exo = ExoMol('KCl', '41K-35Cl')
+    #k41cl37_exo = ExoMol('KCl', '41K-37Cl')
+    #k39cl37_exo = ExoMol('KCl', '39K-37Cl')

@@ -9,7 +9,7 @@ from constants import vcen
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
-from salt_tables import salt_tables, SO2
+from salt_tables import salt_tables, SO2, HCl
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -71,11 +71,13 @@ for fn in flist:
                                       .format(basefn.replace("fits","pdf")))
                          )
 
-    sp_st.plotter(ymin=-0.0025, ymax=0.01)
-    sp_st.plotter.line_ids(detection_table['Species'],
-                           u.Quantity(detection_table['Frequency'], u.GHz),
-                           velocity_offset=-vcen,
-                           auto_yloc_fraction=0.8)
+    #sp_st.plotter(ymin=-0.0025, ymax=0.01)
+    # use the salt names directly.  This is for labeling of the colored
+    # lines; the publication-ready stuff still uses lines.py
+    #sp_st.plotter.line_ids(detection_table['Species'],
+    #                       u.Quantity(detection_table['Frequency'], u.GHz),
+    #                       velocity_offset=-vcen,
+    #                       auto_yloc_fraction=0.8)
 
     for tbl,color in zip(salt_tables, salt_colors):
         for row in tbl:
@@ -92,12 +94,12 @@ for fn in flist:
     #                                  -0.05, 0.10,
     #                                  colors='r', linestyles='--')
 
-    #for row in SO2:
-    #    frq = u.Quantity(row['Freq'], u.GHz).value
-    #    if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
-    #        sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
-    #                                  -0.05, 0.10,
-    #                                  colors='g', linestyles='--')
+    for row in HCl:
+        frq = u.Quantity(row['Freq'], u.GHz).value
+        if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
+            sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
+                                      -0.05, 0.10,
+                                      colors='g', linestyles='--')
 
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/diagnostic_lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))

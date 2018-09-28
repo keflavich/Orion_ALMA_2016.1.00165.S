@@ -111,7 +111,7 @@ Na37Cl['Freq'] = Na37Cl['Freq'] + Na37Cl_offset_model(Na37Cl['vu'], Na37Cl['Ju']
 MgCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl'))
 #MgCl = [row for row in MgCl if len(row['Resolved QNs']) < 20]
 #not detected:
-# HCl = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' HCl')
+HCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' HCl'))
 #NaCN = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCN')
 #NaO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO')
 #FeCO = Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' FeCO')
