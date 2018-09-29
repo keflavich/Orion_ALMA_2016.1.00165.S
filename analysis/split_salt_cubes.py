@@ -30,4 +30,6 @@ for cubefn in [
                                          velocity_convention='radio')
                      .spectral_slab(-20*u.km/u.s, 30*u.km/u.s))
 
-            scube.write('{2}/{0}_{1}'.format(line, cubefn, outpath))
+            if scube.shape[0] > 1:
+                print('{2}/{0}_{1}'.format(line, cubefn, outpath))
+                scube.write('{2}/{0}_{1}'.format(line, cubefn, outpath))

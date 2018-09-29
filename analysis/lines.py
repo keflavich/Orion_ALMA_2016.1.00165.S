@@ -26,6 +26,7 @@ unknown_map = {'Unknown_4': 'NaClv=1_18-17',
                'Unknown_B3_15': 'Na37Clv=5_7-6',
                'Unknown_B3_16': 'NaClv=4_7-6',
                'Unknown_B3_17': 'NaClv=5_7-6',
+               'U333.0': 'NaClv=2_26-25',
               }
 
 disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
@@ -109,7 +110,7 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'U335.0': 335.0508032*u.GHz,
               'NaClv=1_26-25': 335.5064022427176*u.GHz,# # NaCl v=1 26-25
               'KClv=1_44-43': 335.13404*u.GHz, # KCl v=1 44-43
-              'U333.0': 333.006652*u.GHz,
+              'NaClv=2_26-25': 333.006652*u.GHz,
               'SiOv=5_8-7': 335.28198*u.GHz, # traces higher-velocity inner region
               '29SiOv=0_8-7': 342.9808425*u.GHz,
               '29SiOv=1_8-7': 340.6118623*u.GHz,
@@ -252,7 +253,7 @@ texnames = {'Si34S_13-12': 'Si$^{34}$S 13-12',
             #'K37Clv=0 45-44': 335.0508032*u.GHz,
             'NaClv=1_26-25': 'NaCl v=1 26-25', #335.5057*u.GHz,
             'KClv=1_44-43': 'KCl v=1 44-43', #335.1307*u.GHz,
-            'U333.0': 'NaCl v=2 26-25', #333.0126*u.GHz,
+            'NaClv=2_26-25': 'NaCl v=2 26-25', #333.0126*u.GHz,
             '29SiOv=0_8-7': '$^{29}$SiO v=0 J=8-7',
             '29SiOv=1_8-7': '$^{29}$SiO v=1 J=8-7',
             '29SiOv=2_8-7': '$^{29}$SiO v=2 J=8-7',
