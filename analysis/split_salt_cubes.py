@@ -1,6 +1,10 @@
+import os
 import lines
 from astropy import units as u
 from spectral_cube import SpectralCube
+
+basepath = '/home/rng90003/orion/2016.1.00165.S/imaging/'
+outpath = '/home/rng90003/orion/2016.1.00165.S/imaging/saltcubes'
 
 for cubefn in [
     'OrionSourceI_only.B6.robust0.5.longbaselines.spw1.maskedclarkclean10000_medsub.image.pbcor.fits',
@@ -17,7 +21,7 @@ for cubefn in [
     'OrionSourceI_only.B7.lb.robust0.5.spw1.maskedclarkclean10000_medsub.image.pbcor.fits',
 ]:
 
-    cube = SpectralCube.read(cubefn)
+    cube = SpectralCube.read(os.path.join(basepath, cubefn))
 
     for line, freq in lines.disk_lines.items():
         if 'Cl' in line:
@@ -26,4 +30,4 @@ for cubefn in [
                                          velocity_convention='radio')
                      .spectral_slab(-20*u.km/u.s, 30*u.km/u.s))
 
-            scube.write('{0}_{1}'.format(line, cubefn))
+            scube.write('{2}/{0}_{1}'.format(line, cubefn, outpath))
