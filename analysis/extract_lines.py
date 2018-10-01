@@ -40,7 +40,7 @@ conthdu = fits.PrimaryHDU(data=data, header=new_header)
 levels = [50, 150, 300, 500]*u.K
 levels = [50, 300, 500]*u.K
 
-for robust in (-2, 0.5):
+for robust in (0.5,): # -2 looked awful all the time
     ftemplate = '/Volumes/external/orion/Orion{1}_only.{2}.{infix}robust{robust}.spw{0}.{suffix}_medsub.image.pbcor.fits'
 
 
@@ -54,6 +54,10 @@ for robust in (-2, 0.5):
                               ):
         for sourcename in ('SourceI',):# 'BN'):
             for linename, linefreq in disk_lines.items():
+                if 'NaCl' not in linename:
+                    # speedup because I only care about these lines right now
+                    continue
+
                 if 'H30a' in linename:
                     vrange = [-120,130]
                 elif 'SiO' in linename:
@@ -79,6 +83,12 @@ for robust in (-2, 0.5):
 
                     mywcs = cube.wcs.celestial
                     pixscale = wcs.utils.proj_plane_pixel_area(mywcs)**0.5 * u.deg
+
+                    imhalfsize = 0.2*u.arcsec
+                    pixhs = (imhalfsize / pixscale).decompose().value
+                    assert 1000 > pixhs > 10
+                    cy, cx = cube.shape[1]/2., cube.shape[2]/2.
+                    cube = cube[:, int(cy-pixhs):int(cy+pixhs), int(cx-pixhs):int(cx+pixhs)]
 
                     if linefreq > fmin and linefreq < fmax:
 
@@ -152,8 +162,13 @@ for robust in (-2, 0.5):
 
                         ebm = beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
                         ebm.set_facecolor('none')
-                        ebm.set_edgecolor('b')
+                        ebm.set_edgecolor('r')
                         ax.add_patch(ebm)
+
+                        ebm2 = mx.beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
+                        ebm2.set_facecolor('none')
+                        ebm2.set_edgecolor('b')
+                        ax.add_patch(ebm2)
 
                         con = ax.contour(contdata, levels=cont_levels_Jy.value,
                                          colors=['r']*10, extent=extent, linewidths=0.75,
@@ -213,6 +228,12 @@ for robust in (-2, 0.5):
                         ebm.set_facecolor('none')
                         ebm.set_edgecolor('b')
                         ax.add_patch(ebm)
+
+                        ebm2 = m0.beam.ellipse_to_plot(extent[0]+0.05, extent[2]+0.05, 1./3600*u.deg)
+                        ebm2.set_facecolor('none')
+                        ebm2.set_edgecolor('b')
+                        ax.add_patch(ebm2)
+
 
                         con = ax.contour(contdata, levels=cont_levels_Jy.value,
                                          zorder=50,

@@ -24,12 +24,21 @@ for cubefn in [
     cube = SpectralCube.read(os.path.join(basepath, cubefn))
 
     for line, freq in lines.disk_lines.items():
-        if 'Cl' in line:
-            scube = (cube
-                     .with_spectral_unit(u.km/u.s, rest_value=freq,
-                                         velocity_convention='radio')
-                     .spectral_slab(-20*u.km/u.s, 30*u.km/u.s))
+        outfn = '{2}/{0}_{1}'.format(line, cubefn, outpath)
+        if os.path.exists(outfn):
+            continue
+        else:
+            if 'Cl' in line:
+                scube = (cube
+                         .with_spectral_unit(u.km/u.s, rest_value=freq,
+                                             velocity_convention='radio')
+                         .spectral_slab(-20*u.km/u.s, 30*u.km/u.s))
+            elif 'SiO' in line:
+                scube = (cube
+                         .with_spectral_unit(u.km/u.s, rest_value=freq,
+                                             velocity_convention='radio')
+                         .spectral_slab(-80*u.km/u.s, 90*u.km/u.s))
 
             if scube.shape[0] > 1:
-                print('{2}/{0}_{1}'.format(line, cubefn, outpath))
-                scube.write('{2}/{0}_{1}'.format(line, cubefn, outpath))
+                print(outfn)
+                scube.write(outfn)
