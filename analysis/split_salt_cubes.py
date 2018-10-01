@@ -38,6 +38,8 @@ for cubefn in [
                          .with_spectral_unit(u.km/u.s, rest_value=freq,
                                              velocity_convention='radio')
                          .spectral_slab(-80*u.km/u.s, 90*u.km/u.s))
+            else:
+                continue
 
             if scube.shape[0] > 1:
                 print(outfn)
