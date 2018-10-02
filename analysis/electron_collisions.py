@@ -5,6 +5,8 @@ from astropy import constants
 
 def collision_rate_NaCl(Jupper, temperature):
 
+    Jlower = Jupper - 1
+
     # rotational constant (NIST):
     # (I assume this is B0 in Dickinson 1975)
     Be = 0.2180630*u.cm**-1
@@ -31,13 +33,13 @@ def collision_rate_NaCl(Jupper, temperature):
     # beta is defined between 2.18 and 2.19 in Dickinson 1975:
     # it is the inverse Boltzmann constant in eV
     #beta = 11600 / temperature
-    beta = (constants.k_B**-1 / u.K).to(u.eV**-1)
+    beta = (constants.k_B**-1 / temperature).to(u.eV**-1)
 
     # deltaE is the 'threshold energy' from 2.19 in Dickinson 1975
-    deltaE = (2.48e-4 * Be/u.cm**-1 * (Jupper+1)) * u.eV
+    deltaE = (2.48e-4 * Be/u.cm**-1 * (Jlower + 1)) * u.eV
 
     # Equation 2.17 in Dickinson 1975
-    A = 2.470 * (dipole_moment/u.D)**2 * (Jupper / (2*Jupper + 1))
+    A = 2.470 * (dipole_moment/u.D)**2 * (Jupper / (2*Jlower + 1))
 
     # finally, equation 2.23 in Dickinson 1975
     collrate = (1.44e-6 / (temperature/u.K)**0.5 * A * np.exp(-beta * deltaE) *
@@ -51,6 +53,9 @@ if __name__ == "__main__":
 
     from salt_tables import NaCl
     from astropy.table import Column
+
+    for ii in range(1, 10):
+        print(ii, collision_rate_NaCl(ii, 100*u.K))
 
     collrates100 = collision_rate_NaCl(NaCl['Ju'],
                                        100*u.K,
