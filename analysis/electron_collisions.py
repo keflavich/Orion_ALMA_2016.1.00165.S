@@ -19,7 +19,7 @@ def collision_rate_NaCl(Jupper, temperature, Aul):
 
     # C must have units of inverse energy
     C = (1.93e4 / (dipole_moment/u.D * Be/(u.cm**-1) * Jupper) *
-         np.exp(-1.18/(dipole_moment/u.D))) * u.eV**-1
+         np.exp(-1.18/(dipole_moment/u.D)**3)) * u.eV**-1
 
     # beta is defined between 2.18 and 2.19
     #beta = 11600 / temperature
