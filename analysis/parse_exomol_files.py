@@ -16,15 +16,19 @@ GHz_to_K = (1*u.GHz).to(u.eV, u.spectral()).to(u.K,
 cm_to_K = (1*u.cm**-1).to(u.eV, u.spectral()).to(u.K,
                                                  u.temperature_energy()).value
 
+
 class ExoMol(object):
     def __init__(self, name, fullname, max_energy=15000*u.K, load_raw=False,
+                 catname='Barton',
                  populate_transitions=True):
 
-        self.base_url = 'http://www.exomol.com/{loc}/{name}/{fullname}/Barton/'.format(name=name,
-                                                                                       fullname=fullname,
-                                                                                       loc='{loc}')
+        self.base_url = 'http://www.exomol.com/{loc}/{name}/{fullname}/{catname}/'.format(name=name,
+                                                                                          fullname=fullname,
+                                                                                          loc='{loc}',
+                                                                                          catname=catname
+                                                                                         )
 
-        statesfile = paths.salty('{fullname}__Barton.states.bz2'.format(fullname=fullname))
+        statesfile = paths.salty('{fullname}__{catname}.states.bz2'.format(fullname=fullname, catname=catname))
         if os.path.exists(statesfile) and not load_raw:
             log.info("Loading state data from disk file {0}".format(statesfile))
             with open(statesfile, 'rb') as fh:
@@ -32,7 +36,7 @@ class ExoMol(object):
             statesdata_unzip = bz2.BZ2Decompressor().decompress(content)
         else:
             log.info("Retrieving state data for {0}".format(fullname))
-            statesdata = requests.get(self.base_url.format(loc='db')+'{fullname}__Barton.states.bz2'.format(fullname=fullname))
+            statesdata = requests.get(self.base_url.format(loc='db')+'{fullname}__{catname}.states.bz2'.format(fullname=fullname, catname=catname))
             statesdata_unzip = bz2.BZ2Decompressor().decompress(statesdata.content)
             with open(statesfile, 'wb') as fh:
                 fh.write(statesdata.content)
@@ -46,6 +50,11 @@ class ExoMol(object):
                               'col5': ('unknown', None),
                               'col6': ('v', None),
                              }
+        # hackarooney....
+        if 'col6' not in self.states.colnames:
+            states_col_mapping['col5'] = states_col_mapping['col6']
+            del states_col_mapping['col6']
+
         for key,(name,unit) in states_col_mapping.items():
             self.states.rename_column(key, name)
             if unit is not None:
@@ -59,7 +68,7 @@ class ExoMol(object):
             self.transitions = Table.read(populated_transitions_fn, format='ascii.ipac')
         else:
 
-            transfile = paths.salty('{fullname}__Barton.trans.bz2'.format(fullname=fullname))
+            transfile = paths.salty('{fullname}__{catname}.trans.bz2'.format(fullname=fullname, catname=catname))
             if os.path.exists(transfile):
                 log.info("Loading transition data from disk file {0}".format(transfile))
                 with open(transfile, 'rb') as fh:
@@ -67,7 +76,7 @@ class ExoMol(object):
                 transitionsdata_unzip = bz2.BZ2Decompressor().decompress(content)
             else:
                 log.info("Retrieving transition data")
-                transitionsdata = requests.get(self.base_url.format(loc='db')+'{fullname}__Barton.trans.bz2'.format(fullname=fullname))
+                transitionsdata = requests.get(self.base_url.format(loc='db')+'{fullname}__{catname}.trans.bz2'.format(fullname=fullname, catname=catname))
                 transitionsdata_unzip = bz2.BZ2Decompressor().decompress(transitionsdata.content)
                 with open(transfile, 'wb') as fh:
                     fh.write(transitionsdata.content)
@@ -182,8 +191,21 @@ if __name__ == "__main__":
     #k39cl35_exo = ExoMol('KCl', '39K-35Cl')
     #k39cl35_exo = ExoMol('KCl', '39K-35Cl', max_energy=None, load_raw=True,
     #                     populate_transitions=False)
-    na23cl35_exo = ExoMol('NaCl', '23Na-35Cl', max_energy=100000*u.K, load_raw=True)
+    #na23cl35_exo = ExoMol('NaCl', '23Na-35Cl', max_energy=100000*u.K, load_raw=True)
     #na23cl37_exo = ExoMol('NaCl', '23Na-37Cl')
     #k41cl35_exo = ExoMol('KCl', '41K-35Cl')
     #k41cl37_exo = ExoMol('KCl', '41K-37Cl')
     #k39cl37_exo = ExoMol('KCl', '39K-37Cl')
+
+    # http://www.exomol.com/db/SiO/28Si-16O/EBJT/28Si-16O__EBJT.states.bz2
+    # http://www.exomol.com/db/SiO/29Si-16O/EBJT/29Si-16O__EBJT.trans.bz2
+    # http://www.exomol.com/db/SiO/29Si-16O/EBJT/29Si-16O__EBJT.states.bz2
+    #Si28O16 = ExoMol('SiO', '28Si-16O', catname='EBJT')
+    ##Si29O16 = ExoMol('SiO', '29Si-16O', catname='EBJT') #MISSING DATA!! boo.
+    #Si30O16 = ExoMol('SiO', '30Si-16O', catname='EBJT')
+    #Si28O17 = ExoMol('SiO', '28Si-17O', catname='EBJT')
+
+    Si28S32 = ExoMol('SiS', '28Si-32S', catname='UCTY')
+    Si29S32 = ExoMol('SiS', '29Si-32S', catname='UCTY')
+    Si28S33 = ExoMol('SiS', '28Si-33S', catname='UCTY')
+    Si30S32 = ExoMol('SiS', '30Si-32S', catname='UCTY')

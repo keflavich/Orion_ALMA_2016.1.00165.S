@@ -9,7 +9,7 @@ from constants import vcen
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
-from salt_tables import salt_tables, SO2, HCl
+from salt_tables import salt_tables, SO2, HCl, sis_tables
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -105,7 +105,31 @@ for fn in flist:
                                       .format(basefn.replace("fits","pdf")))
                          )
 
+    # Do another one just for SiO
+    sp_st.plotter(ymin=-0.0025, ymax=0.01)
+
+    # uses lines.py
+    sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
+                           auto_yloc_fraction=0.8)
+
+    for txt in sp_st.plotter.axis.texts:
+        txt.set_backgroundcolor((1,1,1,0.9))
+
+
+    for tbl,color in zip(sis_tables, salt_colors):
+        for row in tbl:
+            frq = u.Quantity(row['Freq'], u.GHz).value
+            if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
+                sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
+                                          -0.05, 0.10,
+                                          colors=color, linestyles=':')
+
+    sp_st.plotter.savefig(paths.fpath('stacked_spectra/sis_diagnostic_lines_labeled_{0}'
+                                      .format(basefn.replace("fits","pdf")))
+                         )
+
 
     for (a,b) in zip(linetexnames, linefreqs):
         if (b>sp_st.xarr.min()) and (b<sp_st.xarr.max()) and a not in ided_linetexnames:
             print("'{0}': {1}*u.{2},".format(a,b.value,b.unit))
+

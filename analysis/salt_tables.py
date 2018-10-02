@@ -75,8 +75,6 @@ K41Cl37 = load_barton('41K-37Cl')
 # using 41KCl b/c there's nothing to fit here
 K41Cl37['Freq'] = K41Cl37['Freq'] + K41Cl_offset_model(K41Cl37['vu'], K41Cl37['Ju'])
 
-
-
 AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
 #AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
 #NaF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaF'))
@@ -129,6 +127,24 @@ S34O = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' 34SO '))
 # no, SO2 isn't really believable.
 SO2 = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' SO2',
                                  energy_max=500, energy_type='eu_k'))
+
+SiO = load_barton('28Si-16O')
+SiO17 = load_barton('28Si-17O')
+#Si29O = load_barton('29Si-16O')
+Si30O = load_barton('30Si-16O')
+sio_tables = [SiO,
+              SiO17,
+              #Si29O,
+              Si30O]
+
+SiS = load_barton('28Si-32S')
+SiS33 = load_barton('28Si-33S')
+Si30S = load_barton('30Si-32S')
+Si29S = load_barton('29Si-32S')
+sis_tables = [SiS,
+              SiS33,
+              Si29S,
+              Si30S]
 
 
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
