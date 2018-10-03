@@ -107,7 +107,7 @@ cabezasNaCl.rename_column('V0','vl')
 cabezasNaCl.rename_column('Eup','E_U')
 NaCl = cabezasNaCl[cabezasNaCl['Iso'] == b'35']
 NaCl.add_column(Column(name='Species',
-                       data=['23Na-35Cl v={0}-{1} J={2}-{3}'
+                       data=['23Na-35Clv={0}-{1} J={2}-{3}'
                              .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
                              for row in NaCl]))
 
@@ -122,7 +122,7 @@ Na37Cl['Freq'] = Na37Cl['Freq'] + Na37Cl_offset_model(Na37Cl['vu'], Na37Cl['Ju']
 
 Na37Cl = cabezasNaCl[cabezasNaCl['Iso'] == b'37']
 Na37Cl.add_column(Column(name='Species',
-                         data=['23Na-37Cl v={0}-{1} J={2}-{3}'
+                         data=['23Na-37Clv={0}-{1} J={2}-{3}'
                                .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
                                for row in NaCl]))
 

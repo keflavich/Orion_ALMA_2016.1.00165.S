@@ -18,7 +18,7 @@ NaCl
 !MOLECULAR WEIGHT
 58
 ! NUMBER OF ENERGY LEVELS
-320
+319
 !LEVEL + ENERGIES(cm^-1) + WEIGHT + J + V
 """)
 
@@ -33,21 +33,28 @@ NaCl
             leveldict[(vv,jj)] = ii
             ii += 1
 
-    fh.write("""! NUMBER OF RADIATIVE TRANSITIONS
-{0}
-!TRANS + U + L + A(s^-1) + FREQ(GHz) + E_u/k(K)
-""".format(len(NaCl)))
-
+    radtrans_strings = []
     ii = 1
     for row in NaCl:
         ju,jl = row['Ju'], row['Jl']
         vu,vl = row['vu'], row['vl']
         if (vu, ju) in leveldict and (vl, jl) in leveldict:
             # only include the levels we're interested in
-            fh.write("{0:5d} {1:5d} {2:5d} {3:11.3e} {4:20.8f} {5:10.2f}\n"
-                     .format(ii, leveldict[(vu, ju)], leveldict[(vl, jl)], row['Aij'], row['Freq'], row['E_U'])
-                    )
+            radtrans_strings.append(
+                "{0:5d} {1:5d} {2:5d} {3:11.3e} {4:20.8f} {5:10.2f}\n"
+                .format(ii, leveldict[(vu, ju)], leveldict[(vl, jl)],
+                        row['Aij'], row['Freq'], row['E_U'])
+            )
             ii += 1
+
+    fh.write("""! NUMBER OF RADIATIVE TRANSITIONS
+{0}
+!TRANS + U + L + A(s^-1) + FREQ(GHz) + E_u/k(K)
+""".format(len(radtrans_strings)))
+
+    for rtstr in radtrans_strings:
+        fh.write(rtstr)
+
 
     levels = [(v,j) for v in range(0,3+1) for j in range(1,80+1)]
     pairs = list(itertools.permutations(levels, 2))
