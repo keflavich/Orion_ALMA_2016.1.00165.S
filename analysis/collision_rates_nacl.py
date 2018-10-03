@@ -11,6 +11,10 @@ from astropy import units as u
 from salt_tables import NaCl
 import rates_ios
 
+maxv = 3
+maxj = 60
+assert maxv*maxj < 99999 # max # collision rates
+
 with open('nacl.dat', 'w') as fh:
 
     fh.write("""!MOLECULE
@@ -18,14 +22,17 @@ NaCl
 !MOLECULAR WEIGHT
 58
 ! NUMBER OF ENERGY LEVELS
-319
+{nlev}
 !LEVEL + ENERGIES(cm^-1) + WEIGHT + J + V
-""")
+""".format(nlev=(maxv+1) * maxj + 1))
 
-    ii = 1
+    # manually write out the ground state, since it's not in the table
+    fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(1, 0, 16, 0, 0))
+
+    ii = 2
     leveldict = {}
-    for vv in range(0,3+1):
-        for jj in range(1,80+1):
+    for vv in range(0,maxv+1):
+        for jj in range(1,maxj+1):
             row = NaCl[(NaCl['vu'] == vv) & (NaCl['Ju'] == jj)]
             energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
             degen = 16 + 32 * jj
@@ -56,8 +63,35 @@ NaCl
         fh.write(rtstr)
 
 
-    levels = [(v,j) for v in range(0,3+1) for j in range(1,80+1)]
+    levels = [(v,j) for v in range(0,maxv+1) for j in range(1,maxj+1)]
     pairs = list(itertools.permutations(levels, 2))
+
+
+    temperatures = list(map(float, "10.0   20.0   30.0   40.0   50.0   60.0   70.0   80.0   90.0  100.0  110.0  120.0  130.0  140.0  150.0  160.0  170.0  180.0  190.0  200.0  210.0  220.0  230.0  240.0  250.0  260.0  270.0  280.0  290.0  300.0  500.0 1000.0 2000.0".split()))
+
+    def pos_or_zero(x):
+        if x < 0:
+            return 1e-60
+        else:
+            return x
+
+    pb = ProgressBar(len(pairs))
+
+    ii = 1
+    ratestrings = []
+    for ((v1,j1), (v2,j2)) in (pairs):
+        r100 = rates_ios.rates(v1, j1, v2, j2, 100)
+        if r100 < 1e-25:
+            # Skip negligible rates to avoid singular matrices
+            pb.update()
+            continue
+        rates = [pos_or_zero(rates_ios.rates(v1, j1, v2, j2, tem)) for tem in temperatures]
+        ratestr = " ".join(["{0:7.1e}".format(rr) for rr in rates])
+        ratestrings.append("{0:5d} {1:5d} {2:5d} {3}\n"
+                           .format(ii, leveldict[(v1, j1)], leveldict[(v2, j2)], ratestr))
+        ii += 1
+
+        pb.update()
 
     fh.write("""!NUMBER OF COLL PARTNERS
 1
@@ -70,16 +104,7 @@ NaCl
 !COLL TEMPS
    10.0   20.0   30.0   40.0   50.0   60.0   70.0   80.0   90.0  100.0  110.0  120.0  130.0  140.0  150.0  160.0  170.0  180.0  190.0  200.0  210.0  220.0  230.0  240.0  250.0  260.0  270.0  280.0  290.0  300.0  500.0 1000.0 2000.0
 !TRANS + UP + LOW + COLLRATES(cm^3 s^-1)
-""".format(npairs=len(pairs)))
+""".format(npairs=len(ratestrings)))
 
-    temperatures = list(map(float, "10.0   20.0   30.0   40.0   50.0   60.0   70.0   80.0   90.0  100.0  110.0  120.0  130.0  140.0  150.0  160.0  170.0  180.0  190.0  200.0  210.0  220.0  230.0  240.0  250.0  260.0  270.0  280.0  290.0  300.0  500.0 1000.0 2000.0".split()))
-
-    pb = ProgressBar(len(pairs))
-
-    for ii, ((v1,j1), (v2,j2)) in enumerate(pairs):
-        rates = [rates_ios.rates(v1, j1, v2, j2, tem) for tem in temperatures]
-        ratestr = " ".join(["{0:7.1e}".format(rr) for rr in rates])
-        fh.write("{0:5d} {1:5d} {2:5d} {3}\n"
-                 .format(ii, leveldict[(v1, j1)], leveldict[(v2, j2)], ratestr))
-
-        pb.update()
+    for ratestr in ratestrings:
+        fh.write(ratestr)
