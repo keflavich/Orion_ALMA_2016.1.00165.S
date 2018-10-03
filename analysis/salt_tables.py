@@ -4,6 +4,8 @@ from astropy import modeling
 import paths
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
+from astropy.table import Column
+from astroquery.vizier import Vizier
 
 def load_barton(species):
     tbl = table.Table.read(paths.salty(species+"_rotational_transitions.ipac"),
@@ -93,7 +95,21 @@ NaCl_offset_model = get_offset_model(NaCl_diff)
 
 NaCl['Freq'] = NaCl['Freq'] + NaCl_offset_model(NaCl['vu'], NaCl['Ju'])
 
-
+# use Cabezas instead of Barton
+cabezasNaCl = Vizier(row_limit=1e9).get_catalogs('J/ApJ/825/150')[1]
+cabezasNaCl['nuCalc'][cabezasNaCl['x_nuCalc'] == 'cm-1'] = u.Quantity(cabezasNaCl['nuCalc'][cabezasNaCl['x_nuCalc'] == 'cm-1'], u.cm**-1).to(u.MHz, u.spectral())
+cabezasNaCl['x_nuCalc'][cabezasNaCl['x_nuCalc'] == 'cm-1'] = 'MHz'
+cabezasNaCl.add_column(Column(name='Freq', data=u.Quantity(cabezasNaCl['nuCalc'], u.MHz).to(u.GHz)))
+cabezasNaCl.rename_column('J1','Ju')
+cabezasNaCl.rename_column('J0','Jl')
+cabezasNaCl.rename_column('V1','vu')
+cabezasNaCl.rename_column('V0','vl')
+cabezasNaCl.rename_column('Eup','E_U')
+NaCl = cabezasNaCl[cabezasNaCl['Iso'] == b'35']
+NaCl.add_column(Column(name='Species',
+                       data=['23Na-35Cl v={0}-{1} J={2}-{3}'
+                             .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
+                             for row in NaCl]))
 
 
 Na37Cls = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' Na37Cl'))
@@ -104,6 +120,11 @@ Na37Cl_offset_model = get_offset_model(Na37Cl_diff)
 
 Na37Cl['Freq'] = Na37Cl['Freq'] + Na37Cl_offset_model(Na37Cl['vu'], Na37Cl['Ju'])
 
+Na37Cl = cabezasNaCl[cabezasNaCl['Iso'] == b'37']
+Na37Cl.add_column(Column(name='Species',
+                         data=['23Na-37Cl v={0}-{1} J={2}-{3}'
+                               .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
+                               for row in NaCl]))
 
 
 MgCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' MgCl'))

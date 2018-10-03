@@ -94,12 +94,12 @@ for fn in flist:
     #                                  -0.05, 0.10,
     #                                  colors='r', linestyles='--')
 
-    for row in HCl:
-        frq = u.Quantity(row['Freq'], u.GHz).value
-        if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
-            sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
-                                      -0.05, 0.10,
-                                      colors='g', linestyles='--')
+    #for row in HCl:
+    #    frq = u.Quantity(row['Freq'], u.GHz).value
+    #    if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:
+    #        sp_st.plotter.axis.vlines(frq*(1+vcen/constants.c).decompose().value,
+    #                                  -0.05, 0.10,
+    #                                  colors='g', linestyles='--')
 
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/diagnostic_lines_labeled_{0}'
                                       .format(basefn.replace("fits","pdf")))
