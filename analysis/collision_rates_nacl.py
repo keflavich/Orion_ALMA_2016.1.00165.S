@@ -27,7 +27,7 @@ NaCl
     for vv in range(0,3+1):
         for jj in range(1,80+1):
             row = NaCl[(NaCl['vu'] == vv) & (NaCl['Ju'] == jj)]
-            energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral())
+            energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
             degen = 16 + 32 * jj
             fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, jj, vv))
             leveldict[(vv,jj)] = ii
@@ -72,7 +72,7 @@ NaCl
     for ii, ((v1,j1), (v2,j2)) in enumerate(pairs):
         rates = [rates_ios.rates(v1, j1, v2, j2, tem) for tem in temperatures]
         ratestr = " ".join(["{0:7.1e}".format(rr) for rr in rates])
-        fh.write("{0:5d} {1:5d} {2:5d} {3}"
+        fh.write("{0:5d} {1:5d} {2:5d} {3}\n"
                  .format(ii, leveldict[(v1, j1)], leveldict[(v2, j2)], ratestr))
 
         pb.update()
