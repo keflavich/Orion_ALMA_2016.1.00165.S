@@ -2,17 +2,22 @@ import numpy as np
 from astropy import units as u
 from astropy import constants
 
+# rotational constant (NIST):
+# (I assume this is B0 in Dickinson 1975)
+NaCl_Be = 0.2180630*u.cm**-1
 
-def collision_rate_NaCl(Jupper, temperature):
+# Hebert '68 via Barton:
+NaCl_dipole_moment = 8.9721*u.D
+
+# NIST
+KCl_Be = 0.1286347 * u.cm**-1
+KCl_dipole_moment = 10.239 * u.D
+
+def collision_rate(Jupper, temperature, Be=NaCl_Be,
+                   dipole_moment=NaCl_dipole_moment):
 
     Jlower = Jupper - 1
 
-    # rotational constant (NIST):
-    # (I assume this is B0 in Dickinson 1975)
-    Be = 0.2180630*u.cm**-1
-
-    # Hebert '68 via Barton:
-    dipole_moment = 8.9721*u.D
 
     # equilibrium bond length r_e (Barton):
     # (not used, so commented out)
@@ -44,27 +49,49 @@ def collision_rate_NaCl(Jupper, temperature):
     # finally, equation 2.23 in Dickinson 1975
     collrate = (1.44e-6 / (temperature/u.K)**0.5 * A * np.exp(-beta * deltaE) *
                 np.log(C * deltaE + C / beta *
-                       np.exp(-0.577/(1+2*beta*deltaE))) * u.cm**3)
+                       np.exp(-0.577/(1+2*beta*deltaE))) * u.cm**3 * u.s**-1)
 
     return collrate
 
 
 if __name__ == "__main__":
 
-    from salt_tables import NaCl
+    from salt_tables import NaCl, KCl
     from astropy.table import Column
 
     for ii in range(1, 10):
-        print(ii, collision_rate_NaCl(ii, 100*u.K))
+        print(ii, collision_rate(ii, 100*u.K))
 
-    collrates100 = collision_rate_NaCl(NaCl['Ju'],
-                                       100*u.K,
-                                      )
-    NaCl.remove_column('alpha_100K')
+    collrates100 = collision_rate(NaCl['Ju'],
+                                  100*u.K,
+                                  )
+    if 'alpha_100K' in NaCl.columns:
+        NaCl.remove_column('alpha_100K')
     NaCl.add_column(Column(name='alpha_100K', data=collrates100))
 
-    collrates500 = collision_rate_NaCl(NaCl['Ju'],
-                                       500*u.K,
-                                      )
-    NaCl.remove_column('alpha_500K')
+    collrates500 = collision_rate(NaCl['Ju'],
+                                  500*u.K,
+                                  )
+    if 'alpha_500K' in NaCl.columns:
+        NaCl.remove_column('alpha_500K')
     NaCl.add_column(Column(name='alpha_500K', data=collrates500))
+
+    for ii in range(1, 10):
+        print(ii, collision_rate(ii, 100*u.K, Be=KCl_Be,
+                                 dipole_moment=KCl_dipole_moment))
+
+    collrates100 = collision_rate(KCl['Ju'],
+                                  100*u.K, Be=KCl_Be,
+                                  dipole_moment=KCl_dipole_moment,
+                                  )
+    if 'alpha_100K' in KCl.columns:
+        KCl.remove_column('alpha_100K')
+    KCl.add_column(Column(name='alpha_100K', data=collrates100))
+
+    collrates500 = collision_rate(KCl['Ju'],
+                                  500*u.K, Be=KCl_Be,
+                                  dipole_moment=KCl_dipole_moment,
+                                  )
+    if 'alpha_500K' in KCl.columns:
+        KCl.remove_column('alpha_500K')
+    KCl.add_column(Column(name='alpha_500K', data=collrates500))
