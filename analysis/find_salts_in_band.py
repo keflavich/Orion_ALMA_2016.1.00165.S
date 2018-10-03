@@ -46,6 +46,10 @@ if not os.path.exists(salttablepath):
     tbl.write(salttablepath, format='ascii.ipac', overwrite=False)
 else:
     tbl_ = Table.read(salttablepath, format='ascii.ipac')
+    new_flagcolumn = [tbl_[tbl_['Species'] == row['Species']]['Flag'][0]
+                      for row in tbl
+                      if any(tbl_['Species'] == row['Species'])
+                     ]
     tbl.remove_column('Flag')
-    tbl.add_column(tbl_['Flag'])
+    tbl.add_column(Column(name='Flag', data=new_flagcolumn))
     tbl.write(salttablepath, format='ascii.ipac', overwrite=True)
