@@ -22,7 +22,7 @@ for spw in (0,1,2,3):
         for tbl in ProgressBar(salt_tables):
             for row in tbl:
                 if sp.xarr.in_range(u.Quantity(row['Freq'], u.GHz)):
-                    salts_in_band[row['Species']] = (row['Freq'], row['E_U'], band, spw)
+                    salts_in_band[row['Species']] = (row['Freq'], row['E_U'], band, spw, row['Aij'])
 
 
 with open('salts_in_band.json', 'w') as fh:
@@ -33,6 +33,7 @@ tbl = Table([Column(name='Species', data=list(salts_in_band.keys())),
              Column(name='E_U', data=[salts_in_band[key][1] for key in salts_in_band]),
              Column(name='Band', data=[salts_in_band[key][2] for key in salts_in_band]),
              Column(name='SPW', data=[salts_in_band[key][3] for key in salts_in_band]),
+             Column(name='Aij', data=[salts_in_band[key][4] for key in salts_in_band]),
              Column(name='Flag', data=['----' for key in salts_in_band]),
             ])
 

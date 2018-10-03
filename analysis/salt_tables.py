@@ -88,12 +88,12 @@ CaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' CaCl'))
 AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
 #AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
 NaCls = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCl', line_lists=['SLAIM']))
-NaCl = load_barton('23Na-35Cl')
+NaClbarton = load_barton('23Na-35Cl')
 
-NaCl_diff = match_splat_barton(NaCls, NaCl[NaCl['vu']<4])
+NaCl_diff = match_splat_barton(NaCls, NaClbarton[NaClbarton['vu']<4])
 NaCl_offset_model = get_offset_model(NaCl_diff)
 
-NaCl['Freq'] = NaCl['Freq'] + NaCl_offset_model(NaCl['vu'], NaCl['Ju'])
+NaClbarton['Freq'] = NaClbarton['Freq'] + NaCl_offset_model(NaClbarton['vu'], NaClbarton['Ju'])
 
 # use Cabezas instead of Barton
 cabezasNaCl = Vizier(row_limit=1e9).get_catalogs('J/ApJ/825/150')[1]
