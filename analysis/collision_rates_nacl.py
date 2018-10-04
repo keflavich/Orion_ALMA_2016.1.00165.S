@@ -17,6 +17,14 @@ NaCl['E_U'][375] = 536.9248881998526
 NaCl['E_U'][np.array([61,3670,3881])] = 536.5639967986373
 NaCl['E_U'][np.array([278, 3304, 4292, 7166, 7771])] = 1339.31
 
+# v=x-x J=1-0 energy level - frequency-to-kelvin
+# (these are K values)
+groundstates = {(0,0): 0,
+                (1,0): 519.67949313,
+                (2,0): 1034.28410924,
+                (3,0): 1543.88869568,
+               }
+
 maxv = 3
 maxj = 60
 assert maxv*maxj < 99999 # max # collision rates
@@ -30,22 +38,30 @@ NaCl
 ! NUMBER OF ENERGY LEVELS
 {nlev}
 !LEVEL + ENERGIES(cm^-1) + WEIGHT + J + V
-""".format(nlev=(maxv+1) * maxj + 1))
+""".format(nlev=(maxv + 1) * (maxj + 1)))
 
-    # manually write out the ground state, since it's not in the table
-    fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(1, 0, 16, 0, 0))
 
-    ii = 2
+    ii = 1
     leveldict = {}
     levelenergy = {}
     for vv in range(0,maxv+1):
-        leveldict[(vv,0)] = 1 + maxj*vv
-        levelenergy[(vv,0)] = 0 + 520.3*vv
+        if ii in leveldict.values():
+            raise ValueError((vv,))
+        leveldict[(vv,0)] = ii #1 + maxj*vv
+        energy_K = groundstates[(vv,0)]
+        energy = (energy_K*u.K).to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
+        levelenergy[(vv,0)] = energy
+        degen = 16
+        # manually write out the ground state, since it's not in the table
+        fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, 0, vv))
+        ii += 1
         for jj in range(1,maxj+1):
             row = NaCl[(NaCl['vu'] == vv) & (NaCl['Ju'] == jj)]
             energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
             degen = 16 + 32 * jj
             fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, jj, vv))
+            if ii in leveldict.values():
+                raise ValueError((vv,jj))
             leveldict[(vv,jj)] = ii
             if energy in levelenergy.values():
                 raise ValueError((vv,jj))
@@ -58,6 +74,10 @@ NaCl
         ju,jl = row['Ju'], row['Jl']
         vu,vl = row['vu'], row['vl']
         if (vu, ju) in leveldict and (vl, jl) in leveldict:
+
+            if levelenergy[(vu,ju)] - levelenergy[(vl,jl)] < 1e-4:
+                raise ValueError
+
             # only include the levels we're interested in
             radtrans_strings.append(
                 "{0:5d} {1:5d} {2:5d} {3:11.3e} {4:20.8f} {5:10.2f}\n"
