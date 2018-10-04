@@ -100,6 +100,7 @@ latexdict['tablefoot'] = ('\n\par ')
 
 formats = {'Frequency': lambda x: "{0:0.5f}".format(x),
            'E$_U$': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'A$_{ul}$': lambda x: "{0:0.5f}".format(x),
           }
 
 

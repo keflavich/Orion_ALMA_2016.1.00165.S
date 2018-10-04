@@ -53,13 +53,13 @@ NaCl
         levelenergy[(vv,0)] = energy
         degen = 16
         # manually write out the ground state, since it's not in the table
-        fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, 0, vv))
+        fh.write("{0:5d} {1:15.9f} {2:5.1f} {4:5d}_{3:d}\n".format(ii, energy, degen, 0, vv))
         ii += 1
         for jj in range(1,maxj+1):
             row = NaCl[(NaCl['vu'] == vv) & (NaCl['Ju'] == jj)]
             energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
             degen = 16 + 32 * jj
-            fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, jj, vv))
+            fh.write("{0:5d} {1:15.9f} {2:5.1f} {4:5d}_{3:d}\n".format(ii, energy, degen, jj, vv))
             if ii in leveldict.values():
                 raise ValueError((vv,jj))
             leveldict[(vv,jj)] = ii
