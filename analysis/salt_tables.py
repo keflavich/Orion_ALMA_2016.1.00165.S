@@ -102,9 +102,12 @@ cabezasNaCl['x_nuCalc'][cabezasNaCl['x_nuCalc'] == 'cm-1'] = 'MHz'
 cabezasNaCl.add_column(Column(name='Freq', data=u.Quantity(cabezasNaCl['nuCalc'], u.MHz).to(u.GHz)))
 cabezasNaCl.rename_column('J1','Ju')
 cabezasNaCl.rename_column('J0','Jl')
+cabezasNaCl.add_column(Column(name='gu', data=cabezasNaCl['Ju']*32 + 16))
+cabezasNaCl.add_column(Column(name='gl', data=cabezasNaCl['Jl']*32 + 16))
 cabezasNaCl.rename_column('V1','vu')
 cabezasNaCl.rename_column('V0','vl')
 cabezasNaCl.rename_column('Eup','E_U')
+cabezasNaCl.add_column(Column(name='QNs', data=['v={0}-{1} J={2}-{3}'.format(row['vu'], row['vl'], row['Ju'], row['Jl']) for row in cabezasNaCl]))
 NaCl = cabezasNaCl[cabezasNaCl['Iso'] == b'35']
 NaCl.add_column(Column(name='Species',
                        data=['23Na-35Clv={0}-{1} J={2}-{3}'

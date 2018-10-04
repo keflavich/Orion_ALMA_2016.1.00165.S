@@ -20,7 +20,9 @@ for spw in (0,1,2,3):
         sp = pyspeckit.Spectrum(fn)
 
         for tbl in ProgressBar(salt_tables):
-            for row in tbl:
+            tbl = tbl[(tbl['Freq'] > sp.xarr.min().to(u.GHz).value) &
+                      (tbl['Freq'] < sp.xarr.max().to(u.GHz).value)]
+            for row in ProgressBar(tbl):
                 if sp.xarr.in_range(u.Quantity(row['Freq'], u.GHz)):
                     salts_in_band[row['Species']] = (float(row['Freq']),
                                                      float(row['E_U']),

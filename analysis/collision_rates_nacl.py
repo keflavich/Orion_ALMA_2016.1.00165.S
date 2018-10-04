@@ -67,7 +67,7 @@ NaCl
     pairs = list(itertools.permutations(levels, 2))
 
 
-    temperatures = list(map(float, "10.0   20.0   30.0   40.0   50.0   60.0   70.0   80.0   90.0  100.0  110.0  120.0  130.0  140.0  150.0  160.0  170.0  180.0  190.0  200.0  210.0  220.0  230.0  240.0  250.0  260.0  270.0  280.0  290.0  300.0  500.0 1000.0 2000.0".split()))
+    temperatures = (10,50,100,150,2000)
 
     def pos_or_zero(x):
         if x < 0:
@@ -80,8 +80,13 @@ NaCl
     ii = 1
     ratestrings = []
     for ((v1,j1), (v2,j2)) in (pairs):
+        if v1<v2 and j1<=j2:
+            # only include collisions in one direction
+            # (v1 = vu)
+            pb.update()
+            continue
         r100 = rates_ios.rates(v1, j1, v2, j2, 100)
-        if r100 < 1e-25:
+        if r100 < 1e-19:
             # Skip negligible rates to avoid singular matrices
             pb.update()
             continue
@@ -100,9 +105,9 @@ NaCl
 !NUMBER OF COLL TRANS
 {npairs}
 !NUMBER OF COLL TEMPS
-33
+5
 !COLL TEMPS
-   10.0   20.0   30.0   40.0   50.0   60.0   70.0   80.0   90.0  100.0  110.0  120.0  130.0  140.0  150.0  160.0  170.0  180.0  190.0  200.0  210.0  220.0  230.0  240.0  250.0  260.0  270.0  280.0  290.0  300.0  500.0 1000.0 2000.0
+   10.0  50.0  100.0  150.0 2000.0
 !TRANS + UP + LOW + COLLRATES(cm^3 s^-1)
 """.format(npairs=len(ratestrings)))
 

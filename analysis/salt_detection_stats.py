@@ -107,7 +107,7 @@ for band in ('B3','B6','B7.lb'):
     match = tbl['Band'] == band
     latexdict['header_start'] = '\label{{tab:all_detections_B{0}}}'.format(band[1])
     latexdict['caption'] = 'All observed lines in Band {0}'.format(band[1])
-    cols = ['Species', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'A$_{ul}$' 'Frequency', 'Flag']
+    cols = ['Species', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'A$_{ul}$', 'Frequency', 'Flag']
     print("{1}: nmatch = {0}".format(match.sum(), band))
     tbl[cols][match].write(paths.texpath2('lines_in_band{0}.tex'.format(band[1])),
                            formats=formats, latexdict=latexdict,
