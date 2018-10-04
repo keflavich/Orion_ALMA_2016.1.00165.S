@@ -6,10 +6,16 @@ then run
 f2py -c -m rates_ios rates_ios.f
 """
 import itertools
+import numpy as np
 from astropy.utils.console import ProgressBar
 from astropy import units as u
 from salt_tables import NaCl
 import rates_ios
+
+# can't have identical level energies
+NaCl['E_U'][375] = 536.9248881998526
+NaCl['E_U'][np.array([61,3670,3881])] = 536.5639967986373
+NaCl['E_U'][np.array([278, 3304, 4292, 7166, 7771])] = 1339.31
 
 maxv = 3
 maxj = 60
@@ -31,13 +37,19 @@ NaCl
 
     ii = 2
     leveldict = {}
+    levelenergy = {}
     for vv in range(0,maxv+1):
+        leveldict[(vv,0)] = 1 + maxj*vv
+        levelenergy[(vv,0)] = 0 + 520.3*vv
         for jj in range(1,maxj+1):
             row = NaCl[(NaCl['vu'] == vv) & (NaCl['Ju'] == jj)]
             energy = row['E_U'].quantity[0].to(u.eV, u.temperature_energy()).to(u.cm**-1, u.spectral()).value
             degen = 16 + 32 * jj
             fh.write("{0:5d} {1:15.9f} {2:5.1f} {3:4d}\n".format(ii, energy, degen, jj, vv))
             leveldict[(vv,jj)] = ii
+            if energy in levelenergy.values():
+                raise ValueError((vv,jj))
+            levelenergy[(vv,jj)] = energy
             ii += 1
 
     radtrans_strings = []
@@ -63,15 +75,15 @@ NaCl
         fh.write(rtstr)
 
 
-    levels = [(v,j) for v in range(0,maxv+1) for j in range(1,maxj+1)]
+    levels = [(v,j) for v in range(0,maxv+1) for j in range(0,maxj+1)]
     pairs = list(itertools.permutations(levels, 2))
 
 
     temperatures = (10,50,100,150,2000)
 
     def pos_or_zero(x):
-        if x < 0:
-            return 1e-60
+        if x <= 0:
+            return 1e-50
         else:
             return x
 
@@ -80,16 +92,34 @@ NaCl
     ii = 1
     ratestrings = []
     for ((v1,j1), (v2,j2)) in (pairs):
-        if v1<v2 and j1<=j2:
-            # only include collisions in one direction
-            # (v1 = vu)
-            pb.update()
+        if (j1==j2):
+            # delta-J = 0 are forbidden
             continue
-        r100 = rates_ios.rates(v1, j1, v2, j2, 100)
-        if r100 < 1e-19:
-            # Skip negligible rates to avoid singular matrices
-            pb.update()
-            continue
+        #sel1 = (NaCl['vu'] == v1) & (NaCl['Ju'] == j1)
+        #sel2 = (NaCl['Ju'] == j2) & (NaCl['vu'] == v2)
+        #if j2 == 0 and v2 == 0:
+        #    energy2 = 0
+        #else:
+        #    energy2 = u.Quantity(NaCl[sel2]['E_U'][0], u.K).to(u.eV, u.temperature_energy())
+        #energy1 = u.Quantity(NaCl[sel1]['E_U'], u.K).to(u.eV, u.temperature_energy())
+        energy1 = levelenergy[(v1,j1)]
+        energy2 = levelenergy[(v2,j2)]
+
+        if energy1 - energy2 == 0:
+            raise ValueError
+
+        # why not both directions?
+        # if v1<v2 and j1<=j2:
+        #     # only include collisions in one direction
+        #     # (v1 = vu)
+        #     pb.update()
+        #     continue
+        #r100 = rates_ios.rates(v1, j1, v2, j2, 100)
+        #rr100 = rates_ios.rates(v2, j2, v1, j1, 100)
+        #if r100 < 1e-19 and rr100 < 1e-19:
+        #    # Skip negligible rates to avoid singular matrices
+        #    pb.update()
+        #    continue
         rates = [pos_or_zero(rates_ios.rates(v1, j1, v2, j2, tem)) for tem in temperatures]
         ratestr = " ".join(["{0:7.1e}".format(rr) for rr in rates])
         ratestrings.append("{0:5d} {1:5d} {2:5d} {3}\n"
