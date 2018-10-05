@@ -9,7 +9,7 @@ from constants import vcen
 from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
-from salt_tables import salt_tables, SO2, HCl, sis_tables, AlCl, AlF
+from salt_tables import salt_tables, SO2, HCl, sis_tables, AlCl, AlF, Al37Cl, NaF
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -131,7 +131,7 @@ for fn in flist:
     for txt in sp_st.plotter.axis.texts:
         txt.set_backgroundcolor((1,1,1,0.9))
 
-    for tbl,color in zip([AlCl, AlF], salt_colors):
+    for tbl,color in zip([AlCl, AlF, Al37Cl, NaF,], salt_colors):
         for row in tbl:
             frq = u.Quantity(row['Freq'], u.GHz).value
             if frq > sp_st.xarr.min().value and frq < sp_st.xarr.max().value:

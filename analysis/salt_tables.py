@@ -78,8 +78,15 @@ K41Cl37 = load_barton('41K-37Cl')
 K41Cl37['Freq'] = K41Cl37['Freq'] + K41Cl_offset_model(K41Cl37['vu'], K41Cl37['Ju'])
 
 AlCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlCl'))
-#AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
+AlF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlF'))
 #NaF = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaF'))
+
+AlF = load_barton('27Al-19F')
+AlCl = load_barton('27Al-35Cl')
+Al37Cl = load_barton('27Al-37Cl')
+NaF = load_barton('23Na-19F')
+
+
 #NaO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaO'))
 #NaOH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaOH'))
 #NaCH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCH'))
