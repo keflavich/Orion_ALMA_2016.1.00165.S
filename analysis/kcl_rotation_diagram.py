@@ -250,8 +250,8 @@ def fit_multi_tex(eupper, nupperoverg, vstate, jstate, vibenergies,
         for jj in np.unique(jstate):
             #jstates = np.arange(1,np.max(list(rotenergies.keys()))+1)
             #vstates = np.ones(np.max(list(rotenergies.keys())))*vib
-            vstates = np.arange(10)
-            jstates = np.ones(10)*jj
+            vstates = np.arange(9)
+            jstates = np.ones(9)*jj
             line = result(jstates, vstates)
             xax = np.array([rotenergies[jj] + vibenergies[vv]
                             for vv in vstates])
@@ -557,7 +557,7 @@ if __name__ == "__main__":
 
     pl.legend(loc='lower right')
     pl.title("KCl")
-    pl.axis((0, 2500, 8, 10.5))
+    pl.axis((0, 2500, 7.75, 10.5))
     pl.savefig(paths.fpath("KCl_rotational_diagrams.pdf"))
 
 
@@ -771,7 +771,7 @@ if __name__ == "__main__":
     texJ7 = fit_tex(u.Quantity(nacltbl['EU_K'][j7], u.K), nacl_nu[j7],
                     errors=enacl_nu[j7], plot=True, verbose=True,
                     molecule=nacl, marker='>', color='c', label='J=7 ')
-    pl.legend(loc='lower right')
+    pl.legend(loc='upper right')
     pl.axis([300,3300,9.0,13])
     pl.title("NaCl")
     pl.savefig(paths.fpath("NaCl_rotational_diagrams.pdf"))
@@ -795,7 +795,7 @@ if __name__ == "__main__":
                         colors=('r','g','b','orange','m','c','darkred','darkgreen',
                                 'purple'), )
          )
-    pl.legend(loc='lower right')
+    pl.legend(loc='upper right')
     pl.axis([300,4000,8.8,10.8])
     pl.title("NaCl")
 

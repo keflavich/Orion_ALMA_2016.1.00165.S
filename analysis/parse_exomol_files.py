@@ -210,7 +210,7 @@ if __name__ == "__main__":
     #Si28S33 = ExoMol('SiS', '28Si-33S', catname='UCTY')
     #Si30S32 = ExoMol('SiS', '30Si-32S', catname='UCTY')
 
-    AlCl = ExoMol('AlCl', '27Al-35Cl', catname='Bernath')
-    Al37Cl = ExoMol('AlCl', '27Al-37Cl', catname='Bernath')
-    AlF = ExoMol('AlF', '27Al-19F', catname='Bernath')
-    NaF = ExoMol('NaF', '23Na-19F', catname='Bernath')
+    AlCl = ExoMol('AlCl', '27Al-35Cl', catname='Bernath', max_energy=25000*u.K)
+    Al37Cl = ExoMol('AlCl', '27Al-37Cl', catname='Bernath', max_energy=25000*u.K)
+    AlF = ExoMol('AlF', '27Al-19F', catname='Bernath', max_energy=25000*u.K)
+    NaF = ExoMol('NaF', '23Na-19F', catname='Bernath', max_energy=25000*u.K)
