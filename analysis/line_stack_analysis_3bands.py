@@ -414,6 +414,10 @@ for row in KCltbl:
             raise ValueError
         abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(K37Cltbl[match]['Amplitude'][0])
 
+print("Measured 35/37Cl abundance = {0} +/- {1}".format(np.mean(list(abund.values())),
+                                                        np.std(list(abund.values()))))
+
+
 maskK41Cl = np.array([ln.startswith(salt_to_barton['41KCl']) for ln in tbl['Line Name']])
 K41Cltbl = tbl[maskK41Cl]
 KCltbl = tbl[maskKCl]
