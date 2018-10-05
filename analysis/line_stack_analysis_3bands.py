@@ -275,7 +275,10 @@ def label_by_vstate(tablepath, ncols):
     with open(tablepath, 'w') as fh:
         for line in lines:
             if line.startswith(r'\hline'):
-                started_data = True
+                if started_data:
+                    continue
+                else:
+                    started_data = True
             elif line.startswith(r'\end{tabular}'):
                 started_data = False
 
@@ -287,6 +290,7 @@ def label_by_vstate(tablepath, ncols):
                     fh.write(headerstring)
                     for ll in vstate_lines:
                         fh.write(ll)
+                fh.write("\hline\n")
             elif line.startswith('v &') or (not started_data and line.startswith(r' &')):
                 # this is the header line or unit line
                 fh.write("&".join(line.split("&")[1:]))
@@ -309,7 +313,6 @@ def label_by_vstate(tablepath, ncols):
                     vstate_lines.append(line)
                 else:
                     line = "&".join(line.split("&")[1:])
-                    vstate_lines.append(line)
                     headerstring = (r"&\vspace{{-0.75em}}\\""\n"
                                     r"\multicolumn{{{ncol}}}{{c}}{{$v = {vstate}$}} \\""\n"
                                     r"\vspace{{-0.75em}}\\""\n").format(ncol=ncols-1,
@@ -323,6 +326,7 @@ def label_by_vstate(tablepath, ncols):
 
                     # reset
                     vstate_lines = []
+                    vstate_lines.append(line)
                     current_vstate = vstate
                 continue
 
@@ -378,6 +382,48 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     label_by_vstate(paths.texpath2('{0}_line_parameters.tex'.format(salt)),
                     ncols=len(columns)
                    )
+
+# abundance measurements
+
+maskNaCl = np.array([ln.startswith(salt_to_barton['NaCl']) for ln in tbl['Line Name']])
+maskNa37Cl = np.array([ln.startswith(salt_to_barton['Na37Cl']) for ln in tbl['Line Name']])
+Na37Cltbl = tbl[maskNa37Cl]
+NaCltbl = tbl[maskNaCl]
+
+def get_meas(x):
+    return float(x.split()[0])
+
+abund = {}
+for row in NaCltbl:
+    match = (Na37Cltbl['v'] == row['v']) & (Na37Cltbl['J$_u$'] == row['J$_u$']) & (Na37Cltbl['J$_l$'] == row['J$_l$'])
+    if match.any():
+        if match.sum() > 1:
+            raise ValueError
+        abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(Na37Cltbl[match]['Amplitude'][0])
+
+
+maskKCl = np.array([ln.startswith(salt_to_barton['KCl']) for ln in tbl['Line Name']])
+maskK37Cl = np.array([ln.startswith(salt_to_barton['K37Cl']) for ln in tbl['Line Name']])
+K37Cltbl = tbl[maskK37Cl]
+KCltbl = tbl[maskKCl]
+
+for row in KCltbl:
+    match = (K37Cltbl['v'] == row['v']) & (K37Cltbl['J$_u$'] == row['J$_u$']) & (K37Cltbl['J$_l$'] == row['J$_l$'])
+    if match.any():
+        if match.sum() > 1:
+            raise ValueError
+        abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(K37Cltbl[match]['Amplitude'][0])
+
+maskK41Cl = np.array([ln.startswith(salt_to_barton['41KCl']) for ln in tbl['Line Name']])
+K41Cltbl = tbl[maskK41Cl]
+KCltbl = tbl[maskKCl]
+
+for row in KCltbl:
+    match = (K41Cltbl['v'] == row['v']) & (K41Cltbl['J$_u$'] == row['J$_u$']) & (K41Cltbl['J$_l$'] == row['J$_l$'])
+    if match.any():
+        if match.sum() > 1:
+            raise ValueError
+        abund[row['Line Name']+"_41"] = get_meas(row['Amplitude']) / get_meas(K41Cltbl[match]['Amplitude'][0])
 
 
 
