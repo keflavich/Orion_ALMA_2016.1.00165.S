@@ -74,9 +74,9 @@ for fn in flist:
 
     for molname, molfullname, mol, col, tem, color in (
         ('NaCl', '23Na-35Cl', NaCl, 4e12, 1000, 'b'),
-        ('NaCl', '23Na-37Cl', Na37Cl, 1e12, 1000, (0,0.1,0.9)),
+        ('NaCl', '23Na-37Cl', Na37Cl, 2e12, 1000, (0,0.1,0.9)),
         ('KCl', '39K-35Cl', KCl, 2e12, 1000, 'r'),
-        ('KCl', '39K-37Cl', K37Cl, 0.5e12, 1000, (1,0.1,0)),
+        ('KCl', '39K-37Cl', K37Cl, 1e12, 1000, (1,0.1,0)),
         ('KCl', '41K-35Cl', K41Cl, 0.5e12, 1000, (1,0.0,0.1)),
         ('KCl', '41K-37Cl', K41Cl37, 0.1e12, 1000, (1,0.1,0.1)),
        ):
@@ -100,7 +100,7 @@ for fn in flist:
                                   EU=EU, partfunc=partfunc)
 
         model = mol_modfunc(sp_st.xarr,
-                            -1*u.km/u.s,
+                            -vcen,
                             4*u.km/u.s,
                             1000*u.K,
                             col*u.cm**-2)
