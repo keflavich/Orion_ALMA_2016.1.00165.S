@@ -3,6 +3,7 @@ import os
 import glob
 import paths
 from astropy import constants, units as u, table, stats, coordinates, wcs, log, coordinates as coord
+import radio_beam
 import pyspeckit
 import pylab as pl
 from constants import vcen
@@ -44,7 +45,9 @@ detection_table = detection_table[~nondetections]
 flist = [fn] if 'fn' in locals() else glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust0.5.fits'))
 for fn in flist:
     print(fn)
+
     sp_st = pyspeckit.Spectrum(fn)
+
     pl.figure(0, figsize=(16,6)).clf()
     sp_st.plotter(figure=pl.figure(0, figsize=(16,6)), clear=True)
 

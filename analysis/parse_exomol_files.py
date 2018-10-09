@@ -17,6 +17,27 @@ cm_to_K = (1*u.cm**-1).to(u.eV, u.spectral()).to(u.K,
                                                  u.temperature_energy()).value
 
 
+def get_partition_func(name, fullname, catname='Barton'):
+
+    pffile = paths.salty('{fullname}__{catname}.pf.ipac'.format(fullname=fullname,
+                                                                catname=catname))
+
+    if os.path.exists(pffile):
+        return ascii.read(pffile, format='ipac')
+    else:
+        base_url = 'http://www.exomol.com/{loc}/{name}/{fullname}/{catname}/'.format(name=name,
+                                                                                     fullname=fullname,
+                                                                                     loc='{loc}',
+                                                                                     catname=catname
+                                                                                    )
+        pfdata = requests.get(base_url.format(loc='db')+'{fullname}__{catname}.pf'.format(fullname=fullname, catname=catname))
+
+        result = ascii.read(pfdata.text)
+        result.rename_column('col1','Temperature')
+        result.rename_column('col2','Q')
+        result.write(pffile, format='ascii.ipac')
+        return result
+
 class ExoMol(object):
     def __init__(self, name, fullname, max_energy=15000*u.K, load_raw=False,
                  catname='Barton',
