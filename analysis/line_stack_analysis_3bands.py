@@ -172,14 +172,16 @@ for spw in (0,1,2,3):
 
 linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
 freqs = table.Column(name='Frequency', data=u.Quantity([linefits[ln]['freq'] for ln in linenames]))
-velos = table.Column(name='Fitted Velocity', data=u.Quantity([linefits[ln]['vel'] for ln in linenames]))
-vwidths = table.Column(name='Fitted Width', data=u.Quantity([linefits[ln]['vwidth'] for ln in linenames]))
-evelos = table.Column(name='Fitted Velocity error', data=u.Quantity([linefits[ln]['evel'] for ln in linenames]))
-evwidths = table.Column(name='Fitted Width error', data=u.Quantity([linefits[ln]['evwidth'] for ln in linenames]))
+velos = table.Column(name='Fitted Velocity', data=u.Quantity([linefits[ln]['vel'] for ln in linenames], u.km/u.s))
+vwidths = table.Column(name='Fitted Width', data=u.Quantity([linefits[ln]['vwidth'] for ln in linenames], u.km/u.s))
+evelos = table.Column(name='Fitted Velocity error', data=u.Quantity([linefits[ln]['evel'] for ln in linenames], u.km/u.s))
+evwidths = table.Column(name='Fitted Width error', data=u.Quantity([linefits[ln]['evwidth'] for ln in linenames], u.km/u.s))
 ampls = table.Column(name='Fitted Amplitude', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*1e3 for ln in linenames], u.mJy))
 amplsK = table.Column(name='Fitted Amplitude K', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*linefits[ln]['jtok'].value for ln in linenames], u.K))
 eampls = table.Column(name='Fitted Amplitude error', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].error*1e3 for ln in linenames], u.mJy))
 eamplsK = table.Column(name='Fitted Amplitude error K', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].error*linefits[ln]['jtok'].value for ln in linenames], u.K))
+integrated = table.Column(name='Integrated Intensity', data=amplsK.quantity*vwidths.quantity*np.sqrt(2*np.pi))
+eintegrated = table.Column(name='Integrated Intensity error', data=((amplsK.quantity**2*evwidths.quantity**2) + (vwidths.quantity**2*eamplsK.quantity**2))**0.5)
 jtok = table.Column(name='Jy/K', data=u.Quantity([linefits[ln]['jtok'].value for ln in linenames], u.Jy/u.K))
 eu = table.Column(name='EU_K', data=u.Quantity([linefits[ln]['EU_K'] for ln in linenames], u.K))
 species = table.Column(name='Species', data=[linefits[ln]['species'] for ln in linenames])
@@ -197,7 +199,7 @@ qnju = (Column(name='J$_u$', data=Ju))
 qnjl = (Column(name='J$_l$', data=Jl))
 
 
-tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, jtok, eu, deg, Aij, flag, ])
+tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, integrated, eintegrated, jtok, eu, deg, Aij, flag, ])
 
 tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
 
@@ -214,7 +216,7 @@ linenames = table.Column([lines.texnames[ln]
                         )
 
 
-tbl = table.Table([linenames, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, eu, flag])
+tbl = table.Table([linenames, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, amplsK, eamplsK, integrated, eintegrated, eu, flag])
 
 tbl.sort('Frequency')
 
@@ -236,6 +238,8 @@ formats = {'Frequency': lambda x: "{0:0.5f}".format(x),
            'Fitted Velocity error': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
            'Fitted Amplitude K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
            'Fitted Amplitude error K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Integrated Intensity': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
+           'Integrated Intensity error': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
            'EU_K': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),
           }
 rename = {'Fitted Width':'Width',
@@ -244,6 +248,7 @@ rename = {'Fitted Width':'Width',
           'Fitted Velocity error':'Velocity error',
           'Fitted Amplitude error K':'Amplitude error',
           'Fitted Amplitude K':'Amplitude',
+          'Integrated Intensity': '$\int T_A dv$',
           'EU_K': 'E$_U$',
          }
 maskcols = ['Fitted Width',
@@ -251,7 +256,10 @@ maskcols = ['Fitted Width',
             'Fitted Velocity',
             'Fitted Velocity error',
             'Fitted Amplitude error K',
-            'Fitted Amplitude K', ]
+            'Fitted Amplitude K',
+            'Integrated Intensity',
+            'Integrated Intensity error',
+           ]
 
 for msk in maskcols:
     tbl[msk][badmask] = np.nan
@@ -342,12 +350,15 @@ def merge_errors(tbl, datacol, errorcol):
 merge_errors(tbl, 'Width', 'Width error')
 merge_errors(tbl, 'Amplitude', 'Amplitude error')
 merge_errors(tbl, 'Velocity', 'Velocity error')
+#merge_errors(tbl, 'Integrated Intensity', 'Integrated Intensity error')
+merge_errors(tbl, '$\int T_A dv$', 'Integrated Intensity error')
 del formats['Velocity']
 del formats['Width']
 del formats['Amplitude']
+del formats['$\int T_A dv$']
 
 tbl = tbl['Line Name', 'v', 'J$_u$', 'J$_l$', 'Frequency', 'Velocity',
-          'Width', 'Amplitude', 'E$_U$', ]
+          'Amplitude', '$\int T_A dv$', 'E$_U$', ]
 
 
 #for salt in ('NaCl', 'Na$^{37}Cl', 'KCl', 'K$^{37}$Cl', '$^{41}$KCl',
