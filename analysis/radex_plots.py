@@ -2,6 +2,8 @@ import pyradex
 import pylab as pl
 import numpy as np
 import paths
+import dust_emissivity
+from astropy import units as u
 
 rr = pyradex.Radex(species='nacl', temperature=100, density=1e8, abundance=1e-10)
 rslt = rr()
@@ -18,6 +20,68 @@ v0_1817 = (rslt['upperlevel'] == '0_18  ') & (rslt['lowerlevel'] == '0_17  ')
 v1_1817 = (rslt['upperlevel'] == '1_18  ') & (rslt['lowerlevel'] == '1_17  ')
 v2_1817 = (rslt['upperlevel'] == '2_18  ') & (rslt['lowerlevel'] == '2_17  ')
 v3_1817 = (rslt['upperlevel'] == '3_18  ') & (rslt['lowerlevel'] == '3_17  ')
+
+obs = (((85.5 < rslt['frequency']) & (89.5 > rslt['frequency'])) |
+       ((97.5 < rslt['frequency']) & (101.5 > rslt['frequency'])) |
+       ((229.0 < rslt['frequency']) & (233.7 > rslt['frequency'])) |
+       ((214.25 < rslt['frequency']) & (218.9 > rslt['frequency'])) |
+       ((344.1 < rslt['frequency']) & (348 > rslt['frequency'])) |
+       ((332.1 < rslt['frequency']) & (335.8 > rslt['frequency'])))
+
+
+# play with different backgrounds
+
+print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=2.73)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+
+freq = rr.frequency
+bb100_half_plus_cmb = dust_emissivity.blackbody.blackbody(nu=freq, temperature=100*u.K)/2. + dust_emissivity.blackbody.blackbody(nu=freq, temperature=2.73*u.K)
+
+rr.background_brightness = bb100_half_plus_cmb
+print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+
+bb4000smallff_100_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=100*u.K)/2. +
+                                   dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=4000*u.K)*(100*u.R_sun)**2/(30*u.au)**2 +
+                                   dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=2.73*u.K))
+
+rr.background_brightness = bb4000smallff_100_half_plus_cmb
+print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+
+bb4000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=200*u.K)/2. +
+                                   dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=4000*u.K)*(100*u.R_sun)**2/(30*u.au)**2 +
+                                   dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                       temperature=2.73*u.K))
+rr.background_brightness = bb4000smallff_200_half_plus_cmb
+print(rr(density=1e5*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(rr(density=1e6*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(rr(density=1e7*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(rr(density=1e5*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(rr(density=1e6*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(rr(density=1e7*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+
+mbb1000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                        temperature=200*u.K)/2. +
+                                    dust_emissivity.blackbody.modified_blackbody(nu=freq,
+                                                                                 temperature=1000*u.K)*(10*u.au)**2/(30*u.au)**2 +
+                                    dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                        temperature=4000*u.K)*(100*u.R_sun)**2/(30*u.au)**2 +
+                                    dust_emissivity.blackbody.blackbody(nu=freq,
+                                                                        temperature=2.73*u.K))
+rr.background_brightness = mbb1000smallff_200_half_plus_cmb
+print(rr(density=5e5*u.cm**-3, column=1e15*u.cm**-2, temperature=150*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(rr(density=5e5*u.cm**-3, column=1e15*u.cm**-2, temperature=150*u.K, tbg=None)[obs])
+
+wl = rr.frequency.to(u.um, u.spectral())
+artificial = bb4000smallff_200_half_plus_cmb + 1e-7*u.erg/u.s/u.cm**2/u.Hz/u.sr*((wl>25*u.um) & (wl<45*u.um))
+rr.background_brightness = artificial
+print(rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+
+
+print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=1000*u.K)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
 
 
 densities = np.logspace(5,13,50)
