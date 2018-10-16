@@ -12,7 +12,8 @@ from astroquery.splatalogue.utils import minimize_table as mt
 import lines
 from pyspeckit.spectrum.models.lte_molecule import get_molecular_parameters, generate_model
 from parse_exomol_files import get_partition_func
-from salt_tables import NaCl, Na37Cl, KCl, K37Cl, K41Cl, K41Cl37, salt_tables
+from salt_tables import (NaCl, Na37Cl, KCl, K37Cl, K41Cl, K41Cl37, salt_tables,
+                         AlO, SO2, SiS, SiS33, Si29S)
 
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
@@ -71,6 +72,12 @@ for fn in flist:
     for txt in sp_st.plotter.axis.texts:
         txt.set_backgroundcolor((1,1,1,0.9))
 
+    catmaps = {'NaCl': 'Barton',
+               'KCl': 'Barton',
+               'SO2': 'ExoAmes',
+               'SiS': 'UCTY',
+               'AlO': 'ATP',
+              }
 
     for molname, molfullname, mol, col, tem, color in (
         ('NaCl', '23Na-35Cl', NaCl, 4e12, 1000, 'b'),
@@ -79,6 +86,11 @@ for fn in flist:
         ('KCl', '39K-37Cl', K37Cl, 1e12, 1000, (1,0.1,0)),
         ('KCl', '41K-35Cl', K41Cl, 0.5e12, 1000, (1,0.0,0.1)),
         ('KCl', '41K-37Cl', K41Cl37, 0.1e12, 1000, (1,0.1,0.1)),
+        ('SO2', '32S-16O2', SO2, 1e12, 1000, 'g'),
+        ('SiS', '28Si-32S', SiS, 1e13, 1000, 'm'),
+        ('SiS', '28Si-33S', SiS33, 0.01e13, 1000, 'm'),
+        ('SiS', '29Si-32S', Si29S, 0.05e13, 1000, 'm'),
+        ('AlO', '27Al-16O', AlO, 3e12, 200, 'c'),
        ):
 
         freqs = mol['Freq'].quantity
@@ -90,7 +102,8 @@ for fn in flist:
         EU = mol['E_U'][match].quantity.to(u.erg, u.temperature_energy()).value
 
         def partfunc(tem):
-            tbl = get_partition_func(molname, molfullname)
+            tbl = get_partition_func(molname, molfullname,
+                                     catname=catmaps[molname])
             return np.interp(tem, tbl['Temperature'], tbl['Q'])
 
         def mol_modfunc(xarr, vcen, width, tex, column):

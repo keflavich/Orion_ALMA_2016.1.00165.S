@@ -3,9 +3,23 @@ from astropy import constants, units as u, table, stats, coordinates, wcs, log, 
 from astropy import modeling
 import paths
 from astroquery.splatalogue import Splatalogue
-from astroquery.splatalogue.utils import minimize_table as mt
+from astroquery.splatalogue.utils import minimize_table
 from astropy.table import Column
 from astroquery.vizier import Vizier
+
+Splatalogue.set_default_options(show_upper_degeneracy=True)
+Splatalogue.LINES_LIMIT = 1e5
+
+def mt(x):
+    return minimize_table(x,
+                          columns=['Species', 'Chemical Name', 'Resolved QNs',
+                                   'Freq-GHz(rest frame,redshifted)',
+                                   'Meas Freq-GHz(rest frame,redshifted)',
+                                   'Log<sub>10</sub> (A<sub>ij</sub>)',
+                                   'E_U (K)',
+                                   'Upper State Degeneracy',
+                                  ],)
+
 
 def load_barton(species):
     tbl = table.Table.read(paths.salty(species+"_rotational_transitions.ipac"),
@@ -94,8 +108,6 @@ NaF = load_barton('23Na-19F')
 #NaCH = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCH'))
 NaCN = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCN'))
 CaCl = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' CaCl'))
-AlO = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' AlO'))
-#AlO = AlO[np.array([len(row['QNs']) < 10 for row in AlO])]
 NaCls = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' NaCl', line_lists=['SLAIM']))
 NaClbarton = load_barton('23Na-35Cl')
 
@@ -160,7 +172,9 @@ S34O = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' 34SO '))
 # only low-J lines of SO2...
 # no, SO2 isn't really believable.
 SO2 = mt(Splatalogue.query_lines(80*u.GHz, 400*u.GHz, chemical_name=' SO2',
-                                 energy_max=500, energy_type='eu_k'))
+                                 energy_max=3500, energy_type='eu_k'))
+
+assert len(SO2) > 1000
 
 SiO = load_barton('28Si-16O')
 SiO17 = load_barton('28Si-17O')
@@ -183,6 +197,14 @@ sis_tables = [SiS,
 
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
 salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
+
+# fix table units
+for tbl in SO2, SO, S34O, MgCl, HCl, AlOH, AlO, NaCN, CaCl:
+    tbl['Freq'].unit = u.GHz
+    tbl['EU_K'].unit = u.K
+    tbl.add_column(Column(name='E_U', data=tbl["EU_K"], unit=u.K))
+    tbl.add_column(Column(data=10**tbl['log10_Aij'], unit=u.s**-1, name='Aij'))
+    tbl.rename_column('Upper State Degeneracy', 'gu')
 
 if __name__ == "__main__":
 
