@@ -151,13 +151,13 @@ for band in (3,6,7):
 
         d = .015  # how big to make the diagonal lines in axes coordinates
         # arguments to pass to plot, just so we don't keep repeating them
-        kwargs = dict( color='k', clip_on=False)
+        kwargs = dict(color='k', clip_on=False)
         axes[0].plot((1 - d, 1 + d), (1-d, 1+d), transform=axes[0].transAxes, **kwargs)  # top-right diagonal
         axes[0].plot((1 - d, 1 + d), (-d, +d), transform=axes[0].transAxes, **kwargs)  # bottom-right diagonal
         #axes[1].plot((1 - d, 1 + d), (1-d, 1+d), transform=axes[1].transAxes, **kwargs)  # top-right diagonal
         #axes[1].plot((1 - d, 1 + d), (-d, +d), transform=axes[1].transAxes, **kwargs)  # bottom-right diagonal
-        axes[1].plot(( - d,  + d), (1-d, 1+d), transform=axes[1].transAxes, **kwargs)  # top-left diagonal
-        axes[1].plot(( - d,  + d), (-d, +d), transform=axes[1].transAxes, **kwargs)  # bottom-left diagonal
+        axes[1].plot((0 - d, 0 + d), (1-d, 1+d), transform=axes[1].transAxes, **kwargs)  # top-left diagonal
+        axes[1].plot((0 - d, 0 + d), (-d, +d), transform=axes[1].transAxes, **kwargs)  # bottom-left diagonal
         #axes[2].plot((1 - d, 1 + d), (1-d, 1+d), transform=axes[2].transAxes, **kwargs)  # top-right diagonal
         #axes[2].plot((1 - d, 1 + d), (-d, +d), transform=axes[2].transAxes, **kwargs)  # bottom-right diagonal
         #axes[2].plot(( - d,  + d), (1-d, 1+d), transform=axes[2].transAxes, **kwargs)  # top-left diagonal
