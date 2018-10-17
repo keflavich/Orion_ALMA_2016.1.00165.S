@@ -4,9 +4,11 @@ import numpy as np
 import paths
 import dust_emissivity
 from astropy import units as u
+from astropy.table import Table
 
-rr = pyradex.Radex(species='nacl', temperature=100, density=1e8, abundance=1e-10)
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 rslt = rr()
+
 
 v0_76 = (rslt['upperlevel'] == '0_7   ') & (rslt['lowerlevel'] == '0_6   ')
 v1_76 = (rslt['upperlevel'] == '1_7   ') & (rslt['lowerlevel'] == '1_6   ')
@@ -15,6 +17,14 @@ v3_76 = (rslt['upperlevel'] == '3_7   ') & (rslt['lowerlevel'] == '3_6   ')
 v10 = (rslt['upperlevel'] == '1_7   ') & (rslt['lowerlevel'] == '0_6   ')
 v21 = (rslt['upperlevel'] == '2_7   ') & (rslt['lowerlevel'] == '1_6   ')
 v32 = (rslt['upperlevel'] == '3_7   ') & (rslt['lowerlevel'] == '2_6   ')
+
+for density in (1e2, 1e5, 1e8, 1e11, 1e14):
+    rslt = rr(density={'H2':density})
+    critdens = {rr.quantum_number[iupp]:
+                rr.radex.rmolec.aeinst[rr.radex.imolec.iupp == iupp].sum() / (rr.radex.collie.ctot[iupp-1] / rr.total_density)
+                for iupp in np.arange(1, rr.radex.imolec.iupp.max())}
+    print(density, critdens[b'0_7   '], rr.level_population[7], critdens[b'1_7   '], rr.level_population[68], "\n", rslt[v0_76 | v1_76])
+
 
 v0_1817 = (rslt['upperlevel'] == '0_18  ') & (rslt['lowerlevel'] == '0_17  ')
 v1_1817 = (rslt['upperlevel'] == '1_18  ') & (rslt['lowerlevel'] == '1_17  ')
@@ -125,7 +135,7 @@ if 'data_N1e13_T100' not in locals():
     data_N1e13_T100 = [rr(density=density, column=1e13, temperature=100)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32] for density in densities]
 
 pl.clf()
-pl.subplot(2,1,1)
+pl.subplot(3,1,1)
 pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
 pl.ylabel("T$_{ex}$ [K]")
 pl.semilogx(densities, np.array([x[3]['Tex'] for x in data_N1e13_T100]), label='v=0 J=7-6')
@@ -137,7 +147,22 @@ pl.semilogx(densities, np.array([x[5]['Tex'] for x in data_N1e13_T100]), label='
 pl.semilogx(densities, np.array([x[4]['Tex'] for x in data_N1e13_T100]), label='v=3-2 J=7-6')
 pl.ylim(0,110)
 pl.legend(loc='lower right')
-pl.subplot(2,1,2)
+
+pl.subplot(3,1,2)
+pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
+pl.ylabel("T$_{B}$ [K]")
+pl.semilogx(densities, np.array([x[3]['T_B'] for x in data_N1e13_T100]), label='v=0 J=7-6')
+pl.semilogx(densities, np.array([x[2]['T_B'] for x in data_N1e13_T100]), label='v=1 J=7-6')
+pl.semilogx(densities, np.array([x[1]['T_B'] for x in data_N1e13_T100]), label='v=2 J=7-6')
+pl.semilogx(densities, np.array([x[0]['T_B'] for x in data_N1e13_T100]), label='v=3 J=7-6')
+pl.semilogx(densities, np.array([x[6]['T_B'] for x in data_N1e13_T100]), label='v=1-0 J=7-6')
+pl.semilogx(densities, np.array([x[5]['T_B'] for x in data_N1e13_T100]), label='v=2-1 J=7-6')
+pl.semilogx(densities, np.array([x[4]['T_B'] for x in data_N1e13_T100]), label='v=3-2 J=7-6')
+pl.ylim(0,110)
+pl.legend(loc='lower right')
+
+
+pl.subplot(3,1,3)
 pl.hlines(1, 1e6, 1e13, color='k', linestyle='--')
 pl.loglog(densities, np.array([x[3]['tau'] for x in data_N1e13_T100]), label='v=0 J=7-6')
 pl.loglog(densities, np.array([x[4]['tau'] for x in data_N1e13_T100]), label='v=3-2 J=7-6')
@@ -212,6 +237,7 @@ pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
 pl.savefig(paths.fpath('radex/NaCl_J=7-6_vs_density_100K_N=1e15.png'))
 
 
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 densities = np.logspace(5,13,50)
 
 if 'data_N1e14_T100' not in locals():
@@ -244,6 +270,7 @@ pl.savefig(paths.fpath('radex/NaCl_J=7-6_vs_density_100K_N=1e14.png'))
 
 
 
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 if 'data_N1e12_T100_J1817' not in locals():
     data_N1e12_T100_J1817 = [rr(density=density, column=1e12, temperature=100)[v0_1817 | v1_1817 | v2_1817 | v3_1817] for density in densities]
 
@@ -271,6 +298,7 @@ pl.savefig(paths.fpath('radex/NaCl_J=18-17_vs_density_100K_N=1e12.png'))
 
 
 
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 if 'data_N1e13_T100_J1817' not in locals():
     data_N1e13_T100_J1817 = [rr(density=density, column=1e13, temperature=100)[v0_1817 | v1_1817 | v2_1817 | v3_1817] for density in densities]
 
@@ -298,6 +326,7 @@ pl.savefig(paths.fpath('radex/NaCl_J=18-17_vs_density_100K_N=1e13.png'))
 
 columns = np.logspace(12, 20, 50)
 
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 if 'data_n1e8_T100' not in locals():
     data_n1e8_T100 = [rr(density=1e8, column=column, temperature=100)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32] for column in columns]
 
@@ -328,6 +357,7 @@ pl.savefig(paths.fpath('radex/NaCl_J=7-6_vs_column_100K_n=1e8.png'))
 
 columns = np.logspace(12, 20, 50)
 
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 if 'data_n1e8_T1000' not in locals():
     data_n1e8_T1000 = [rr(density=1e8, column=column, temperature=1000)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32] for column in columns]
 
@@ -355,3 +385,102 @@ pl.ylim(1e-7, 1e2)
 pl.ylabel("Optical Depth")
 pl.xlabel("Column of NaCl [cm$^{-2}$]")
 pl.savefig(paths.fpath('radex/NaCl_J=7-6_vs_column_1000K_n=1e8.png'))
+
+densities = np.logspace(3,13,50)
+
+#rr = lambda: pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=1e14)
+if 'data_N1e14_T1000' not in locals():
+    data_N1e14_T1000 = [rr(density={'H2':density}, column=1e14, temperature=1000)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32] for density in densities]
+
+pl.clf()
+pl.subplot(3,1,1)
+pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
+pl.ylabel("T$_{ex}$ [K]")
+pl.semilogx(densities, np.array([x[3]['Tex'] for x in data_N1e14_T1000]), label='v=0 J=7-6')
+pl.semilogx(densities, np.array([x[2]['Tex'] for x in data_N1e14_T1000]), label='v=1 J=7-6')
+pl.semilogx(densities, np.array([x[1]['Tex'] for x in data_N1e14_T1000]), label='v=2 J=7-6')
+pl.semilogx(densities, np.array([x[0]['Tex'] for x in data_N1e14_T1000]), label='v=3 J=7-6')
+pl.semilogx(densities, np.array([x[6]['Tex'] for x in data_N1e14_T1000]), label='v=1-0 J=7-6')
+pl.semilogx(densities, np.array([x[5]['Tex'] for x in data_N1e14_T1000]), label='v=2-1 J=7-6')
+pl.semilogx(densities, np.array([x[4]['Tex'] for x in data_N1e14_T1000]), label='v=3-2 J=7-6')
+pl.ylim(0,1100)
+pl.legend(loc='lower right', fontsize=8)
+
+pl.subplot(3,1,2)
+pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
+pl.ylabel("T$_{B}$ [K]")
+pl.semilogx(densities, np.array([x[3]['T_B'] for x in data_N1e14_T1000]), label='v=0 J=7-6')
+pl.semilogx(densities, np.array([x[2]['T_B'] for x in data_N1e14_T1000]), label='v=1 J=7-6')
+pl.semilogx(densities, np.array([x[1]['T_B'] for x in data_N1e14_T1000]), label='v=2 J=7-6')
+pl.semilogx(densities, np.array([x[0]['T_B'] for x in data_N1e14_T1000]), label='v=3 J=7-6')
+pl.semilogx(densities, np.array([x[6]['T_B'] for x in data_N1e14_T1000]), label='v=1-0 J=7-6')
+pl.semilogx(densities, np.array([x[5]['T_B'] for x in data_N1e14_T1000]), label='v=2-1 J=7-6')
+pl.semilogx(densities, np.array([x[4]['T_B'] for x in data_N1e14_T1000]), label='v=3-2 J=7-6')
+pl.ylim(0,10)
+pl.legend(loc='lower right', fontsize=8)
+
+
+pl.subplot(3,1,3)
+pl.hlines(1, 1e6, 1e13, color='k', linestyle='--')
+pl.loglog(densities, np.array([x[3]['tau'] for x in data_N1e14_T1000]), label='v=0 J=7-6')
+pl.loglog(densities, np.array([x[4]['tau'] for x in data_N1e14_T1000]), label='v=3-2 J=7-6')
+pl.loglog(densities, np.array([x[5]['tau'] for x in data_N1e14_T1000]), label='v=2-1 J=7-6')
+pl.loglog(densities, np.array([x[6]['tau'] for x in data_N1e14_T1000]), label='v=1-0 J=7-6')
+pl.legend(loc='lower right', fontsize=8)
+pl.ylim(1e-7, 1e2)
+pl.ylabel("Optical Depth")
+pl.xlabel("Density of H$_2$ [cm$^{-3}$]")
+pl.savefig(paths.fpath('radex/NaCl_J=7-6_vs_density_1000K_N=1e14.png'))
+
+
+
+# different sorts of plots....
+
+
+for ii,temperature in enumerate((200, 500, 1000)):
+    pl.figure(ii)
+    pl.clf()
+    tbl = Table.read(paths.tpath('line_fits.txt'), format='ascii.fixed_width')
+    naclmask = np.array(['23Na-35Cl' in x for x in tbl['Line Name']])
+    pl.plot(tbl['Frequency'][naclmask], tbl['Fitted Amplitude K'][naclmask], 's', markerfacecolor='none', markeredgecolor='k')
+    for (density, temperature, column) in (
+        (1e4, temperature, 1e14),
+        (1e9, temperature, 1e14),
+        (1e10, temperature, 1e14),
+        (1e11, temperature, 1e14),
+        (1e12, temperature, 1e14),
+        ):
+
+        rslt = rr(density={'H2':density}, temperature=temperature, column=column)
+        pl.plot(rslt['frequency'], rslt['T_B'], '.', label="n={0} T={1} N={2}".format(np.log10(density), temperature, np.log10(column)))
+    pl.legend(loc='best')
+    pl.xlim(0, 600)
+    pl.ylim(-10, 200)
+    pl.xlabel("Frequency")
+    pl.ylabel("T$_B$")
+
+
+rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
+bins = np.linspace(-18, -9.5)
+pl.figure(4)
+pl.clf()
+pl.title("T=1000 K")
+pl.hist(np.log10(rr.radex.collie.crate[:61,:61]/rr.total_density.value).ravel(), bins=bins, label='v=0')
+pl.hist(np.log10(rr.radex.collie.crate[:61,61:122]/rr.total_density.value).ravel(), bins=bins, alpha=0.25, label='v=0->1')
+pl.hist(np.log10(rr.radex.collie.crate[61:122,:61]/rr.total_density.value).ravel(), bins=bins, alpha=0.25, label='v=1->0')
+pl.hist(np.log10(rr.radex.collie.crate[:61,122:183]/rr.total_density.value).ravel(), bins=np.linspace(-15,-8), alpha=0.25, label='v=0->2')
+pl.hist(np.log10(rr.radex.collie.crate[122:183,:61]/rr.total_density.value).ravel(), bins=np.linspace(-15,-8), alpha=0.25, label='v=2->0')
+pl.legend(loc='best')
+pl.xlabel("log(A$_{ij}$")
+
+rr = pyradex.Radex(species='nacl', temperature=100, density=1e8, column=4e13)
+pl.figure(5)
+pl.clf()
+pl.title("T=100 K")
+pl.hist(np.log10(rr.radex.collie.crate[:61,:61]/rr.total_density.value).ravel(), bins=bins, label='v=0')
+pl.hist(np.log10(rr.radex.collie.crate[:61,61:122]/rr.total_density.value).ravel(), bins=bins, alpha=0.25, label='v=0->1')
+pl.hist(np.log10(rr.radex.collie.crate[61:122,:61]/rr.total_density.value).ravel(), bins=bins, alpha=0.25, label='v=1->0')
+pl.hist(np.log10(rr.radex.collie.crate[:61,122:183]/rr.total_density.value).ravel(), bins=np.linspace(-15,-8), alpha=0.25, label='v=0->2')
+pl.hist(np.log10(rr.radex.collie.crate[122:183,:61]/rr.total_density.value).ravel(), bins=np.linspace(-15,-8), alpha=0.25, label='v=2->0')
+pl.legend(loc='best')
+pl.xlabel("log(A$_{ij}$")

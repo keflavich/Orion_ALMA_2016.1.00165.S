@@ -80,24 +80,25 @@ for fn in flist:
               }
 
     for molname, molfullname, mol, col, tem, color in (
-        ('NaCl', '23Na-35Cl', NaCl, 4e12, 1000, 'b'),
-        ('NaCl', '23Na-37Cl', Na37Cl, 2e12, 1000, (0,0.1,0.9)),
-        ('KCl', '39K-35Cl', KCl, 2e12, 1000, 'r'),
-        ('KCl', '39K-37Cl', K37Cl, 1e12, 1000, (1,0.1,0)),
-        ('KCl', '41K-35Cl', K41Cl, 0.5e12, 1000, (1,0.0,0.1)),
-        ('KCl', '41K-37Cl', K41Cl37, 0.1e12, 1000, (1,0.1,0.1)),
-        ('SO2', '32S-16O2', SO2, 1e12, 1000, 'g'),
-        ('SiS', '28Si-32S', SiS, 1e13, 1000, 'm'),
-        ('SiS', '28Si-33S', SiS33, 0.01e13, 1000, 'm'),
-        ('SiS', '29Si-32S', Si29S, 0.05e13, 1000, 'm'),
-        ('AlO', '27Al-16O', AlO, 3e12, 200, 'c'),
+        ('NaCl', '23Na-35Cl', NaCl, 4e14, 1000, 'b'),
+        ('NaCl', '23Na-37Cl', Na37Cl, 2e14, 1000, (0,0.1,0.9)),
+        ('KCl', '39K-35Cl', KCl, 2e14, 1000, 'r'),
+        ('KCl', '39K-37Cl', K37Cl, 1e14, 1000, (1,0.1,0)),
+        ('KCl', '41K-35Cl', K41Cl, 0.5e14, 1000, (1,0.0,0.1)),
+        ('KCl', '41K-37Cl', K41Cl37, 0.1e14, 1000, (1,0.1,0.1)),
+        ('SO2', '32S-16O2', SO2, 1e14, 1000, 'g'),
+        ('SiS', '28Si-32S', SiS, 1e15, 1000, 'm'),
+        ('SiS', '28Si-33S', SiS33, 0.01e15, 1000, 'm'),
+        ('SiS', '29Si-32S', Si29S, 0.05e15, 1000, 'm'),
+        ('AlO', '27Al-16O', AlO, 3e14, 200, 'c'),
        ):
 
         freqs = mol['Freq'].quantity
 
         match = (freqs > sp_st.xarr.min()) & (freqs < sp_st.xarr.max())
         freqs = freqs[match]
-        aij = mol['Aij'][match].quantity.to(u.s**-1).value
+        aij = np.log10(mol['Aij'][match].quantity.to(u.s**-1).value)
+        print(aij)
         deg = mol['gu'][match]
         EU = mol['E_U'][match].quantity.to(u.erg, u.temperature_energy()).value
 
@@ -115,7 +116,7 @@ for fn in flist:
         model = mol_modfunc(sp_st.xarr,
                             -vcen,
                             4*u.km/u.s,
-                            1000*u.K,
+                            tem*u.K,
                             col*u.cm**-2)
         model[model<0.1] = np.nan
 

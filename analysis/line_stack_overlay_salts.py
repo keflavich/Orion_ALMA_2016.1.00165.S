@@ -13,6 +13,8 @@ import lines
 from salt_tables import (salt_tables, SO, SO2, HCl, sis_tables, AlCl, AlF, Al37Cl,
                          NaF, AlO, AlOH, NaCN)
 
+pl.matplotlib.rcParams['font.size']=16
+
 all_lines = {**lines.disk_lines, **lines.absorbers}
 
 ided_linenames = sorted(all_lines.keys())
@@ -43,6 +45,8 @@ detection_table = table.Table.read(paths.tpath('salts_in_band.ipac'), format='as
 nondetections = (detection_table['Flag'] == '-n') | (detection_table['Flag'] == 'cn')
 detection_table = detection_table[~nondetections]
 
+
+
 flist = [fn] if 'fn' in locals() else glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust0.5.fits'))
 for fn in flist:
     print(fn)
@@ -54,12 +58,32 @@ for fn in flist:
 
     basefn = os.path.split(fn)[-1]
 
-    sp_st.plotter(ymax=0.1)
-    sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen)
+    sp_st.plotter(ymin=-0.0025, ymax=0.01)
+    sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
+                           label1_size=16,
+                           auto_yloc_fraction=0.75)
+    for txt in sp_st.plotter.axis.texts:
+        txt.set_backgroundcolor((1,1,1,0.9))
+
 
     sp_st.plotter.savefig(paths.fpath('stacked_spectra/{0}'
                                       .format(basefn.replace("fits","pdf")))
                           )
+
+    for obj in sp_st.plotter.axis.texts+sp_st.plotter.axis.lines:
+        if 'Na' in obj.get_label():
+            obj.set_color('r')
+            obj.set_zorder(5)
+        elif 'K' in obj.get_label():
+            obj.set_color('b')
+            obj.set_zorder(10)
+    for txt in sp_st.plotter.axis.texts:
+        txt.set_backgroundcolor((1,1,1,0.9))
+
+    sp_st.plotter.savefig(paths.fpath('stacked_spectra/color_labels_{0}'
+                                      .format(basefn.replace("fits","pdf")))
+                          )
+
 
     sp_st.plotter(ymin=-0.0025, ymax=0.01)
 

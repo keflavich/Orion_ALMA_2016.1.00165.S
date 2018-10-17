@@ -91,19 +91,19 @@ for band in (3,6,7):
 
 
             for molname, molfullname, mol, col, tem, color in (
-                ('NaCl', '23Na-35Cl', NaCl, 4e12, 1000, 'g'),
-                ('NaCl', '23Na-37Cl', Na37Cl, 2e12, 1000, (0,0.9,0.1)),
-                ('KCl', '39K-35Cl', KCl, 2e12, 1000, 'r'),
-                ('KCl', '39K-37Cl', K37Cl, 1e12, 1000, (1,0.1,0)),
-                ('KCl', '41K-35Cl', K41Cl, 0.5e12, 1000, (1,0.0,0.1)),
-                ('KCl', '41K-37Cl', K41Cl37, 0.1e12, 1000, (1,0.1,0.1)),
+                ('NaCl', '23Na-35Cl', NaCl, 4e14, 1000, 'g'),
+                ('NaCl', '23Na-37Cl', Na37Cl, 2e14, 1000, (0,0.9,0.1)),
+                ('KCl', '39K-35Cl', KCl, 2e14, 1000, 'r'),
+                ('KCl', '39K-37Cl', K37Cl, 1e14, 1000, (1,0.1,0)),
+                ('KCl', '41K-35Cl', K41Cl, 0.5e14, 1000, (1,0.0,0.1)),
+                ('KCl', '41K-37Cl', K41Cl37, 0.1e14, 1000, (1,0.1,0.1)),
                ):
 
                 freqs = mol['Freq'].quantity
 
                 match = (freqs > sp_st.xarr.min()) & (freqs < sp_st.xarr.max())
                 freqs = freqs[match]
-                aij = mol['Aij'][match].quantity.to(u.s**-1).value
+                aij = np.log10(mol['Aij'][match].quantity.to(u.s**-1).value)
                 deg = mol['gu'][match]
                 EU = mol['E_U'][match].quantity.to(u.erg, u.temperature_energy()).value
 
@@ -120,7 +120,7 @@ for band in (3,6,7):
                 model = mol_modfunc(sp_st.xarr,
                                     -vcen,
                                     4*u.km/u.s,
-                                    1000*u.K,
+                                    tem*u.K,
                                     col*u.cm**-2)
                 model[model==0] = np.nan
 
