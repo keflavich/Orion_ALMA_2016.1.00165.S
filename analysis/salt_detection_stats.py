@@ -92,7 +92,11 @@ def expnum(x):
 species = ["".join(map(expnum, row['Species'].split('v')[0].split('-')))
            for row in tbl]
 tbl.rename_column('Species', 'fullSpecies')
-tbl.add_column(Column(name='Species', data=species))
+tbl.add_column(Column(name='Species_', data=species))
+tbl.add_column(Column(name='Alkali Isotope', data=[41 if '41' in spc else 39 if '39' in spc else 23 for spc in species]))
+tbl.add_column(Column(name='Cl Isotope', data=[35 if '35' in spc else 37 for spc in species]))
+tbl.add_column(Column(name='Species', data=['NaCl' if 'Na' in spc else 'KCl' for spc in species]))
+
 
 latexdict = latex_info.latexdict.copy()
 latexdict['preamble'] = '\centering'
@@ -103,13 +107,20 @@ formats = {'Frequency': lambda x: "{0:0.5f}".format(x),
            'A$_{ul}$': lambda x: "{0:0.5f}".format(x),
           }
 
+# remove - flag
+tbl['Flag'] = [x.strip('-').upper() for x in tbl['Flag']]
 
-for band in ('B3','B6','B7.lb'):
-    match = tbl['Band'] == band
-    latexdict['header_start'] = '\label{{tab:all_detections_B{0}}}'.format(band[1])
-    latexdict['caption'] = 'All cataloged lines in Band {0}'.format(band[1])
-    cols = ['Species', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'A$_{ul}$', 'Frequency', 'Flag']
-    print("{1}: nmatch = {0}".format(match.sum(), band))
-    tbl[cols][match].write(paths.texpath2('lines_in_band{0}.tex'.format(band[1])),
-                           formats=formats, latexdict=latexdict,
-                           overwrite=True)
+print(tbl)
+
+for species in ('Na','K'):
+    for band in ('B3','B6','B7.lb'):
+        match = (tbl['Band'] == band) & (tbl['Species'] == (species+'Cl')) & (tbl['v'] < 9)
+        latexdict['header_start'] = '\label{{tab:{1}_detections_B{0}}}'.format(band[1], species)
+        latexdict['caption'] = 'All cataloged {1}Cl lines in Band {0}'.format(band[1], species)
+        cols = ['{0} Isotope'.format(species), 'Cl Isotope', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'A$_{ul}$', 'Frequency', 'Flag']
+        tbl.rename_column('Alkali Isotope', '{0} Isotope'.format(species))
+        print("{1}: nmatch = {0}".format(match.sum(), band))
+        tbl[cols][match].write(paths.texpath2('{1}_lines_in_band{0}.tex'.format(band[1], species)),
+                               formats=formats, latexdict=latexdict,
+                               overwrite=True)
+        tbl.rename_column('{0} Isotope'.format(species), 'Alkali Isotope')
