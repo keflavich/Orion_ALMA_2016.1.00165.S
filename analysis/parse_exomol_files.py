@@ -235,3 +235,5 @@ if __name__ == "__main__":
     Al37Cl = ExoMol('AlCl', '27Al-37Cl', catname='Bernath', max_energy=25000*u.K)
     AlF = ExoMol('AlF', '27Al-19F', catname='Bernath', max_energy=25000*u.K)
     NaF = ExoMol('NaF', '23Na-19F', catname='Bernath', max_energy=25000*u.K)
+
+    NH3 = ExoMol('NH3', '14N-1H3', catname='BYTe', max_energy=25000*u.K)
