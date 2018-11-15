@@ -14,8 +14,8 @@ def write_crtf(region_list, filename):
                     major,minor = minor,major
                     pa += 90*u.deg
                 fh.write("ellipse [[{0}deg, {1}deg], [{2}arcsec, {3}arcsec], {4}deg] coord={5}\n"
-                         .format(reg.center.ra.deg[0],
-                                 reg.center.dec.deg[0],
+                         .format(reg.center.ra.deg,
+                                 reg.center.dec.deg,
                                  major.to(u.arcsec).value,
                                  minor.to(u.arcsec).value,
                                  pa.to(u.deg).value % 360,
@@ -27,8 +27,8 @@ def write_crtf(region_list, filename):
                     major,minor = minor,major
                     pa += 90*u.deg
                 fh.write("rotbox [[{0}deg, {1}deg], [{2}arcsec, {3}arcsec], {4}deg] coord={5}\n"
-                         .format(reg.center.ra.deg[0],
-                                 reg.center.dec.deg[0],
+                         .format(reg.center.ra.deg,
+                                 reg.center.dec.deg,
                                  major.to(u.arcsec).value,
                                  minor.to(u.arcsec).value,
                                  pa.to(u.deg).value % 360,
@@ -40,5 +40,6 @@ def write_crtf(region_list, filename):
 if __name__ == "__main__":
 
     regfile = regions.read_ds9('deepcleanregions.reg')
+    regions.io.write_crtf(regfile, 'deepcleanregions.crtf', coordsys='icrs')
 
-    write_crtf(regfile, 'deepcleanregions.crtf')
+    #write_crtf(regfile, 'deepcleanregions.crtf')

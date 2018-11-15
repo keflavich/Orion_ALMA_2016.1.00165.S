@@ -34,9 +34,11 @@ for uvrange, uvrangename in (('50~300000m', '50mplus'),
                              ('1000~300000klambda', '1000klplus'),
                              ('1500~300000klambda', '1500klplus'),
                              ('10~300000m', 'allbaselines'),):
-    for robust, depth1, depth2 in (#(2, '2mJy', '1mJy',),
+    for robust, depth1, depth2 in (
                                    (0.5, '1mJy', '0.05mJy',),
-                                   (-2, '0.5mJy', '0.05mJy')):
+                                   (-2, '0.5mJy', '0.05mJy'),
+                                   (2, '2mJy', '0.1mJy',),
+                                  ):
 
         contimagename = 'Orion_SourceI_B3_continuum_r{0}.clean{1}.{2}'.format(robust, depth1, uvrangename)
         if redo or not os.path.exists(contimagename+".residual.tt0"):

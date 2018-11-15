@@ -277,7 +277,7 @@ def fit_multi_tex(eupper, nupperoverg, vstate, jstate, vibenergies,
                     linewidth=0.5)
 
 
-        pl.ylabel("log N$_u$ (cm$^{-2}$)")
+        pl.ylabel("log N$_u$/g (cm$^{-2}$)")
         pl.xlabel("E$_u$ (K)")
 
         pl.plot([], [], linestyle='-', color='k',
@@ -428,7 +428,7 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
                 alpha=0.6,
                 linewidth=1.0,
                 label='{2}$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value), label))
-        pl.ylabel("log N$_u$ (cm$^{-2}$)")
+        pl.ylabel("log N$_u$/g (cm$^{-2}$)")
         pl.xlabel("E$_u$ (K)")
 
         if (uplims is not None) and ((errors is None) or replace_errors_with_uplims):
