@@ -55,7 +55,7 @@ pl.subplot(2,1,1)
 pl.loglog(plotwl, plotbg, linestyle='-')
 pl.loglog(wl, rr.background_brightness, marker='.', linestyle='none')
 pl.xlabel("Wavelength [$\mu$m]")
-pl.ylabel("Background Brightness\n[{}]".format(rr.background_brightness.unit.to_string()))
+pl.ylabel("Background Brightness\n[{}]".format(rr.background_brightness.unit.to_string(format='latex')))
 pl.subplot(2,1,2)
 
 # introduce an arbitrary scaling value to obtain 'reasonable' column densities

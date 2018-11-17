@@ -1,3 +1,8 @@
+import sys
+sys.path.insert(0,'.')
+from makemask_regions import reg_to_mask
+
+
 redo = False
 
 def makefits(myimagebase):
@@ -68,8 +73,13 @@ for uvrange, uvrangename in (('50~300000m', '50mplus'),
                   )
             makefits(contimagename)
 
-            prevcontimage = contimagename
-            contimagename = 'Orion_SourceI_B7_continuum_r{0}.clean{1}.{2}.deepmask'.format(robust, depth2, uvrangename)
+        prevcontimage = contimagename
+
+        maskfile = reg_to_mask('deepcleanregions.reg', prevcontimage+".image.tt0")
+        print("mask=",maskfile)
+
+        contimagename = 'Orion_SourceI_B7_continuum_r{0}.clean{1}.{2}.deepmask'.format(robust, depth2, uvrangename)
+        if redo or not os.path.exists(contimagename+".residual.tt0"):
             os.system('rm -rf ' + contimagename + "*")
             tclean(vis=contvis,
                    imagename=contimagename,
@@ -78,7 +88,7 @@ for uvrange, uvrangename in (('50~300000m', '50mplus'),
                    field='Orion_BNKL_source_I',
                    specmode='mfs',
                    deconvolver='mtmfs',
-                   mask=['deepcleanregions.crtf'],
+                   mask=prevcontimage+".mask",
                    nterms=2,
                    scales=[0,4,12],
                    smallscalebias=0.8,

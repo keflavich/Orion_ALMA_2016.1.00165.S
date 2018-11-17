@@ -1,78 +1,77 @@
 #CRTF
-global coord=icrs
-+ellipse[[83.810725deg, -5.375360deg], [0.000024deg, 0.000008deg], 349.010150deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.810117deg, -5.375966deg], [0.000032deg, 0.000019deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809829deg, -5.375756deg], [0.000012deg, 0.000010deg], 322.599510deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.810050deg, -5.375908deg], [0.000008deg, 0.000007deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809996deg, -5.375113deg], [0.000008deg, 0.000011deg], 25.550601deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.810054deg, -5.374578deg], [0.000009deg, 0.000005deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.810108deg, -5.374548deg], [0.000009deg, 0.000005deg], 341.347610deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809404deg, -5.374459deg], [0.000012deg, 0.000013deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809475deg, -5.374215deg], [0.000004deg, 0.000005deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.808775deg, -5.372956deg], [0.000016deg, 0.000011deg], 345.661390deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.808671deg, -5.372841deg], [0.000014deg, 0.000005deg], 352.874980deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.808658deg, -5.372823deg], [0.000005deg, 0.000013deg], 35.748972deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809892deg, -5.372137deg], [0.000004deg, 0.000005deg], 49.122658deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807400deg, -5.371500deg], [0.000015deg, 0.000014deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807267deg, -5.372774deg], [0.000013deg, 0.000012deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807925deg, -5.374955deg], [0.000005deg, 0.000005deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807083deg, -5.375096deg], [0.000006deg, 0.000006deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.808187deg, -5.375524deg], [0.000011deg, 0.000010deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809633deg, -5.378337deg], [0.000031deg, 0.000024deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809796deg, -5.377884deg], [0.000007deg, 0.000005deg], 337.727250deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811071deg, -5.377358deg], [0.000035deg, 0.000013deg], 9.481401deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811504deg, -5.377249deg], [0.000007deg, 0.000007deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812487deg, -5.377656deg], [0.000023deg, 0.000024deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811896deg, -5.378923deg], [0.000035deg, 0.000019deg], 35.140004deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.814142deg, -5.377733deg], [0.000026deg, 0.000007deg], 354.662090deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.814183deg, -5.376668deg], [0.000003deg, 0.000003deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811987deg, -5.375770deg], [0.000013deg, 0.000025deg], 33.567754deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811679deg, -5.375189deg], [0.000019deg, 0.000018deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812387deg, -5.374769deg], [0.000026deg, 0.000021deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812617deg, -5.375311deg], [0.000008deg, 0.000008deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812883deg, -5.375417deg], [0.000003deg, 0.000006deg], 49.219096deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813250deg, -5.374904deg], [0.000010deg, 0.000012deg], 345.208400deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812267deg, -5.372417deg], [0.000017deg, 0.000013deg], 336.426320deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813175deg, -5.371496deg], [0.000015deg, 0.000015deg], 0.000001deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813671deg, -5.371346deg], [0.000014deg, 0.000009deg], 347.946070deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+rotbox[[83.810487deg, -5.375169deg], [0.000032deg, 0.000092deg], 321.503690deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.811379deg, -5.374951deg], 0.000009deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.811954deg, -5.375437deg], 0.000008deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.807958deg, -5.376562deg], 0.000010deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.805375deg, -5.377495deg], 0.000016deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.806458deg, -5.378784deg], 0.000014deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+circle[[83.806717deg, -5.378763deg], 0.000013deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809858deg, -5.381681deg], [0.000026deg, 0.000015deg], 306.089720deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811237deg, -5.380397deg], [0.000021deg, 0.000014deg], 17.721760deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.808483deg, -5.383432deg], [0.000014deg, 0.000011deg], 329.817620deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.809550deg, -5.384497deg], [0.000029deg, 0.000019deg], 20.386986deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.810558deg, -5.384331deg], [0.000012deg, 0.000016deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811975deg, -5.384747deg], [0.000007deg, 0.000008deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.816967deg, -5.385294deg], [0.000027deg, 0.000037deg], 30.018367deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.816167deg, -5.383878deg], [0.000024deg, 0.000021deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.815150deg, -5.382338deg], [0.000016deg, 0.000015deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.817271deg, -5.382024deg], [0.000011deg, 0.000010deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.818083deg, -5.380298deg], [0.000020deg, 0.000019deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.818329deg, -5.376475deg], [0.000019deg, 0.000016deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.820271deg, -5.376110deg], [0.000022deg, 0.000024deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.815687deg, -5.375669deg], [0.000012deg, 0.000011deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812075deg, -5.373728deg], [0.000009deg, 0.000013deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813350deg, -5.373352deg], [0.000014deg, 0.000011deg], 321.284780deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.814908deg, -5.371827deg], [0.000012deg, 0.000016deg], 43.752962deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.816429deg, -5.372523deg], [0.000024deg, 0.000024deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.817962deg, -5.372647deg], [0.000009deg, 0.000019deg], 43.210089deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.818412deg, -5.370034deg], [0.000011deg, 0.000012deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.817821deg, -5.369574deg], [0.000010deg, 0.000009deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811825deg, -5.370789deg], [0.000028deg, 0.000023deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811087deg, -5.369571deg], [0.000009deg, 0.000011deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.811221deg, -5.369728deg], [0.000011deg, 0.000011deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813796deg, -5.367994deg], [0.000038deg, 0.000038deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.816954deg, -5.366735deg], [0.000031deg, 0.000011deg], 314.369670deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.813604deg, -5.365467deg], [0.000017deg, 0.000028deg], 36.656108deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.812512deg, -5.366419deg], [0.000017deg, 0.000011deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.806337deg, -5.372099deg], [0.000026deg, 0.000023deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807500deg, -5.368618deg], [0.000026deg, 0.000023deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807512deg, -5.367459deg], [0.000021deg, 0.000025deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.807512deg, -5.366577deg], [0.000014deg, 0.000017deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.805687deg, -5.373925deg], [0.000013deg, 0.000015deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
-+ellipse[[83.803771deg, -5.383404deg], [0.000024deg, 0.000021deg], 360.000000deg], color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810725deg, -5.375360deg], [0.000024deg, 0.000008deg], 349.010150deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810117deg, -5.375966deg], [0.000032deg, 0.000019deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809829deg, -5.375756deg], [0.000012deg, 0.000010deg], 322.599510deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810050deg, -5.375908deg], [0.000008deg, 0.000007deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809996deg, -5.375113deg], [0.000008deg, 0.000011deg], 25.550601deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810054deg, -5.374578deg], [0.000009deg, 0.000005deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810108deg, -5.374548deg], [0.000009deg, 0.000005deg], 341.347610deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809404deg, -5.374459deg], [0.000012deg, 0.000013deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809475deg, -5.374215deg], [0.000004deg, 0.000005deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.808775deg, -5.372956deg], [0.000016deg, 0.000011deg], 345.661390deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.808671deg, -5.372841deg], [0.000014deg, 0.000005deg], 352.874980deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.808658deg, -5.372823deg], [0.000005deg, 0.000013deg], 35.748972deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809892deg, -5.372137deg], [0.000004deg, 0.000005deg], 49.122658deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807400deg, -5.371500deg], [0.000015deg, 0.000014deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807267deg, -5.372774deg], [0.000013deg, 0.000012deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807925deg, -5.374955deg], [0.000005deg, 0.000005deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807083deg, -5.375096deg], [0.000006deg, 0.000006deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.808187deg, -5.375524deg], [0.000011deg, 0.000010deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809633deg, -5.378337deg], [0.000031deg, 0.000024deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809796deg, -5.377884deg], [0.000007deg, 0.000005deg], 337.727250deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811071deg, -5.377358deg], [0.000035deg, 0.000013deg], 9.481401deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811504deg, -5.377249deg], [0.000007deg, 0.000007deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812487deg, -5.377656deg], [0.000023deg, 0.000024deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811896deg, -5.378923deg], [0.000035deg, 0.000019deg], 35.140004deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.814142deg, -5.377733deg], [0.000026deg, 0.000007deg], 354.662090deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.814183deg, -5.376668deg], [0.000003deg, 0.000003deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811987deg, -5.375770deg], [0.000013deg, 0.000025deg], 33.567754deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811679deg, -5.375189deg], [0.000019deg, 0.000018deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812387deg, -5.374769deg], [0.000026deg, 0.000021deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812617deg, -5.375311deg], [0.000008deg, 0.000008deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812883deg, -5.375417deg], [0.000003deg, 0.000006deg], 49.219096deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813250deg, -5.374904deg], [0.000010deg, 0.000012deg], 345.208400deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812267deg, -5.372417deg], [0.000017deg, 0.000013deg], 336.426320deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813175deg, -5.371496deg], [0.000015deg, 0.000015deg], 0.000001deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813671deg, -5.371346deg], [0.000014deg, 0.000009deg], 347.946070deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+rotbox[[83.810487deg, -5.375169deg], [0.000032deg, 0.000092deg], 321.503690deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.811379deg, -5.374951deg], 0.000009deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.811954deg, -5.375437deg], 0.000008deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.807958deg, -5.376562deg], 0.000010deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.805375deg, -5.377495deg], 0.000016deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.806458deg, -5.378784deg], 0.000014deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+circle[[83.806717deg, -5.378763deg], 0.000013deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809858deg, -5.381681deg], [0.000026deg, 0.000015deg], 306.089720deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811237deg, -5.380397deg], [0.000021deg, 0.000014deg], 17.721760deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.808483deg, -5.383432deg], [0.000014deg, 0.000011deg], 329.817620deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.809550deg, -5.384497deg], [0.000029deg, 0.000019deg], 20.386986deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.810558deg, -5.384331deg], [0.000012deg, 0.000016deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811975deg, -5.384747deg], [0.000007deg, 0.000008deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.816967deg, -5.385294deg], [0.000027deg, 0.000037deg], 30.018367deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.816167deg, -5.383878deg], [0.000024deg, 0.000021deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.815150deg, -5.382338deg], [0.000016deg, 0.000015deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.817271deg, -5.382024deg], [0.000011deg, 0.000010deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.818083deg, -5.380298deg], [0.000020deg, 0.000019deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.818329deg, -5.376475deg], [0.000019deg, 0.000016deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.820271deg, -5.376110deg], [0.000022deg, 0.000024deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.815687deg, -5.375669deg], [0.000012deg, 0.000011deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812075deg, -5.373728deg], [0.000009deg, 0.000013deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813350deg, -5.373352deg], [0.000014deg, 0.000011deg], 321.284780deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.814908deg, -5.371827deg], [0.000012deg, 0.000016deg], 43.752962deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.816429deg, -5.372523deg], [0.000024deg, 0.000024deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.817962deg, -5.372647deg], [0.000009deg, 0.000019deg], 43.210089deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.818412deg, -5.370034deg], [0.000011deg, 0.000012deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.817821deg, -5.369574deg], [0.000010deg, 0.000009deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811825deg, -5.370789deg], [0.000028deg, 0.000023deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811087deg, -5.369571deg], [0.000009deg, 0.000011deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.811221deg, -5.369728deg], [0.000011deg, 0.000011deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813796deg, -5.367994deg], [0.000038deg, 0.000038deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.816954deg, -5.366735deg], [0.000031deg, 0.000011deg], 314.369670deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.813604deg, -5.365467deg], [0.000017deg, 0.000028deg], 36.656108deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.812512deg, -5.366419deg], [0.000017deg, 0.000011deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.806337deg, -5.372099deg], [0.000026deg, 0.000023deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807500deg, -5.368618deg], [0.000026deg, 0.000023deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807512deg, -5.367459deg], [0.000021deg, 0.000025deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.807512deg, -5.366577deg], [0.000014deg, 0.000017deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.805687deg, -5.373925deg], [0.000013deg, 0.000015deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal
+ellipse[[83.803771deg, -5.383404deg], [0.000024deg, 0.000021deg], 360.000000deg],  coord=ICRS, color=green, linewidth=1, font=helvetica, fontsize=10, fontstyle=normal

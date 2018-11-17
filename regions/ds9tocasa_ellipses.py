@@ -42,4 +42,4 @@ if __name__ == "__main__":
     regfile = regions.read_ds9('deepcleanregions.reg')
     regions.io.write_crtf(regfile, 'deepcleanregions.crtf', coordsys='icrs')
 
-    #write_crtf(regfile, 'deepcleanregions.crtf')
+    write_crtf(regfile, 'deepcleanregions_manual.crtf')
