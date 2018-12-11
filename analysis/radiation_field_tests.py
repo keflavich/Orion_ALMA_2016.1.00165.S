@@ -85,3 +85,12 @@ pl.xlabel("E$_U$ [K]")
 pl.ylabel("log upper state population")
 pl.tight_layout()
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
+
+# the referee asked about tau
+# blue = all
+# orange = observed
+pl.figure(2).clf()
+pl.plot(rslt['upperstateenergy'].data, rslt['tau'], '.')
+pl.plot(rslt['upperstateenergy'].data[obs], rslt['tau'][obs], '.')
+pl.xlabel("Upper state energy")
+pl.ylabel("Optical Depth")

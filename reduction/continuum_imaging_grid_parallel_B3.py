@@ -1,6 +1,9 @@
 import sys
 sys.path.insert(0,'.')
 from makemask_regions import reg_to_mask
+import os
+
+parallel = os.environ.get('PARALLEL') == 'True'
 
 
 redo = False
@@ -29,16 +32,18 @@ imsize = [14000,14000] # size of image in pixels.
 
 contvis = 'B3_calibrated_final_cont.ms'
 
-for uvrange, uvrangename in (('50~300000m', '50mplus'),
-                             ('825~10000klambda', '825to10000kl'),
-                             ('150~300000m', '150mplus'),
-                             ('200~300000m', '200mplus'),
+for uvrange, uvrangename in (
+                             ('10~300000m', 'allbaselines'),
                              ('250~300000klambda', '250klplus'),
                              ('250~2000klambda', '250to2000kl'),
                              ('500~300000klambda', '500klplus'),
                              ('1000~300000klambda', '1000klplus'),
                              ('1500~300000klambda', '1500klplus'),
-                             ('10~300000m', 'allbaselines'),):
+                             ('50~300000m', '50mplus'),
+                             ('825~10000klambda', '825to10000kl'),
+                             ('150~300000m', '150mplus'),
+                             ('200~300000m', '200mplus'),
+):
     for robust, depth1, depth2 in (
                                    (0.5, '1mJy', '0.05mJy',),
                                    (-2, '0.5mJy', '0.05mJy'),
@@ -69,7 +74,7 @@ for uvrange, uvrangename in (('50~300000m', '50mplus'),
                    veltype='radio',
                    savemodel='none',
                    uvrange=uvrange,
-                   parallel=True,
+                   parallel=parallel,
                   )
             makefits(contimagename)
 
@@ -102,6 +107,6 @@ for uvrange, uvrangename in (('50~300000m', '50mplus'),
                    veltype='radio',
                    savemodel='none',
                    uvrange=uvrange,
-                   parallel=True,
+                   parallel=parallel,
                   )
             makefits(contimagename)

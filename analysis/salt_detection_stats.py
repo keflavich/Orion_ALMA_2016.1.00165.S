@@ -116,7 +116,7 @@ for species in ('Na','K'):
     for band in ('B3','B6','B7.lb'):
         match = (tbl['Band'] == band) & (tbl['Species'] == (species+'Cl')) & (tbl['v'] < 9)
         latexdict['header_start'] = '\label{{tab:{1}_detections_B{0}}}'.format(band[1], species)
-        latexdict['caption'] = 'All cataloged {1}Cl lines in Band {0}'.format(band[1], species)
+        latexdict['caption'] = 'All cataloged {1}Cl lines in the Band {0} tuning'.format(band[1], species)
         cols = ['{0} Isotope'.format(species), 'Cl Isotope', 'v', 'J$_u$', 'J$_l$', 'E$_U$', 'A$_{ul}$', 'Frequency', 'Flag']
         tbl.rename_column('Alkali Isotope', '{0} Isotope'.format(species))
         print("{1}: nmatch = {0}".format(match.sum(), band))

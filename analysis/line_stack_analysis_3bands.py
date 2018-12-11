@@ -373,7 +373,7 @@ for salt in ('NaCl', 'Na37Cl', 'KCl', 'K37Cl', '41KCl', '41K37Cl'):
     texsalt = salt.replace("37","$^{37}$").replace("41","$^{41}$")
     latexdict = latex_info.latexdict.copy()
     latexdict['header_start'] = '\label{{tab:{0}_salt_lines}}'.format(salt)
-    latexdict['caption'] = '{0} Lines'.format(texsalt)
+    latexdict['caption'] = 'Parameters of {0} lines obtained with Gaussian fits'.format(texsalt)
     latexdict['preamble'] = '\centering'
     latexdict['tablefoot'] = ('\n\par '
                              )
@@ -424,6 +424,8 @@ for row in KCltbl:
         if match.sum() > 1:
             raise ValueError
         abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(K37Cltbl[match]['Amplitude'][0])
+
+print(abund)
 
 print("Measured 35/37Cl abundance = {0} +/- {1}".format(np.mean(list(abund.values())),
                                                         np.std(list(abund.values()))))
