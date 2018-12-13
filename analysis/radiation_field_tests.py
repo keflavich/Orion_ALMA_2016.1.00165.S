@@ -94,3 +94,13 @@ pl.plot(rslt['upperstateenergy'].data, rslt['tau'], '.')
 pl.plot(rslt['upperstateenergy'].data[obs], rslt['tau'][obs], '.')
 pl.xlabel("Upper state energy")
 pl.ylabel("Optical Depth")
+
+# What about the observable T_B?
+# (note that RADEX is using the background-subtracted brightness in the T_B column, which isn't what we want)
+pl.figure(3).clf()
+T_B = (rr.source_brightness*u.sr).to(u.K, u.brightness_temperature(1*u.sr, rr.frequency))
+pl.plot(rslt['upperstateenergy'].data, T_B, '.')
+pl.plot(rslt['upperstateenergy'].data[obs], T_B[obs], '.')
+pl.xlabel("Upper state energy")
+pl.ylabel("Brightness Temperature")
+pl.ylim(0,100)

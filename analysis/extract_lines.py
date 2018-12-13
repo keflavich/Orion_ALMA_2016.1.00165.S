@@ -9,6 +9,7 @@ import radio_beam
 from files import b6_hires_cont, b7_hires_cont
 from astropy.nddata import Cutout2D
 import reproject
+from constants import central_freqs as freqs
 
 import pylab as pl
 pl.ioff()
@@ -19,7 +20,6 @@ pl.ioff()
 #conthdu = fits.open(paths.dpath('sourceIcutouts/Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits'))
 
 continua = {}
-freqs = {'B6': 224*u.GHz, 'B7': 345*u.GHz,}
 
 
 for band, cfn in (('B6', b6_hires_cont), ('B7', b7_hires_cont)):

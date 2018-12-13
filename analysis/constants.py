@@ -36,3 +36,6 @@ extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
 origin = offset_to_point(source.ra.deg,
                          source.dec.deg,
                          extraction_path)*u.deg
+
+# only approximate
+central_freqs = {'B6': 224*u.GHz, 'B7': 345*u.GHz, 'B3': 95*u.GHz}
