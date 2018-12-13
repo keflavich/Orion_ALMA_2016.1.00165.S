@@ -66,6 +66,7 @@ print("peaks at {0} arcsec".format(scipy.signal.find_peaks(naclcutout.mean(axis=
 diff = np.diff(scipy.signal.find_peaks(naclcutout.mean(axis=0))[0]*pixscale*3600)
 print("height of nacl emission = {0}".format((diff/2*u.arcsec*415*u.pc).to(u.AU, u.dimensionless_angles())))
 
+print("per-band continuum measurements in the spectral extraction aperture: ")
 for ii,contfn in enumerate((b3_hires_cont, b6_hires_cont, b7_hires_cont)):
     conthdu = fits.open(paths.dpath(contfn))[0]
 

@@ -12,7 +12,7 @@ import reproject
 
 # step 1: create a velocity map
 
-vmap_name = 'disk_velocity_map.fits'
+vmap_name = paths.dpath('disk_velocity_map.fits')
 if not os.path.exists(vmap_name):
     cube = SpectralCube.read(paths.dpath('cubes/OrionSourceI_Unknown_4_robust0.5.maskedclarkclean10000_medsub_K.fits'))
     cube = SpectralCube.read(paths.dpath('cubes/OrionSourceI_Unknown_4_robust0.5maskedclarkclean10000_medsub_K.fits'))
