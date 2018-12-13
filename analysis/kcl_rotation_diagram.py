@@ -16,6 +16,9 @@ import pylab as pl
 
 import lines
 import salt_tables
+from lte_modeling_tools import (rovib_lte_model_generator,
+                                simple_lte_model_generator, kkms_of_nupper,
+                                nupper_of_kkms)
 
 vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                  'K37Cl': (275.87497*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
@@ -39,94 +42,6 @@ def get_rot_energies(moltbl):
             for ju in np.unique(moltbl['Ju'])
             if matchJu(ju)
            }
-
-
-
-def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
-    """ Derived directly from pyspeckit eqns..."""
-
-    if replace_bad:
-        neg = kkms <= 0
-        kkms[neg] = replace_bad
-
-    freq = u.Quantity(freq, u.GHz)
-    Aul = u.Quantity(Aul, u.Hz)
-    kkms = u.Quantity(kkms, u.K*u.km/u.s)
-    #nline = 1.95e3 * freq**2 / Aul * kkms
-    nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
-    # term2 = np.exp(-constants.h*freq/(constants.k_B*Tex)) -1
-    # term2 -> kt / hnu
-    # kelvin-hertz
-    Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
-    return (nline * Khz / degeneracies).to(u.cm**-2)
-
-def kkms_of_nupper(nupper, freq, Aul, degeneracies):
-    """
-    Test the inverse
-    """
-
-    freq = u.Quantity(freq, u.GHz)
-    Aul = u.Quantity(Aul, u.Hz)
-    nupper = u.Quantity(nupper, u.cm**-2)
-
-    nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
-
-    Khz = (nupper / nline * degeneracies)
-
-    kkms = (Khz / (freq/constants.c)).to(u.K * u.km/u.s)
-
-    return kkms
-
-
-# test
-kkms = 100*u.K*u.km/u.s
-freq = 100*u.GHz
-Aul = 1*u.s**-1
-degeneracies = 1
-nupper = nupper_of_kkms(kkms, freq, Aul, degeneracies)
-kkms2 = kkms_of_nupper(nupper, freq, Aul, degeneracies)
-np.testing.assert_almost_equal(kkms2.value, kkms.value)
-
-
-def rovib_lte_model_generator(vibenergies, rotenergies):
-
-    @custom_model
-    def model(jstate, vstate, logcolumn=np.log(1e13), rottem=100, vibtem=2000):
-        elower_vib = np.array([vibenergies[int(v)] for v in vstate])
-        eupper_j = np.array([rotenergies[ju] for ju in jstate])
-        #result = -1/rottem * (eupper - elower_vib) + column - 1/vibtem * eupper
-
-        # these are the populations of states in the v=0 state at a given
-        # J-level.
-        result_v0 = -1/rottem * eupper_j + logcolumn
-
-        # Then, for each of these, we determine the levels in the vibrationally
-        # excited state by adding e^-hnu/kt, where t is a different temperature
-        # (t_v) and nu is now just the nu provided by the vibrations
-        result = result_v0 - 1/vibtem * elower_vib
-
-        return result
-
-    return model()
-
-def simple_lte_model_generator():
-
-    @custom_model
-    def model(eupper, logcolumn=np.log(1e13), tem=100):
-        """
-        Calculate the quantity N_u/g_u as a function of E_u in Kelvin
-
-        The 'logcolumn' quantity is N_tot / Q_tot
-
-        Temperature is the excitation temperature
-        """
-
-        result = -1/tem * eupper + logcolumn
-
-        return result
-
-    return model()
-
 
 
 def fit_multi_tex(eupper, nupperoverg, vstate, jstate, vibenergies,
@@ -206,7 +121,7 @@ def fit_multi_tex(eupper, nupperoverg, vstate, jstate, vibenergies,
     fitter = modeling.fitting.LevMarLSQFitter()
     #fitter = modeling.fitting.LinearLSQFitter()
 
-    model_to_fit = model()
+    model_to_fit = model
     model_to_fit.logcolumn.bounds = collims
     model_to_fit.rottem.bounds = rottemlims
     model_to_fit.vibtem.bounds = vibtemlims
@@ -420,7 +335,7 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
     fitter = modeling.fitting.LevMarLSQFitter()
     #fitter = modeling.fitting.LinearLSQFitter()
     #model.slope.bounds = [0, -1000]
-    if good.sum() >= 0:
+    if good.sum() >= 2:
         result = fitter(model,
                         eupper[good].to(u.K).value,
                         np.log(nupperoverg_tofit[good]),
@@ -597,12 +512,12 @@ if __name__ == "__main__":
     tex0 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu[v0],
                    errors=ekcl35_nu[v0], plot=True, verbose=True,
                    molecule=kcl35, marker='o', color='r', label='v=0 ')
-    tex0_dustc = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu_dustcorr[v0],
-                         errors=ekcl35_nu[v0], plot=True, verbose=True,
-                         molecule=kcl35, marker='o', color='b', label='v=0 ')
-    tex0_dustc_nob3 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0][1:], u.K), kcl35_nu_dustcorr[v0][1:],
-                              errors=ekcl35_nu[v0][1:], plot=True, verbose=True,
-                         molecule=kcl35, marker='o', color='g', label='v=0 no b3')
+    #tex0_dustc = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0], u.K), kcl35_nu_dustcorr[v0],
+    #                     errors=ekcl35_nu[v0], plot=True, verbose=True,
+    #                     molecule=kcl35, marker='o', color='b', label='v=0 ')
+    #tex0_dustc_nob3 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v0][1:], u.K), kcl35_nu_dustcorr[v0][1:],
+    #                          errors=ekcl35_nu[v0][1:], plot=True, verbose=True,
+    #                     molecule=kcl35, marker='o', color='g', label='v=0 no b3')
     #tex1 = fit_tex(u.Quantity(kcl35tbl['EU_K'][v1], u.K), kcl35_nu[v1],
     #               errors=ekcl35_nu[v1], plot=True, verbose=True,
     #               molecule=kcl35, marker='s', color='b', label='v=1 ')
@@ -618,10 +533,9 @@ if __name__ == "__main__":
     texJ13 = fit_tex(u.Quantity(kcl35tbl['EU_K'][j13], u.K), kcl35_nu[j13],
                      errors=ekcl35_nu[j13], plot=True, verbose=True,
                      molecule=kcl35, marker='h', color='k', label='J=13 ')
-    texJ13_dustc = fit_tex(u.Quantity(kcl35tbl['EU_K'][j13], u.K), kcl35_nu_dustcorr[j13],
-                     errors=ekcl35_nu[j13], plot=True, verbose=True,
-                     molecule=kcl35, marker='h', color='k', label='J=13 dust')
-    1/0
+    #texJ13_dustc = fit_tex(u.Quantity(kcl35tbl['EU_K'][j13], u.K), kcl35_nu_dustcorr[j13],
+    #                 errors=ekcl35_nu[j13], plot=True, verbose=True,
+    #                 molecule=kcl35, marker='h', color='k', label='J=13 dust')
     texJ29 = fit_tex(u.Quantity(kcl35tbl['EU_K'][j29], u.K), kcl35_nu[j29],
                      errors=ekcl35_nu[j29], plot=True, verbose=True,
                      molecule=kcl35, marker='o', color='b', label='J=29 ')
