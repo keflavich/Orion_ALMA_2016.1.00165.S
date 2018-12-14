@@ -18,8 +18,10 @@ kcl35tbl = tbl[kcl35mask]
 v0 = np.array(['v=0' in row['Species'] for row in kcl35tbl])
 
 
-# What happens if we adopt s345 = 9*s100?
-
+# Using LTE modeling tools, what integrated intensity do we expect for each
+# line for some arbitrary column density (we are ignoring optical depth) for a
+# high excitation temperature?
+#
 # this is split out from kcl_rotational_diagrams.py
 mod = simple_lte_model_generator()
 mod.tem = 1000
@@ -34,15 +36,19 @@ s100 = fluxes[0]
 print("For T_ex = 1000 K, s100 / s345 = {0}".format(s100/s345))
 print("                   s345 / s100 = {0}".format(s345/s100))
 
-# calculation to determine the effect of dust opacity
+# the flux measurements at 100 GHz in the KCl 13-12 and 345 GHz 45-44 lines, in
+# Kelvin units
 f100 = 15.3
 f345 = 9.7
 
-for kappa in (1., 1.5, 2):
+for beta in (1., 1.5, 2):
     print()
     print()
-    print(f"          kappa={kappa}")
-    ratio = (345/100)**kappa
+    print(f"          beta={beta}")
+
+    # this is the opacity ratio between the two frequencies for a given dust Beta
+    # kappa = kappa_0 * nu^beta
+    ratio = (345/100)**beta
 
     # eqn is: F_1 / F_2 = S_1 exp(-kappa1 N) / (S_2 exp(-kappa2 N)
     # F1/F2 * S_2/S_1 = exp(-kappa1 N + kappa2 N)
@@ -63,6 +69,7 @@ for kappa in (1., 1.5, 2):
 
 
 
+    # these are th evalues pulled from the T=1000K analysis above
     s345 = 109.06
     s100 = 12.875
 
