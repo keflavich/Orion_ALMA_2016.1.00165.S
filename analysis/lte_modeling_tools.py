@@ -4,7 +4,61 @@ from astropy.modeling.models import custom_model
 from astropy import units as u
 
 def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
-    """ Derived directly from pyspeckit eqns..."""
+    """
+    Mangum & Shirley 2015 eqn 82 gives, for the optically thin, Rayleigh-Jeans,
+    negligible background approximation:
+
+        Ntot = (3 k) / (8 pi^3 nu S mu^2 R_i)   (Q/g) exp(E_u/k Tex) integ(T_R/f dv)
+
+    Eqn 31:
+
+        Ntot/Nu = Q_rot / gu exp(E_u/k Tex)
+
+        -> Ntot = Nu Q_rot / gu exp(E_u/k Tex)
+        -> Nu = N_tot g / Qrot exp(-E_u / k Tex)
+
+    To get Nu of an observed line, then:
+
+        Nu Q_rot / gu exp(E_u/k Tex) = (3 k) / (8 pi^3 nu S mu^2 R_i)   (Q/g) exp(E_u/k Tex) integ(T_R/f dv)
+
+    This term cancels:
+        Q_rot / gu exp(E_u/k Tex)
+
+    Leaving:
+
+        Nu = (3 k) / (8 pi^3 nu S mu^2 R_i)   integ(T_R/f dv)
+
+    integ(T_R/f dv) is the optically thin integrated intensity in K km/s
+    dnu/nu = dv/c [doppler eqn], so to get integ(T_R dnu), sub in dv = c/nu dnu
+
+        Nu = (3 k c) / (8 pi^3 nu^2  S mu^2 R_i)   integ(T_R/f dnu)
+
+
+    We then need to deal with the S mu^2 R_i term.  We assume R_i = 1, since we
+    are not measuring any hyperfine transitions (R_i is the hyperfine
+    degeneracy; eqn 75)
+    Equation 11:
+
+        A_ul = 64 pi^4 nu^3 / (3 h c^3) |mu_ul|^2
+
+    Equation 62:
+
+        |mu_ul|^2 = S mu^2
+
+        -> S mu^2 = (3 h c^3 Aul) / (64 pi^4 nu^3)
+
+    Plugging that in gives
+
+        Nu = (3 k c) / (8 pi^3 nu^2  ((3 h c^3 Aul) / (64 pi^4 nu^3)))   integ(T_R/f dnu)
+           = (3 k c 64 pi^4 nu^3) / (8 pi^3 nu^2 3 h c^3 Aul)            integ(T_R/f dnu)
+           = (8 pi nu k / (Aul c^2 h)) integ(T_R/f dnu)
+
+    which is the equation implemented below.  We could also have left this in
+    dv units by substituting du = nu/c dv:
+
+           = (8 pi nu^2 k / (Aul c^3 h)) integ(T_R/f dv)
+
+    """
 
     if replace_bad:
         neg = kkms <= 0
@@ -13,18 +67,20 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
     freq = u.Quantity(freq, u.GHz)
     Aul = u.Quantity(Aul, u.Hz)
     kkms = u.Quantity(kkms, u.K*u.km/u.s)
-    #nline = 1.95e3 * freq**2 / Aul * kkms
+
     nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
-    # term2 = np.exp(-constants.h*freq/(constants.k_B*Tex)) -1
-    # term2 -> kt / hnu
+
     # kelvin-hertz
     Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
+
     return (nline * Khz / degeneracies).to(u.cm**-2)
 
 def kkms_of_nupper(nupper, freq, Aul, degeneracies):
     """
     Convert the column density in the upper state of a line ``nupper`` to the
     integrated intensity in brightness units (K km / s).
+
+    Inversion of nupper_of_kkms above.
     """
 
     freq = u.Quantity(freq, u.GHz)
