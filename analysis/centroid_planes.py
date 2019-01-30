@@ -40,7 +40,10 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     guesses = {}
 
     for reg in regs:
-        vel = float(reg.meta['text'].strip("{}"))
+        vel = float(reg.meta['text'].strip("{}")
+                    if 'text' in reg.meta
+                    else reg.meta['label']
+                   )
         if vel in guesses:
             guesses[vel].append(reg)
         else:
@@ -214,7 +217,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ax1.xaxis.set_major_locator(loc)
 
     cmap = pl.cm.Spectral_r
-    cmap = pl.cm.spectral
+    cmap = pl.cm.Spectral
     norm = pl.matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     offset_fits_arcsec = []
