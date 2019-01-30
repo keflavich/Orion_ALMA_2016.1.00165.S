@@ -29,10 +29,10 @@ fitresult_list = []
 
 for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
-    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
-    ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
-    ('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
-    ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
+    #('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
+    #('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    #('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    #('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
    ):
 
     regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
@@ -223,6 +223,8 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     offset_fits_arcsec = []
     vels = np.sort(np.array([v for v in results]))
 
+    gfit_points = []
+
     for vel in vels:
         fit_result = results[vel]
         fitted = fit_result[0]
@@ -239,8 +241,11 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                          marker='o')
                 ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
                 offset = offset_to_point(ra, dec)
-                ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
-                         transform=trans)
+                gfit_points.extend(ax2.plot((offset-ref_offset)*3600, vel,
+                                            color=color, marker='s',
+                                            markersize=5,
+                                            markeredgecolor='k',
+                                            transform=trans))
                 offsets_.append((offset-ref_offset)*3600)
             offset_fits_arcsec.append(np.mean(offsets_))
         else:
@@ -249,13 +254,18 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                      (ycen-ref_cen_y)*pixscale.to(u.arcsec), color=color, marker='o')
             ra,dec = cube.wcs.celestial.wcs_pix2world(xcen, ycen, 0)
             offset = offset_to_point(ra, dec)
-            ax2.plot((offset-ref_offset)*3600, vel, color=color, marker='s',
-                     transform=trans)
+            gfit_points.extend(ax2.plot((offset-ref_offset)*3600, vel,
+                                        color=color, marker='s',
+                                        markersize=5,
+                                        markeredgecolor='k',
+                                        transform=trans)
+                              )
             offset_fits_arcsec.append((offset-ref_offset)*3600)
 
 
     show_keplercurves(ax2, 0*u.deg, 150, assumed_vcen, yaxis_unit=u.km/u.s, radii={},
-                      masses=[15, ], linestyles=[':',], colors=['r']
+                      masses=[15, ], linestyles=[':',], colors=['r'],
+                      trans=ax2.get_transform('world'),
                      )
 
     # xx_thindisk, yy_thindisk = thindiskcurve(mass=20*u.M_sun, rmin=30*u.au, rmax=80*u.au)
@@ -300,7 +310,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_withbackground.pdf'.format(linename=linename)),
                bbox_inches='tight')
-    
+
     #fig3,ax3 = show_pv(data, ww,
     #                   origin, vrange=[-40,55], vcen=assumed_vcen,
     #                   imvmin=-0.001, imvmax=0.020)
@@ -364,10 +374,9 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                bbox_inches='tight')
 
     # show the average fitted positions
-    ax2.plot(offset_fits_arcsec, vels, marker='o', markersize=5,
-             linestyle='none', markerfacecolor='k', alpha=0.5,
-             markeredgecolor='w',
-             transform=trans)
+    avgposns = ax2.plot(offset_fits_arcsec, vels, marker='o', markersize=5,
+                        linestyle='none', markerfacecolor='k', alpha=0.5,
+                        markeredgecolor='w', transform=trans)
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_withavgs.pdf'.format(linename=linename)),
                bbox_inches='tight')
@@ -434,6 +443,8 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
 
 
     ax1.cla()
+    #ax1.remove()
+    #ax1 = fig1.add_subplot(1,2,1, projection=ww)
     ax1.imshow(sm_pvd, cmap='gray_r', extent=[xx_as.value.min(),
                                               xx_as.value.max(),
                                               (vv+assumed_vcen).value.min(),
@@ -444,9 +455,17 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                label=('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
                       .format(15, 25, 65))
               )
+
+    keplines = show_keplercurves(ax1, 0*u.deg, 150, assumed_vcen,
+                                 yaxis_unit=u.km/u.s, radii={}, masses=[15, ],
+                                 linestyles=[':',], colors=['r'],
+                                 trans=ax1.transData,
+                     )
+
     xlim_as, ylim_kms = [-0.2,0.2], [vmin-3, vmax+3]
     ax1.set_xlim(*xlim_as)
     ax1.set_ylim(*ylim_kms)
+
     ax1.set_aspect('auto')
     #ax1.legend(('$M={0:0.1f}$\n$R_{{in}}={1:d}$\n$R_{{out}}={2:d}$'
     #                  .format(15, 25, 65)),
@@ -456,9 +475,17 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     loc = pl.matplotlib.ticker.MultipleLocator(base=0.1)
     ax1.xaxis.set_major_locator(loc)
 
+    ax1.set_ylabel("$V_{LSR}$ [km s$^{-1}$]")
     ax1.set_xlabel("Offset Position (arcsec)")
-    ax1.set_ylabel("Offset Dec (arcsec)")
+
 
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_withavgs_comparepv.pdf'
+                           .format(mass=15, linename=linename)),
+               bbox_inches='tight')
+
+    for feature in gfit_points + avgposns:
+        feature.set_visible(False)
+
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_comparepv.pdf'
                            .format(mass=15, linename=linename)),
                bbox_inches='tight')

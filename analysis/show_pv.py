@@ -131,9 +131,11 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
                       radii={15: ([30, 80], ['m', 'm'])},
                       yaxis_unit=u.m/u.s,
                       show_other_powerlaws=False,
+                      trans=None,
                      ):
 
-    trans = ax.get_transform('world')
+    if trans is None:
+        trans = ax.get_transform('world')
 
     # Since we reset the CRVAL to be the origin, we don't need to
     # add origin as an offset any more
@@ -146,30 +148,33 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
     if linewidths is None:
         linewidths = itertools.cycle([1])
 
+    lines = []
+
     for mass,color,linestyle,linewidth in zip(masses,colors,linestyles,linewidths):
         # this is the 3d velocity, so assumes edge-on
         vel = (((constants.G * mass*u.M_sun)/(positions))**0.5).to(yaxis_unit)
         loc = (positions/(d_orion)).to(u.arcsec, u.dimensionless_angles())
-        ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), linestyle=linestyle,
-                color=color, linewidth=linewidth, alpha=1.0, transform=trans)
+        lines += ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(yaxis_unit),
+                         linestyle=linestyle, color=color, linewidth=linewidth,
+                         alpha=1.0, transform=trans)
         #ax.plot((origin-loc).to(u.arcsec), (vcen+vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
-        ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), linestyle=linestyle,
-                color=color, linewidth=linewidth, alpha=1.0, transform=trans)
+        lines += ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit),
+                         linestyle=linestyle, color=color, linewidth=linewidth,
+                         alpha=1.0, transform=trans)
 
         if show_other_powerlaws:
             vcurve = positions**-1 / (positions[200]**-1) * (vel[200])
-            ax.plot((origin+loc).to(u.arcsec),
-                    (vcen+vcurve).to(yaxis_unit),
-                    color=color, linestyle='--',
-                    transform=trans)
-            ax.plot((origin-loc).to(u.arcsec),
-                    (vcen-vcurve).to(yaxis_unit),
-                    color=color, linestyle='--',
-                    transform=trans)
+            lines += ax.plot((origin+loc).to(u.arcsec),
+                             (vcen+vcurve).to(yaxis_unit),
+                             color=color, linestyle='--',
+                             transform=trans)
+            lines += ax.plot((origin-loc).to(u.arcsec),
+                             (vcen-vcurve).to(yaxis_unit),
+                             color=color, linestyle='--',
+                             transform=trans)
 
 
-    lines = []
     for mass in radii:
         for radius,color in zip(*radii[mass]):
             rad_as = (radius*u.au/d_orion).to(u.arcsec, u.dimensionless_angles())
