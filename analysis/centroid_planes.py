@@ -18,9 +18,13 @@ import imp
 import edge_on_ring_velocity_model
 from astropy.utils.console import ProgressBar
 from constants import vcen as assumed_vcen, origin, d_orion
+import tracemalloc
+from astropy import log
 
 imp.reload(edge_on_ring_velocity_model)
 from edge_on_ring_velocity_model import thindiskcurve, thindiskcurve_fitter, trace_plotter
+
+first_snapshot = tracemalloc.take_snapshot()
 
 if 'cached_gaussfit_results' not in locals():
     cached_gaussfit_results = {}
@@ -28,10 +32,10 @@ if 'cached_gaussfit_results' not in locals():
 fitresult_list = []
 
 for linename,(vmin,vmax),limits,(cenx, ceny) in (
-    ('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
-    ('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
-    ('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
-    ('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    #('Unknown_4', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    #('H2Ov2=1_5(5,0)-6(4,3)', (-28, 38), (-0.2, 0.2, -0.2, 0.2), (68.8, 65.5)),
+    #('Unknown_1', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
+    #('Unknown_2', (-15, 27), (-0.1, 0.1, -0.12, 0.12), (65.1, 60.5)),
     ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
    ):
 
@@ -185,6 +189,11 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     # #!@#$!@#$@!%@#${^(@#$)%#$(
     ww.wcs.set()
 
+
+    snap3 = tracemalloc.take_snapshot()
+    diff = snap3.compare_to(first_snapshot, 'lineno')
+    mem_used = sum([dd.size_diff for dd in diff])*u.B
+    log.info(f"Used {mem_used.to(u.GB)} for line {linename} prior to plotting")
 
     fig1 = pl.figure(1)
     pl.clf()
@@ -386,10 +395,17 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                bbox_inches='tight')
     im.set_visible(False)
 
+
+    tracemalloc.start()
+
+    snap1 = tracemalloc.take_snapshot()
+
     for mass in (15.5, 19, 5, 10, 15, 20, ):
         for line in lines:
-            line.set_visible(False)
+            line.remove()
+            #line.set_visible(False)
         leg.remove()
+        del leg, lines
 
         fitresult = thindiskcurve_fitter(xsep=np.array(offsets_au),
                                          velo=vels,
@@ -399,6 +415,12 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                                          fixedmass=True,
                                         )
         assert fitresult.params['mass'].value == mass
+
+        snap2 = tracemalloc.take_snapshot()
+        diff = snap2.compare_to(snap1, 'lineno')
+        mem_used = sum([dd.size_diff for dd in diff])*u.B
+        log.info(f"Used {mem_used.to(u.GB)} with mass={mass} after fitresult")
+
 
         xx_thindisk, yy_thindisk = thindiskcurve(mass=fitresult.params['mass']*u.M_sun,
                                                  rmin=fitresult.params['rinner']*u.au,
@@ -420,9 +442,19 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
                         [line.get_label() for line in lines],
                         loc='upper left',
                         fontsize=12, handlelength=1.0)
+        pl.tight_layout()
         pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_withavgs.pdf'
                                .format(mass=mass, linename=linename)),
-                   bbox_inches='tight')
+                   bbox_inches='tight'
+                  )
+
+
+        del fitresult, xx_thindisk, yy_thindisk
+
+        snap2 = tracemalloc.take_snapshot()
+        diff = snap2.compare_to(snap1, 'lineno')
+        mem_used = sum([dd.size_diff for dd in diff])*u.B
+        log.info(f"Used {mem_used.to(u.GB)} with mass={mass}")
 
     im.set_visible(True)
     for line in lines:
@@ -489,3 +521,14 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_comparepv.pdf'
                            .format(mass=15, linename=linename)),
                bbox_inches='tight')
+    pl.savefig(paths.fpath('velcentroid/{linename}_pp_pv_plots_fittedmodel_{mass}msun_comparepv.png'
+                           .format(mass=15, linename=linename)),
+               bbox_inches='tight')
+
+
+    fig1.clf()
+
+    snap3 = tracemalloc.take_snapshot()
+    diff = snap3.compare_to(first_snapshot, 'lineno')
+    mem_used = sum([dd.size_diff for dd in diff])*u.B
+    log.info(f"Used {mem_used.to(u.GB)} for line {linename}")

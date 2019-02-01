@@ -4,6 +4,8 @@ from astropy import constants
 from astropy import units as u
 import lmfit
 from constants import vcen
+from astropy import log
+import tracemalloc
 
 
 def thindiskcurve(mass=20*u.M_sun, maxdist=100*u.au, yaxis_unit=u.km/u.s,
@@ -124,11 +126,19 @@ def thindiskcurve_fitter(xsep, velo, error=None, mguess=20*u.M_sun,
                     'velo': u.Quantity(velo, u.km/u.s),
                     'error': error})
 
+    snap1 = tracemalloc.take_snapshot()
+
     minimizer = lmfit.Minimizer(thindiskcurve_residual, parameters, epsfcn=0.005,
                                 fcn_kws=fcn_kws)
 
+    snap2 = tracemalloc.take_snapshot()
+    diff = snap2.compare_to(snap1, 'lineno')
+    mem_used = sum([dd.size_diff for dd in diff])*u.B
+    log.info(f"Used {mem_used.to(u.GB)} in the lmfit minimizer")
+
     result = minimizer.minimize()
 
+    print()
     result.params.pretty_print()
 
     if fixedmass:

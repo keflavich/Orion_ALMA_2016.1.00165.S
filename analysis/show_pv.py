@@ -12,7 +12,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from constants import d_orion
 
 def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
-    
 
     if ww.wcs.cunit[1] == 'm/s':
         scalefactor = 1000.0
