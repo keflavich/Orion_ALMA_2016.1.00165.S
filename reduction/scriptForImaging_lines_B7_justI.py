@@ -3,6 +3,7 @@ import numpy as np
 import os
 import glob
 import datetime
+from source_ids import sources_fmtd
 
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -26,42 +27,44 @@ for ms in mslist:
     print("Done listing {0}".format(ms))
     assert result,"Listing {0} failed".format(ms)
 
-for spw,spws in enumerate([["25","25"], ["27","27"], ["29","29"], ["31","31"]]):
+for sourcename, coordinate in sources_fmtd.items():
 
-    for suffix, niter in (('maskedclarkclean10000', 10000), ):
-        for robust in (0.5, -2, 2):
-        
-            imagename = 'OrionSourceI_only.B7.lb.robust{2}.spw{0}.{1}'.format(spw, suffix, robust)
+    for spw,spws in enumerate([["25","25"], ["27","27"], ["29","29"], ["31","31"]]):
 
-            if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
-                if fits.getheader("{0}.image.pbcor.fits".format(imagename))['RADESYS'] == 'ICRS':
-                    print("Skipping completed file {0}".format(imagename))
-                    continue
-                else:
-                    print("Redoing {0} because it's in fk5.".format(imagename))
+        for suffix, niter in (('maskedclarkclean10000', 10000), ):
+            for robust in (0.5, -2, 2):
 
-            print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
-            tclean(vis=mslist,
-                   imagename=imagename,
-                   spw=spws,
-                   field='Orion_BNKL_source_I',
-                   specmode='cube',
-                   outframe='LSRK',
-                   threshold='15mJy',
-                   cycleniter=-1, # -1 is default
-                   cyclefactor=0.0001, # set very small: try to prevent major cycles
-                   # clean only Source I and BN
-                   #mask=['circle[[5h35m14.5184s,-5d22m30.6199s],0.222arcsec]'],
-                   phasecenter='ICRS 5h35m14.5184s -5d22m30.6199s',
-                   imsize=[128, 128],
-                   cell=['0.004arcsec'],
-                   niter=niter,
-                   deconvolver='clark',
-                   gridder='standard',
-                   weighting='briggs',
-                   robust=robust,
-                   pbcor=True,
-                   pblimit=0.2,
-                   savemodel='none',
-                   interactive=False)
-            makefits(imagename)
+                imagename = 'Orion{3}_only.B7.lb.robust{2}.spw{0}.{1}'.format(spw, suffix, robust, sourcename)
+
+                if os.path.exists("{0}.image.pbcor.fits".format(imagename)):
+                    if fits.getheader("{0}.image.pbcor.fits".format(imagename))['RADESYS'] == 'ICRS':
+                        print("Skipping completed file {0}".format(imagename))
+                        continue
+                    else:
+                        print("Redoing {0} because it's in fk5.".format(imagename))
+
+                print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
+                tclean(vis=mslist,
+                       imagename=imagename,
+                       spw=spws,
+                       field='Orion_BNKL_source_I',
+                       specmode='cube',
+                       outframe='LSRK',
+                       threshold='15mJy',
+                       cycleniter=-1, # -1 is default
+                       cyclefactor=0.0001, # set very small: try to prevent major cycles
+                       # clean only Source I and BN
+                       #mask=['circle[[5h35m14.5184s,-5d22m30.6199s],0.222arcsec]'],
+                       phasecenter=coordinate,
+                       imsize=[128, 128],
+                       cell=['0.004arcsec'],
+                       niter=niter,
+                       deconvolver='clark',
+                       gridder='standard',
+                       weighting='briggs',
+                       robust=robust,
+                       pbcor=True,
+                       pblimit=0.2,
+                       savemodel='none',
+                       interactive=False)
+                makefits(imagename)
