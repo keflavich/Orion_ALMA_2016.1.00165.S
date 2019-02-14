@@ -3,6 +3,8 @@ import numpy as np
 import os
 import glob
 import datetime
+import sys
+sys.path.append('.')
 from source_ids import sources_fmtd
 
 def makefits(myimagebase, cleanup=True):

@@ -3,6 +3,12 @@
 #This script is ment to be set in the COMMAND variable
 #in the configure file to submit.  That submit script will create the
 #clusterspec file for us in the WORK_DIR we specified in the configure file.
+#PBS -l mem=30gb
+#PBS -l nodes=1:ppn=8
+#PBS -d /lustre/aginsbur/orion/2016.1.00165.S/imaging
+#PBS -N orionB6line
+#PBS -m abe
+# # Send mail on begin, end, abort, and fail
 
 WORK_DIR='/lustre/aginsbur/orion/2016.1.00165.S/imaging'
 cd ${WORK_DIR}
