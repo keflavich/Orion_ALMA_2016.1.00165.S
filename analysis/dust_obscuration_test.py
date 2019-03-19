@@ -1,3 +1,14 @@
+"""
+The referee suggested that dust attenuation in the upper disk might be
+responsible for the lower intensities of the high-J lines, i.e., the
+apparently cool rotational temperatures.  This probably can't be a complete
+explanation, since there still needs to be very high excitation to get
+the v=n states occupied, but we can evaluate this idea.
+
+
+This wasn't the most helpful test, though, because it doesn't go back through
+the step of inferring the level populations afterward.
+"""
 import pyradex
 import pylab as pl
 import numpy as np
@@ -7,6 +18,7 @@ from astropy import units as u
 from astropy.table import Table
 from kcl_rotation_diagram import fit_tex
 from astroquery.vamdc import Vamdc
+from dust_emissivity.dust import kappa
 from radex_modeling import chi2, GOF_plot
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
@@ -24,35 +36,31 @@ freq = rr.frequency
 wl = freq.to(u.um, u.spectral())
 rovib_range = ((wl>25*u.um) & (wl<45*u.um))
 
-def bgfunc(freq, disktem=150*u.K, diskdilution=1/2., startem=4000*u.K, stardilution=(100*u.R_sun)**2/(30*u.au)**2,
+def bgfunc(freq, disktem=150*u.K, diskdilution=1/2.,
+           startem=4000*u.K,
+           stardilution=(100*u.R_sun)**2/(30*u.au)**2,
            cmbtem=2.73*u.K, cmbdilution=1.0):
     return (dust_emissivity.blackbody.blackbody(nu=freq, temperature=disktem) * diskdilution +
             dust_emissivity.blackbody.blackbody(nu=freq, temperature=startem) * stardilution +
             dust_emissivity.blackbody.blackbody(nu=freq, temperature=cmbtem) * cmbdilution)
 
-def bg_with_artificial(freq, rovib_range=rovib_range, gcen=29*u.um,
-                       gwidth=1.0*u.um,
-                       gamp=5e-8*rr.background_brightness.unit, **kwargs):
-    wl = freq.to(u.um, u.spectral())
-    artificial = bgfunc(freq)
-    artificial[rovib_range] += gamp * np.exp(-(wl[rovib_range]-gcen)**2/(2*(gwidth)**2))
-    return artificial
-
-rr.background_brightness = bg_with_artificial(freq)
+# no artificial background, just a reasonable one
+rr.background_brightness = bgfunc(freq)
 
 
 plotwl = np.logspace(0, 5, 1000)*u.um
 plotfreq = plotwl.to(u.GHz, u.spectral())
 rovib_range_plot = (plotwl>25*u.um) & (plotwl<45*u.um)
-plotbg = bg_with_artificial(plotfreq, rovib_range_plot)
+plotbg = bgfunc(plotfreq)
 
 rslt = (rr(density=1e8*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None))
-print("wacky background-illuminated chi^2 = {0}".format(chi2(rslt)))
+print("stellar background-illuminated chi^2 = {0}".format(chi2(rslt)))
 vone = np.array([row['upperlevel'][0] == '1' for row in rslt], dtype='bool')
 vzero = np.array([row['upperlevel'][0] == '0' for row in rslt], dtype='bool')
 vtwo = np.array([row['upperlevel'][0] == '2' for row in rslt], dtype='bool')
 Jeight = np.array([row['upperlevel'][2] == '8' for row in rslt], dtype='bool')
-pl.figure(1).clf()
+pl.figure(1)
+pl.clf()
 pl.subplot(2,1,1)
 pl.loglog(plotwl, plotbg, linestyle='-')
 pl.loglog(wl, rr.background_brightness, marker='.', linestyle='none')
@@ -86,7 +94,7 @@ pl.legend(loc='upper right')
 pl.xlabel("E$_U$ [K]")
 pl.ylabel("log upper state population")
 pl.tight_layout()
-pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
+pl.savefig(paths.fpath('simulated_populations_with_stellar_radiation_field.pdf'))
 
 # the referee asked about tau
 # blue = all
@@ -97,10 +105,14 @@ pl.plot(rslt['upperstateenergy'].data[obs], rslt['tau'][obs], '.')
 pl.xlabel("Upper state energy")
 pl.ylabel("Optical Depth")
 
-# What about the observable T_B?
-# (note that RADEX is using the background-subtracted brightness in the T_B column, which isn't what we want)
 pl.figure(3).clf()
 T_B = (rr.source_brightness*u.sr).to(u.K, u.brightness_temperature(1*u.sr, rr.frequency))
+
+# what if we attenuate the emission either by increasing the background or
+# decreasing the observed emission?
+
+T_B = T_B - 100 * u.K * (1-np.exp(-kappa(rr.frequency, beta=1)*10*u.g/u.cm**2))
+
 pl.plot(rslt['upperstateenergy'].data, T_B, '.')
 pl.plot(rslt['upperstateenergy'].data[obs], T_B[obs], '.')
 pl.xlabel("Upper state energy")
@@ -108,13 +120,9 @@ pl.ylabel("Brightness Temperature")
 pl.ylim(0,100)
 
 
-
-
 pl.figure(4).clf()
 GOF_plot(rslt)
 
 pl.figure(5).clf()
-rr.background_brightness = bg_with_artificial(freq, gcen=29*u.um, gwidth=1*u.um,
-                                              gamp=5e-8*rr.background_brightness.unit,)
-rslt2 = (rr(density=1e8*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None))
+rslt2 = rr(density=1e8*u.cm**-3, column=1e19*u.cm**-2, temperature=90*u.K, tbg=None)
 GOF_plot(rslt2)

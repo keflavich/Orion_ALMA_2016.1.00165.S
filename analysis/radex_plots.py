@@ -5,6 +5,7 @@ import paths
 import dust_emissivity
 from astropy import units as u
 from astropy.table import Table
+from radex_modeling import chi2
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 rslt = rr()
@@ -42,6 +43,7 @@ obs = (((85.5 < rslt['frequency']) & (89.5 > rslt['frequency'])) |
 # play with different backgrounds
 
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=2.73)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(chi2(rr.get_table()))
 
 freq = rr.frequency
 wl = rr.frequency.to(u.um, u.spectral())
@@ -49,6 +51,7 @@ bb100_half_plus_cmb = dust_emissivity.blackbody.blackbody(nu=freq, temperature=1
 
 rr.background_brightness = bb100_half_plus_cmb
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(chi2(rr.get_table()))
 
 bb4000smallff_100_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
                                                                        temperature=100*u.K)/2. +
@@ -59,6 +62,7 @@ bb4000smallff_100_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
 
 rr.background_brightness = bb4000smallff_100_half_plus_cmb
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(chi2(rr.get_table()))
 
 bb4000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
                                                                        temperature=200*u.K)/2. +
@@ -68,11 +72,17 @@ bb4000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
                                                                        temperature=2.73*u.K))
 rr.background_brightness = bb4000smallff_200_half_plus_cmb
 print(rr(density=1e5*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 print(rr(density=1e6*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 print(rr(density=1e7*u.cm**-3, column=1e15*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 print(rr(density=1e5*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 print(rr(density=1e6*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 print(rr(density=1e7*u.cm**-3, column=1e16*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 
 mbb1000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
                                                                         temperature=200*u.K)/2. +
@@ -84,13 +94,16 @@ mbb1000smallff_200_half_plus_cmb = (dust_emissivity.blackbody.blackbody(nu=freq,
                                                                         temperature=2.73*u.K))
 rr.background_brightness = mbb1000smallff_200_half_plus_cmb
 print(rr(density=5e5*u.cm**-3, column=1e15*u.cm**-2, temperature=150*u.K, tbg=None)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(chi2(rr.get_table()))
 print(rr(density=5e5*u.cm**-3, column=1e15*u.cm**-2, temperature=150*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 
 rovib_range = ((wl>25*u.um) & (wl<45*u.um))
 stepfunc = 1e-7*u.erg/u.s/u.cm**2/u.Hz/u.sr*rovib_range
 artificial = bb4000smallff_200_half_plus_cmb + stepfunc
 rr.background_brightness = artificial
 print(rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None)[obs])
+print(chi2(rr.get_table()))
 
 
 rr.background_brightness = mbb1000smallff_200_half_plus_cmb
@@ -118,14 +131,15 @@ rovib_range_plot = (plotwl>25*u.um) & (plotwl<45*u.um)
 plotbg[rovib_range_plot] += 1e-9*rr.background_brightness.unit * np.exp(-(plotwl[rovib_range_plot]-35*u.um)**2/(2*(2.5*u.um)**2))
 
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None))
+print(chi2(rslt))
 vone = np.array([row['upperlevel'][0] == '1' for row in rslt], dtype='bool')
 vzero = np.array([row['upperlevel'][0] == '0' for row in rslt], dtype='bool')
 vtwo = np.array([row['upperlevel'][0] == '2' for row in rslt], dtype='bool')
 Jeight = np.array([row['upperlevel'][2] == '8' for row in rslt], dtype='bool')
 pl.clf()
 pl.subplot(2,1,1)
-pl.loglog(wl, rr.background_brightness, marker='.')
 pl.loglog(plotwl, plotbg, linestyle='-')
+pl.loglog(wl, rr.background_brightness, marker='.', linestyle='none')
 pl.xlabel("Wavelength [$\mu$m]")
 pl.ylabel("Background Brightness\n[{}]".format(rr.background_brightness.unit.to_string()))
 pl.subplot(2,1,2)
@@ -139,10 +153,11 @@ pl.semilogy(rslt[Jeight]['upperstateenergy'], rslt[Jeight]['upperlevelpop'], 's'
 pl.xlabel("E$_U$ [K]")
 pl.ylabel("Upper state population")
 pl.tight_layout()
-pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
+# MOVED to dust_obscuration pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
 
 
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=1000*u.K)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
+print(chi2(rr.get_table()))
 
 
 if False:
