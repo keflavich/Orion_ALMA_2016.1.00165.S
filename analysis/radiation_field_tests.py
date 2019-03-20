@@ -7,7 +7,7 @@ from astropy import units as u
 from astropy.table import Table
 from kcl_rotation_diagram import fit_tex
 from astroquery.vamdc import Vamdc
-from radex_modeling import chi2, GOF_plot
+from radex_modeling import chi2, GOF_plot, fitmod
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 rslt = rr()
@@ -118,3 +118,6 @@ rr.background_brightness = bg_with_artificial(freq, gcen=29*u.um, gwidth=1*u.um,
                                               gamp=5e-8*rr.background_brightness.unit,)
 rslt2 = (rr(density=1e8*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=None))
 GOF_plot(rslt2)
+
+pl.figure(6).clf()
+fitmod(plot=True)
