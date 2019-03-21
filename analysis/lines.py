@@ -106,7 +106,6 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'SO8_8-7_7': 344.310612*u.GHz,
               'SO9_8-8_7': 346.528481*u.GHz,
               'U346.3': 346.3708*u.GHz,
-              'U344.4': 344.4537*u.GHz,
               'U335.0': 335.0508032*u.GHz,
               'NaClv=1_26-25': 335.5064022427176*u.GHz,# # NaCl v=1 26-25
               'KClv=1_44-43': 335.13404*u.GHz, # KCl v=1 44-43
@@ -166,6 +165,9 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'NaClv=7_8-7': 98.8671926968896*u.GHz, # already shifted by 4kms
               'K37Clv=6_30-29': 215.73679432678762*u.GHz, # already shifted by 17 kms
               'K37Clv=4_J=32-31': 232.90755269258102*u.GHz, # already shifted by 17 kms
+              'AlO_N=6-5': 229.6938725*u.GHz,
+              'AlO_N=9-8': 344.4537*u.GHz,
+              #'U344.4': 344.4537*u.GHz,
              }
 
 outflow_lines = {'Si34S_13-12': 229.499086*u.GHz,
@@ -256,7 +258,8 @@ texnames = {'Si34S_13-12': 'Si$^{34}$S 13-12',
             'SiOv=1_5-4': 'SiO v=1 J=5-4',
             'H30a': 'H30$\\alpha$', #231.900928*u.GHz, # not actually detected
             'U346.3': 'U346.371', #346.3708*u.GHz,
-            'U344.4': 'AlO N=9-8', #344.4537*u.GHz,
+            'AlO_N=9-8': 'AlO N=9-8', #344.4537*u.GHz,
+            'AlO_N=6-5': 'AlO N=6-5',
             'U335.0': 'K$^{37}$Cl 45-44', #335.0523*u.GHz,
             #'K37Clv=0 45-44': 335.0508032*u.GHz,
             'NaClv=1_26-25': 'NaCl v=1 26-25', #335.5057*u.GHz,
