@@ -87,6 +87,7 @@ pl.xlabel("E$_U$ [K]")
 pl.ylabel("log upper state population")
 pl.tight_layout()
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
+pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.svg'))
 
 # the referee asked about tau
 # blue = all
