@@ -10,7 +10,8 @@ coord = coordinates.SkyCoord("5:35:14.519", "-5:22:30.633", frame='fk5',
                              unit=(u.hour, u.deg))
 
 #sourceIcont = fits.open(paths.dpath('uid_A001_X88e_X1d3_calibrated_final_cont.pbcor.fits'))
-for basefn in ('Orion_SourceI_B3_continuum_r-2{suffix}',
+for basefn in ('Orion_SourceI_B7_continuum_r-2.clean0.1mJy.500klplus.deepmask{suffix}',
+               'Orion_SourceI_B3_continuum_r-2{suffix}',
                'Orion_SourceI_B6_continuum_r-2_longbaselines{suffix}',
                'Orion_SourceI_B3_continuum_r-2.mask2mJy.clean1mJy{suffix}',
                'Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy{suffix}',

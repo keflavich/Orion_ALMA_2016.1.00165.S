@@ -15,7 +15,7 @@ from astropy.nddata import Cutout2D
 from mpl_plot_templates import asinh_norm
 import latex_info
 from latex_info import strip_trailing_zeros, round_to_n
-from files import b6_hires_cont, b3_hires_cont, reid7mm
+from files import b7_hires_cont, b6_hires_cont, b3_hires_cont, reid7mm
 
 import pylab as pl
 
@@ -37,10 +37,11 @@ ptsrc_diskcen_offsets = {}
 parhist = {}
 
 beams = {}
- 
+
 for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                                #('Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
                                #('Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4_SourceIcutout.image.tt0.pbcor.fits', 224.0*u.GHz, 'B6'),
+                               (b7_hires_cont, 340.0*u.GHz, 'B7', 1*u.mJy),
                                (b6_hires_cont, 224.0*u.GHz, 'B6', 2*u.mJy),
                                (b3_hires_cont, 93.3*u.GHz, 'B3', None),
                                (reid7mm, 43.165*u.GHz, '7mm', None),
@@ -100,7 +101,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     ptsrc_amp_value = data[int(ptsrcy), int(ptsrcx)]
     print("Point source amplitude data value: {0}".format(ptsrc_amp_value))
     print()
-    
+
     if thresh is not None:
         # mask out low pixels: see what happens if we only fit the stuff we
         # *really* believe.
@@ -356,7 +357,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print()
 
     bestdiskmod_refit = model(**result6.params)
-    
+
     print("For comparison, the original smoothed linear fit: ")
     result2.params.pretty_print()
     print("red Chi^2: {0:0.3g}".format(result2.redchi))
@@ -421,7 +422,10 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
     ptsrc_ra, ptsrc_dec = mywcs.wcs_pix2world(result4.params['ptsrcx'],
                                               result4.params['ptsrcy'], 0)
-    eptsrc_ra, eptsrc_dec = result4.params['ptsrcx'].stderr*pixscale, result4.params['ptsrcy'].stderr*pixscale,
+    try:
+        eptsrc_ra, eptsrc_dec = result4.params['ptsrcx'].stderr*pixscale, result4.params['ptsrcy'].stderr*pixscale,
+    except TypeError:
+        eptsrc_ra, eptsrc_dec = np.nan*u.arcsec,np.nan*u.arcsec
     fitted_ptsrc = coordinates.SkyCoord(ptsrc_ra*u.deg, ptsrc_dec*u.deg, frame=mywcs.wcs.radesys.lower())
     print("Fitted point source location = {0} {1}".format(fitted_ptsrc.to_string('hmsdms'), fitted_ptsrc.frame.name))
     print("Fitted point source amplitude: {0}".format(result4.params['ptsrcamp']))
@@ -477,7 +481,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                                          fitted_diskends_mod4.icrs.dec.deg[0],
                                          fitted_diskends_mod4.icrs.ra.deg[1],
                                          fitted_diskends_mod4.icrs.dec.deg[1],))
-    
+
     # compute offset from point source to disk center along the disk axis angle
     assert ptsrc_diskcen_sep < 0.1*u.arcsec
     sep_projected = ptsrc_diskcen_sep * np.abs(np.cos(posang-90*u.deg))
@@ -518,7 +522,10 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     print("Fitted source (disk vertical scale) size: {0}".format(fitted_beam.__repr__()))
     print("Real source (disk vertical scale) size: {0}".format(source_size.__repr__()))
     scaleheight = (fitted_beam.major*d_orion).to(u.au, u.dimensionless_angles())
-    scaleheight_error = (result4.params['kernelmajor'].stderr*u.arcsec*d_orion).to(u.au, u.dimensionless_angles())
+    try:
+        scaleheight_error = (result4.params['kernelmajor'].stderr*u.arcsec*d_orion).to(u.au, u.dimensionless_angles())
+    except TypeError:
+        scaleheight_error = np.nan * u.au
     print("Scale height: {0} +/- {1}".format(scaleheight, scaleheight_error))
     print()
 
@@ -574,7 +581,12 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                          fitted_ptsrc.icrs.dec.deg,
                          band
                         ))
-               
+
+    try:
+        ePtwidth = (u.Quantity(result4.params['ptsrcwid'].stderr, u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value
+    except TypeError:
+        ePtwidth = np.nan*u.au
+
     fit_results[freq] = {
                          'Disk FWHM': scaleheight,
                          'eDisk FWHM': scaleheight_error,
@@ -587,7 +599,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
                          'Pt Amp': result4.params['ptsrcamp'].value,
                          'ePt Amp': result4.params['ptsrcamp'].stderr,
                          'Pt Width': (u.Quantity(result4.params['ptsrcwid'], u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
-                         'ePt Width': (u.Quantity(result4.params['ptsrcwid'].stderr, u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value,
+                         'ePt Width': ePtwidth,
                          'Pt Flux': pointmodel_image.sum() / ppbeam,
                          'Total Flux': bestdiskplussmearedsourcemod.sum() / ppbeam,
                          'Pt \%': pointmodel_image.sum() / bestdiskplussmearedsourcemod.sum(),
@@ -748,7 +760,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     im0 = ax.imshow(data*jtok.value, interpolation='none', origin='lower', cmap='viridis')
     im = ax.imshow(data*1e3, interpolation='none', origin='lower', cmap='viridis')
 
-    wavelength = '1.3 mm' if band == 'B6' else '3 mm' if band == 'B3' else '7 mm' if band == '7mm' else 'ERROR'
+    wavelength = '1.3 mm' if band == 'B6' else '3 mm' if band == 'B3' else '7 mm' if band == '7mm' else '880 \mu\mathrm{m}' if band == 'B7' else 'ERROR'
 
     cb = fig5.colorbar(mappable=im)
     cb.set_label('$S_{{{0}}}$ [mJy beam$^{{-1}}$]'.format(wavelength))
@@ -761,7 +773,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     cb2.set_position(pos)
     cb.ax.yaxis.set_label_position("left")
     cb2.set_ylabel('$T_B$ [K]')
-    
+
 
     ax.set_xticks([])
     ax.set_yticks([])
@@ -824,8 +836,8 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     cb2.set_position(pos)
     cb.ax.yaxis.set_label_position("left")
     cb2.set_ylabel('$T_B$ [K]')
-    
-    
+
+
     #ax.set_xticks([])
     #ax.set_yticks([])
     ax.set_xlabel("RA offset (\")")
@@ -967,7 +979,7 @@ latexdict['tablefoot'] = ('\n\par The pointlike source '
                           'failure in the fitter; the errors are likely similar to '
                           'the 93.3 GHz fit errors. '
                           'The Pt Flux and Total Flux columns report the integrals '
-                          'of the best-fit models.' 
+                          'of the best-fit models.'
                          )
 
 mask7mm = tbl['Frequency'] == 43.165
