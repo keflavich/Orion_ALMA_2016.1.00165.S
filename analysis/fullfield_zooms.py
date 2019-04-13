@@ -289,7 +289,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
     #print("5. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.ax.set_yticklabels(["{0:3.1f}".format(float(x.get_text())) for x in cb.ax.get_yticklabels()])
     #print("6. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
-    
+
 
 
     if psffn is not None:

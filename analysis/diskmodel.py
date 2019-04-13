@@ -849,6 +849,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     beam_ellipse.set_facecolor('w')
     ax.add_patch(beam_ellipse)
     fig5.savefig(paths.fpath("contmodel/OrionSourceI_data_stretched_{0}.pdf".format(band)), bbox_inches='tight')
+    fig5.savefig(paths.fpath("contmodel/OrionSourceI_data_stretched_{0}.svg".format(band)), bbox_inches='tight')
 
 
 

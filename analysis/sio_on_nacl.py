@@ -111,6 +111,12 @@ ax.contour(siov5data, colors=['y']*3, levels=[300, 400, 500, 600, 800],
            zorder=10,
           )
 
+ax.text(-0.12,0.12,"NaCl",color='r', fontsize=14)
+ax.text(-0.12,0.10,"SiO v=5",color='y', fontsize=14)
+ax.text(-0.12,0.08,"Continuum",color='k', fontsize=14)
+ax.plot([0.05, 0.10], [-0.13, -0.13], color='k')
+ax.text(0.075, -0.12, "20 AU", color='k', fontsize=14, ha='center')
+
 cb = pl.colorbar(mappable=im)
 cb.set_label("$T_B$ [K]")
 ax.set_xlabel("RA offset (\")")
