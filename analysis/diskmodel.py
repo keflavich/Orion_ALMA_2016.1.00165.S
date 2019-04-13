@@ -585,7 +585,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     try:
         ePtwidth = (u.Quantity(result4.params['ptsrcwid'].stderr, u.arcsec)*d_orion).to(u.au, u.dimensionless_angles()).value
     except TypeError:
-        ePtwidth = np.nan*u.au
+        ePtwidth = np.nan
 
     fit_results[freq] = {
                          'Disk FWHM': scaleheight,
@@ -914,6 +914,9 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
 
 
 def crd_or_qty(x):
+    if isinstance(x, list):
+        x = [np.nan if y is None else y
+             for y in x]
     try:
         return u.Quantity(x)
     except TypeError:
@@ -1044,7 +1047,7 @@ with open(paths.texpath('continuum_beams.tex'), 'w') as fh:
 print()
 print("Measured point source offsets: ")
 print(ptsrc_diskcen_offsets)
-for k in ['B6','B3']:
+for k in ['B7', 'B6', 'B3']:
     print("{0} fitted offset and positional error".format(k))
     print((ptsrc_diskcen_offsets[k][0]*d_orion).to(u.au, u.dimensionless_angles()),
           (ptsrc_diskcen_offsets[k][2]*d_orion).to(u.au, u.dimensionless_angles()))
