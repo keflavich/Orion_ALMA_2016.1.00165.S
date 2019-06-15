@@ -28,13 +28,14 @@ imaging_parameters = {
 
 
 line_to_image_list = [
+    {'name': 'SiOv=0_2-1', 'frequency': 86.84696*u.GHz,'band': 3, },
     {'band': 6, 'name': 'H2Ov2=1_5(5,0)-6(4,3)', 'frequency': 232.6867*u.GHz, 'velocity_range': (-30, 40)},
+    {'name': 'SiOv=0_8-7', 'frequency': 347.330824*u.GHz,'band': 7, },
+    {'name': 'SiOv=1_2-1', 'frequency': 86.24343*u.GHz,'band': 3, },
     {'name': 'SiS_12-11', 'frequency': 217.817644*u.GHz, 'band': 6, },
     {'name': '29SiOv=0_5-4', 'frequency': 214.3857577*u.GHz,'band': 6, },
     {'name': '29SiOv=0_2-1', 'frequency': 85.759199*u.GHz,'band': 3, },
     {'name': '29SiOv=2_2-1', 'frequency': 85.640452*u.GHz,'band': 3, },
-    {'name': 'SiOv=1_2-1', 'frequency': 86.24343*u.GHz,'band': 3, },
-    {'name': 'SiOv=0_2-1', 'frequency': 86.84696*u.GHz,'band': 3, },
     {'name': 'SiOv=0_5-4', 'frequency': 217.10498*u.GHz,'band': 6, },
     {'name': 'SiOv=1_5-4', 'frequency': 215.59595*u.GHz,'band': 6, },
     {'name': 'H30a', 'frequency': 231.900928*u.GHz,'band': 6, },
@@ -46,7 +47,6 @@ line_to_image_list = [
     {'name': '29SiOv=0_8-7', 'frequency': 342.9808425*u.GHz,'band': 7, },
     {'name': '29SiOv=1_8-7', 'frequency': 340.6118623*u.GHz,'band': 7, },
     {'name': '29SiOv=2_8-7', 'frequency': 338.2451561*u.GHz,'band': 7, },
-    {'name': 'SiOv=0_8-7', 'frequency': 347.330824*u.GHz,'band': 7, },
     {'name': 'SiOv=1_8-7', 'frequency': 344.916247*u.GHz,'band': 7, },
     {'name': 'SiOv=2_8-7', 'frequency': 342.504607*u.GHz,'band': 7, },
     {'name': '30SiOv=0_8-7', 'frequency': 338.9300437*u.GHz,'band': 7, },
