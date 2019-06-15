@@ -49,6 +49,7 @@ for line_info in line_to_image_list:
     spw = ",".join([str(spw) for spw in spws])
 
     start_vel = v0 if dv > 0*u.km/u.s else v1
+    start_vel = v0
 
     for suffix, niter in (('clarkclean1000', 1000), ):
 
