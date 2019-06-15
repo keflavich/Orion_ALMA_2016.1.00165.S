@@ -32,8 +32,9 @@ for line_info in line_to_image_list:
     linename = line_info['name']
     frequency = line_info['frequency'].to(u.Hz).value
 
+    # only use first MS for metadata, but use both later
     msfile = os.path.join(ms_basepath,
-                          mses[band])
+                          mses[band][0])
 
     msmd.open(msfile)
     spws = msmd.spwsforfield('Orion_BNKL_source_I')
@@ -55,7 +56,7 @@ for line_info in line_to_image_list:
         imagename = 'OrionSourceI.{3}.spw{0}.{2}.{1}'.format(spw, suffix, linename, band)
         if not os.path.exists("{0}.image.pbcor.fits".format(imagename)):
             print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
-            tclean(vis=msfile,
+            tclean(vis=mses[band],
                    imagename=imagename,
                    field='Orion_BNKL_source_I',
                    spw=spw,
