@@ -67,7 +67,7 @@ for line_info in line_to_image_list:
                    restfreq=frequency,
                    veltype='radio',
                    outframe='LSRK',
-                   interactive=F,
+                   interactive=False,
                    niter=imaging_parameters[band]['niter'],
                    imsize=imaging_parameters[band]['imsize'],
                    cell=imaging_parameters[band]['cell'],
