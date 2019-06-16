@@ -21,7 +21,7 @@ def makefits(myimagebase, cleanup=True):
     if cleanup:
         for suffix in ('psf', 'weight', 'sumwt', 'pb', 'model', 'residual',
                        'mask', 'image', 'workdirectory'):
-            os.system('rm -rf {0}.{1}'.format(myimagebase, suffix))
+            os.system('rm -rf "{0}.{1}"'.format(myimagebase, suffix))
 
 
 for line_info in line_to_image_list:
