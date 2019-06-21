@@ -1,5 +1,6 @@
 from astropy import units as u
 ms_basepath = '/export/home/rng90003/orion/2016.1.00165.S/measurement_sets/'
+ms_basepath = '/lustre/aginsbur/orion/2016.1.00165.S/measurement_sets/'
 
 
 mses = {'b3': ['member.uid___A001_X88e_X1d9_calibrated.ms'],
