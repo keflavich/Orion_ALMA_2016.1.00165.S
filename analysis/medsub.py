@@ -1,3 +1,4 @@
+import os
 from spectral_cube import SpectralCube
 from astropy import units as u
 from astropy import log
@@ -38,31 +39,34 @@ for source in sources_fmtd:
                 for band in ("B7.lb", "B6", "B3"):
                     imagename = 'Orion{3}_only.{band}.robust{2}.spw{0}.{1}'.format(spw, suffix, robust, source, band=band)
                     fn = "{basepath}/{imagename}.image.pbcor.fits".format(basepath=basepath, imagename=imagename)
-                    try:
-                        cube = SpectralCube.read(fn.format(source=source))
-                        if cube.wcs.wcs.radesys.lower() == 'fk5':
-                            log.exception("{0} has radesys = {1}".format(fn.format(source=source),
-                                                                         cube.wcs.wcs.radesys))
+                    doublemedsubfn = fn.replace(".image.pbcor.fits",
+                                                "_doublemedsub.image.pbcor.fits").format(source=source)
+                    # NOTE: sometimes you want to overwrite stuff!  If so, just do 'if True' here
+                    if not os.path.exists(doublemedsubfn):
+                        try:
+                            cube = SpectralCube.read(fn.format(source=source))
+                            if cube.wcs.wcs.radesys.lower() == 'fk5':
+                                log.exception("{0} has radesys = {1}".format(fn.format(source=source),
+                                                                             cube.wcs.wcs.radesys))
+                                continue
+                            cube = cube.mask_out_bad_beams(0.1)
+                        except FileNotFoundError:
+                            log.exception("File {0} not found".format(fn.format(source=source)))
                             continue
-                        cube = cube.mask_out_bad_beams(0.1)
-                    except FileNotFoundError:
-                        log.exception("File {0} not found".format(fn.format(source=source)))
-                        continue
 
-                    log.info("Working on file {0}".format(fn.format(source=source)))
+                        log.info("Working on file {0}".format(fn.format(source=source)))
 
-                    med = cube.median(axis=0)
+                        med = cube.median(axis=0)
 
-                    medsub = cube-med
+                        medsub = cube-med
 
-                    medsub.write(fn.replace(".image.pbcor.fits",
-                                            "_medsub.image.pbcor.fits").format(source=source),
-                                 overwrite=True)
+                        medsub.write(fn.replace(".image.pbcor.fits",
+                                                "_medsub.image.pbcor.fits").format(source=source),
+                                     overwrite=True)
 
-                    medspace = medsub.median(axis=(1,2))
-                    doublemedsub = medsub - medspace.quantity[:,None,None]
+                        medspace = medsub.median(axis=(1,2))
+                        doublemedsub = medsub - medspace.quantity[:,None,None]
 
-                    doublemedsub.write(fn.replace(".image.pbcor.fits",
-                                                  "_doublemedsub.image.pbcor.fits").format(source=source),
-                                       overwrite=True)
+                        doublemedsub.write(doublemedsubfn,
+                                           overwrite=True)
 

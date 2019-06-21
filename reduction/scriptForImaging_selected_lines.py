@@ -54,7 +54,7 @@ for line_info in line_to_image_list:
     for suffix, niter in (('clarkclean1000', 1000), ):
 
 
-        imagename = 'OrionSourceI.{3}.spw{0}.{2}.{1}'.format(spw, suffix, linename, band)
+        imagename = 'OrionFullField.{3}.spw{0}.{2}.{1}'.format(spw, suffix, linename, band)
         if not os.path.exists("{0}.image.pbcor.fits".format(imagename)):
             print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
             tclean(vis=mses[band],
