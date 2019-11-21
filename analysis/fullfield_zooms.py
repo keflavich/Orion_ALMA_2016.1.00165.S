@@ -374,6 +374,7 @@ if __name__ == "__main__":
                #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.image.tt0.pbcor.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.image.tt0.pbcor.fits",
                "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor.fits",
+               "Orion_SourceI_B7_continuum_r-2.clean0.1mJy.500klplus.deepmask.image.tt0.pbcor.fits",
                "Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor.fits",
               ):
         figure = inset_overlays(fn, zoomregions=zoomregions,

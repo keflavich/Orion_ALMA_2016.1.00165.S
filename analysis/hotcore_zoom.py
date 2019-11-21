@@ -7,6 +7,7 @@ import pylab as pl
 from astropy.io import fits
 from astropy import wcs
 import astropy.visualization
+from visualization import make_scalebar
 from astropy.convolution import convolve, Gaussian2DKernel
 from mpl_plot_templates import asinh_norm
 import matplotlib
@@ -15,7 +16,13 @@ import warnings
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
+
+distance = 400*u.pc
+
 psf_center = coordinates.SkyCoord('5:35:14.511 -5:22:30.561',
+                                  unit=(u.h, u.deg),
+                                  frame='icrs')
+scalebarpos = coordinates.SkyCoord('5:35:14.62 -5:22:32.8',
                                   unit=(u.h, u.deg),
                                   frame='icrs')
 
@@ -81,13 +88,13 @@ def inset_overlays(fn, zoomregions, fignum=1,
                       )
 
     # we'll want this later
-    #make_scalebar(ax, scalebarpos,
-    #              length=(0.5*u.pc / distance).to(u.arcsec,
-    #                                              u.dimensionless_angles()),
-    #              color='k',
-    #              label='0.5 pc',
-    #              text_offset=1.0*u.arcsec,
-    #             )
+    make_scalebar(ax, scalebarpos,
+                  length=(1000*u.au / distance).to(u.arcsec,
+                                                  u.dimensionless_angles()),
+                  color='k',
+                  label='1000 au',
+                  text_offset=0.1*u.arcsec,
+                 )
 
 
     ax.set_aspect(1)
@@ -165,7 +172,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
     #print("5. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
     cb.ax.set_yticklabels(["{0:3.1f}".format(float(x.get_text())) for x in cb.ax.get_yticklabels()])
     #print("6. cb labels: {0}".format([x.get_text() for x in cb.ax.get_yticklabels()]))
-    
+
 
 
     if psffn is not None:
@@ -256,12 +263,13 @@ if __name__ == "__main__":
                #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.image.tt0.pbcor.fits",
                #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.image.tt0.pbcor.fits",
                "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.image.tt0.pbcor.fits",
-               "Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor.fits",
+               "Orion_SourceI_B7_continuum_r-2.clean0.1mJy.500klplus.deepmask.image.tt0.pbcor.fits",
+               #"Orion_SourceI_B3_continuum_r-2.clean0.25mJy.image.tt0.pbcor.fits",
               ):
         figure = inset_overlays(paths.dpath(fn), zoomregions=zoomregions,
                                 psffn=paths.dpath(fn.replace("image.tt0.pbcor","psf.tt0")),
                                 vmin=-0.0005, vmax=0.005)
-        figure.savefig(paths.fpath('fullfield_zooms/'+fn).replace(".fits","_inset.pdf"), bbox_inches='tight', dpi=300)
+        figure.savefig(paths.fpath('fullfield_zooms/'+fn).replace(".fits","_hotcore_inset.pdf"), bbox_inches='tight', dpi=300)
 
 
 
@@ -283,28 +291,28 @@ if __name__ == "__main__":
     #zoomregions['hotcoredisk']['min'] = -0.001
     #zoomregions['hotcoredisk']['max'] = 0.001
 
-    for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
-               #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
-               "Orion_SourceI_B3_continuum_r-2.clean0.25mJy.residual.tt0.fits",
-               "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.residual.tt0.fits",
-              ):
-        figure = inset_overlays(paths.dpath(fn), zoomregions=zoomregions,
-                                psffn=paths.dpath(fn).replace("residual","psf"),
-                                vmin=-0.0001, vmax=0.001)
-        figure.savefig(paths.fpath('fullfield_zooms/'+fn).replace(".fits","_inset.pdf"), bbox_inches='tight',
-                       dpi=300)
+    #for fn in (#"Orion_SourceI_B6_continuum_r-2_longbaselines.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.mask5mJy.clean4mJy.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2_automultithresh_1mJy.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r0.5.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean5mJy.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean4mJy.selfcal.phase0.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean3mJy.selfcal.phase1.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean2mJy.selfcal.phase2.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean1mJy.selfcal.phase3.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean0.5mJy.selfcal.phase4.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean5mJy.automultithresh.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean4mJy.automultithresh.selfcal.phase0.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean3mJy.automultithresh.selfcal.phase1.residual.tt0.fits",
+    #           #"Orion_SourceI_B6_continuum_r-2.clean2mJy.automultithresh.selfcal.phase2.residual.tt0.fits",
+    #           #"Orion_SourceI_B3_continuum_r-2.clean0.25mJy.residual.tt0.fits",
+    #           "Orion_SourceI_B6_continuum_r-2.clean0.1mJy.selfcal.ampphase5.deepmask.residual.tt0.fits",
+    #          ):
+    #    figure = inset_overlays(paths.dpath(fn), zoomregions=zoomregions,
+    #                            psffn=paths.dpath(fn).replace("residual","psf"),
+    #                            vmin=-0.0001, vmax=0.001)
+    #    figure.savefig(paths.fpath('fullfield_zooms/'+fn).replace(".fits","_hotcore_inset.pdf"), bbox_inches='tight',
+    #                   dpi=300)
 
 # Orion_SourceI_B3_continuum_r0.5_dirty.image.tt0.pbcor.fits
 # Orion_SourceI_B3_continuum_r0.5.image.tt0.pbcor.fits

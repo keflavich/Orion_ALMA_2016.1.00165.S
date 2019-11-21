@@ -25,6 +25,8 @@ def makefits(myimagebase, cleanup=True):
 
 
 for line_info in line_to_image_list:
+    if line_info['name'] != 'SiS_12-11':
+        continue
 
     v0 = u.Quantity(line_info['velocity_range'][0], u.km/u.s)
     v1 = u.Quantity(line_info['velocity_range'][1], u.km/u.s)
@@ -33,30 +35,59 @@ for line_info in line_to_image_list:
     frequency = line_info['frequency'].to(u.Hz).value
 
     # only use first MS for metadata, but use both later
-    msfile = os.path.join(ms_basepath,
-                          mses[band][0])
 
-    msmd.open(msfile)
-    spws = msmd.spwsforfield('Orion_BNKL_source_I')
-    spws = [x for x in spws
-            if (msmd.chanfreqs(x).min() < frequency) and
-            (msmd.chanfreqs(x).max() > frequency)]
-    dnu = np.diff(msmd.chanfreqs(spws[0])).mean()
-    dv = (dnu / frequency * constants.c).to(u.km/u.s)
+    dvs = []
+    spws = {}
+
+    for ms_ in mses[band]:
+        msfile = os.path.join(ms_basepath,
+                              ms_)
+
+        msmd.open(msfile)
+        spws_ = msmd.spwsforfield('Orion_BNKL_source_I')
+        spws_ = [x for x in spws_
+                if (msmd.chanfreqs(x).min() < frequency) and
+                (msmd.chanfreqs(x).max() > frequency)]
+        if len(spws_) == 0:
+            print("SKIPPING {0} BECAUSE NO SPWS FOUND!!".format(line_info))
+            continue
+        for spw in tuple(spws_):
+            dnu = np.diff(msmd.chanfreqs(spw)).mean()
+            if np.abs(dnu) > 2e6:
+                spws_.remove(spw)
+                continue
+            dv = (dnu / frequency * constants.c).to(u.km/u.s)
+            dvs.append(dv)
+        dv = min(dvs)
+        spws[ms_] = spws_
+
+    width = '{0}km/s'.format(dv)
+
     nchan = int(np.abs(((v1-v0)/dv).decompose()))
     msmd.close()
 
-    spw = ",".join([str(spw) for spw in spws])
+    print(spws)
+
+    spw = [",".join([str(spw) for spw in spwl]) for _,spwl in spws.items()]
 
     start_vel = v0
-    print("Start_vel = {0}".format(start_vel))
+    print("Start_vel = {0} for line {1} restfreq={2}".format(start_vel, linename, frequency))
+    print("nchan = {0}".format(nchan))
+    print("spw = {0}".format(spw))
+    spwname = (str(spw).replace("[","")
+               .replace(",","_")
+               .replace("]","")
+               .replace("'","")
+               .replace(" ",""))
 
-    for suffix, niter in (('clarkclean1000', 1000), ):
+    for suffix, niter in (('clarkclean1000', 1000), ('clarkclean10000', 10000), ):
 
 
-        imagename = 'OrionFullField.{3}.spw{0}.{2}.{1}'.format(spw, suffix, linename, band)
+        imagename = 'OrionFullField.{3}.spw{0}.{2}.{1}'.format(spwname, suffix, linename, band)
         if not os.path.exists("{0}.image.pbcor.fits".format(imagename)):
             print("Imaging {0} at {1}".format(imagename, datetime.datetime.now()))
+            assert ',' not in imagename
+            assert '[' not in imagename
             tclean(vis=mses[band],
                    imagename=imagename,
                    field='Orion_BNKL_source_I',
@@ -65,7 +96,7 @@ for line_info in line_to_image_list:
                    specmode='cube',
                    start='{0}km/s'.format(start_vel.to(u.km/u.s).value),
                    nchan=nchan,
-                   restfreq=frequency,
+                   restfreq='{0}Hz'.format(frequency),
                    veltype='radio',
                    outframe='LSRK',
                    interactive=False,
@@ -77,5 +108,6 @@ for line_info in line_to_image_list:
                    phasecenter='',
                    threshold=imaging_parameters[band]['threshold'],
                    savemodel='none',
+                   chanchunks=8,
                   )
             makefits(imagename)

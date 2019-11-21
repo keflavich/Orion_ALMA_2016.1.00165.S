@@ -1,12 +1,15 @@
 from astropy import units as u
 ms_basepath = '/export/home/rng90003/orion/2016.1.00165.S/measurement_sets/'
 ms_basepath = '/lustre/aginsbur/orion/2016.1.00165.S/measurement_sets/'
+ms_basepath = '/orange/adamginsburg/orion/2016.1.00165.S/measurement_sets/'
 
 
 mses = {'b3': ['member.uid___A001_X88e_X1d9_calibrated.ms'],
         'b6': ['uid___A001_X88e_X1d3_calibrated.ms',
                'uid___A002_Xb925ef_X4334_calibrated.ms'],
-        'b7': ['band7.ms', 'band7_lb.ms'],
+        'b7': ['band7.ms',
+               'band7_lb.ms', # uid___A002_Xc694dd_X438c.ms
+              ],
        }
 
 imaging_parameters = {
@@ -20,7 +23,7 @@ imaging_parameters = {
           'threshold': '10mJy',
           'niter': 1000,
          },
-    'b7':{'imsize': [3840, 4720],
+    'b7':{'imsize': [4800, 4800],
           'cell': ['0.006arcsec'],
           'threshold': '15mJy',
           'niter': 1000,
@@ -31,7 +34,7 @@ imaging_parameters = {
 line_to_image_list = [
     {'name': 'SiOv=0_2-1', 'frequency': 86.84696*u.GHz,'band': 3, },
     {'band': 6, 'name': 'H2Ov2=1_5(5,0)-6(4,3)', 'frequency': 232.6867*u.GHz, 'velocity_range': (-30, 40)},
-    {'name': 'SiOv=0_8-7', 'frequency': 347.330824*u.GHz,'band': 7, },
+    {'name': 'SiOv=0_8-7', 'frequency': 347.330824*u.GHz,'band': 7, 'velocity_range': (-30, 45)},
     {'name': 'SiOv=1_2-1', 'frequency': 86.24343*u.GHz,'band': 3, },
     {'name': 'SiS_12-11', 'frequency': 217.817644*u.GHz, 'band': 6, },
     {'name': '29SiOv=0_5-4', 'frequency': 214.3857577*u.GHz,'band': 6, },
