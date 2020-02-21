@@ -11,7 +11,7 @@ from astroquery.splatalogue import Splatalogue
 from astroquery.splatalogue.utils import minimize_table as mt
 import lines
 from salt_tables import (salt_tables, SO, SO2, HCl, sis_tables, AlCl, AlF, Al37Cl,
-                         NaF, AlO, AlOH, NaCN)
+                         NaF, AlO, AlOH, NaCN, CaS, CaO)
 
 pl.matplotlib.rcParams['font.size']=16
 
@@ -28,6 +28,7 @@ ided_linetexnames = [lines.texnames[x] if x in lines.texnames else x
 
 #salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
+
 tables = []
 
 def linename(row):
@@ -177,7 +178,7 @@ for fn in flist:
         if (b>sp_st.xarr.min()) and (b<sp_st.xarr.max()) and a not in ided_linetexnames:
             print("'{0}': {1}*u.{2},".format(a,b.value,b.unit))
 
-    for speciesname, species in (('NaCN', NaCN), ('SO2',SO2), ('SO', SO)):
+    for speciesname, species in (('NaCN', NaCN), ('SO2',SO2), ('SO', SO), ('CaS', CaS), ('CaO', CaO)):
         # Do another one just for nacn
         sp_st.plotter(ymin=-0.0025, ymax=0.01)
 
