@@ -38,4 +38,4 @@ origin = offset_to_point(source.ra.deg,
                          extraction_path)*u.deg
 
 # only approximate
-central_freqs = {'B6': 224*u.GHz, 'B7': 345*u.GHz, 'B3': 95*u.GHz}
+central_freqs = {'B6': 224*u.GHz, 'B7': 345*u.GHz, 'B3': 95*u.GHz, 'B9': 660*u.GHz, 'B8': 470*u.GHz}
