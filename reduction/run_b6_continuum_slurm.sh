@@ -17,6 +17,8 @@ which git
 git --version
 echo $?
 
+cd /orange/adamginsburg/orion/2016.1.00165.S/imaging
+
 export CASA=/blue/adamginsburg/adamginsburg/casa/casa-release-5.7.0-134.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 
