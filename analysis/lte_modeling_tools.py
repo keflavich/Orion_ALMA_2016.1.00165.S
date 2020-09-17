@@ -3,7 +3,7 @@ from astropy import constants
 from astropy.modeling.models import custom_model
 from astropy import units as u
 
-def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
+def nupper_of_kkms(kkms, freq, Aul, replace_bad=None):
     """
     Mangum & Shirley 2015 eqn 82 gives, for the optically thin, Rayleigh-Jeans,
     negligible background approximation:
@@ -19,10 +19,10 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
 
     To get Nu of an observed line, then:
 
-        Nu Q_rot / gu exp(E_u/k Tex) = (3 k) / (8 pi^3 nu S mu^2 R_i)   (Q/g) exp(E_u/k Tex) integ(T_R/f dv)
+        Nu (Q_rot / gu) exp(E_u/k Tex) = (3 k) / (8 pi^3 nu S mu^2 R_i)   (Q/g) exp(E_u/k Tex) integ(T_R/f dv)
 
     This term cancels:
-        Q_rot / gu exp(E_u/k Tex)
+        (Q_rot / gu) exp(E_u/k Tex)
 
     Leaving:
 
@@ -73,9 +73,9 @@ def nupper_of_kkms(kkms, freq, Aul, degeneracies, replace_bad=None):
     # kelvin-hertz
     Khz = (kkms * (freq/constants.c)).to(u.K * u.MHz)
 
-    return (nline * Khz / degeneracies).to(u.cm**-2)
+    return (nline * Khz).to(u.cm**-2)
 
-def kkms_of_nupper(nupper, freq, Aul, degeneracies):
+def kkms_of_nupper(nupper, freq, Aul):
     """
     Convert the column density in the upper state of a line ``nupper`` to the
     integrated intensity in brightness units (K km / s).
@@ -89,7 +89,7 @@ def kkms_of_nupper(nupper, freq, Aul, degeneracies):
 
     nline = 8 * np.pi * freq * constants.k_B / constants.h / Aul / constants.c**2
 
-    Khz = (nupper / nline * degeneracies)
+    Khz = (nupper / nline)
 
     kkms = (Khz / (freq/constants.c)).to(u.K * u.km/u.s)
 
