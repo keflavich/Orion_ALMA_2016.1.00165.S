@@ -68,6 +68,7 @@ for uvrange, uvrangename in (
                    veltype='radio',
                    savemodel='none',
                    uvrange=uvrange,
+                   pblimit=0.0,
                   )
             makefits(contimagename)
 
@@ -102,5 +103,6 @@ for uvrange, uvrangename in (
                    veltype='radio',
                    savemodel='none',
                    uvrange=uvrange,
+                   pblimit=0.0,
                   )
             makefits(contimagename)

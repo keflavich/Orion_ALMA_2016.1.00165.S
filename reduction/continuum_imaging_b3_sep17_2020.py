@@ -64,6 +64,7 @@ for uvrange, uvrangename in (
                    savemodel='none',
                    uvrange=uvrange,
                    parallel=parallel,
+                   pblimit=0.0,
                   )
             makefits(contimagename)
 
@@ -97,5 +98,6 @@ for uvrange, uvrangename in (
                    savemodel='none',
                    uvrange=uvrange,
                    parallel=parallel,
+                   pblimit=0.0,
                   )
             makefits(contimagename)
