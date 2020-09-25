@@ -73,7 +73,7 @@ for uvrange, uvrangename in (
         maskfile = reg_to_mask('deepcleanregions.reg', prevcontimage+".image.tt0")
 
         contimagename = 'Orion_SourceI_B3_continuum_r{0}.clean{1}.{2}.deepmask'.format(robust, depth2, uvrangename)
-        if redo or not os.path.exists(contimagename+".residual.tt0"):
+        if redo or not os.path.exists(contimagename+".image.tt0"):
             os.system('rm -rf ' + contimagename + "*")
             tclean(vis=contvis,
                    imagename=contimagename,
