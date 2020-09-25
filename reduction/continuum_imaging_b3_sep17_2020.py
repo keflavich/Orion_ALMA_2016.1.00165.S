@@ -74,11 +74,15 @@ for uvrange, uvrangename in (
 
         contimagename = 'Orion_SourceI_B3_continuum_r{0}.clean{1}.{2}.deepmask'.format(robust, depth2, uvrangename)
         if redo or not os.path.exists(contimagename+".image.tt0"):
-            os.system('rm -rf ' + contimagename + "*")
+            #os.system('rm -rf ' + contimagename + "*")
+            if not os.path.exists(contimagename+".model.tt0"):
+                startmodel=[prevcontimage+'.model.tt0', prevcontimage+'.model.tt1']
+            else:
+                startmodel=''
             tclean(vis=contvis,
                    imagename=contimagename,
                    datacolumn='data',
-                   startmodel=[prevcontimage+'.model.tt0', prevcontimage+'.model.tt1'],
+                   startmodel=startmodel,
                    field='Orion_BNKL_source_I',
                    specmode='mfs',
                    deconvolver='mtmfs',
