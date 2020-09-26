@@ -79,6 +79,12 @@ for uvrange, uvrangename in (
                 startmodel=[prevcontimage+'.model.tt0', prevcontimage+'.model.tt1']
             else:
                 startmodel=''
+
+            if not os.path.exists(prevcontimage+".mask"):
+                mask = prevcontimage+".mask"
+            else:
+                mask = ''
+
             tclean(vis=contvis,
                    imagename=contimagename,
                    datacolumn='data',
@@ -86,7 +92,7 @@ for uvrange, uvrangename in (
                    field='Orion_BNKL_source_I',
                    specmode='mfs',
                    deconvolver='mtmfs',
-                   mask=prevcontimage+".mask",
+                   mask=mask,
                    nterms=2,
                    scales=[0,4,12],
                    smallscalebias=0.8,
