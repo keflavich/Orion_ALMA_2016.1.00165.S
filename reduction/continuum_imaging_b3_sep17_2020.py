@@ -23,7 +23,7 @@ def makefits(myimagebase):
 
 cell='0.004arcsec' # cell size for imaging.
 imsize = [14000,14000] # size of image in pixels.
-imsize = [30000,30000] # 14k gets you to 0.6 pb!  
+imsize = [35000,35000] # 14k gets you to 0.6 pb!  
 
 #contvis = ['band6_continuum_ms{0}.ms'.format(ii) for ii in range(2)]
 #if not os.path.exists(contvis[0]):
