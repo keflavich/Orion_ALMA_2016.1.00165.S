@@ -3,6 +3,7 @@ import os
 from astropy.io import fits
 from astropy import wcs
 import regions
+import shutil
 
 from taskinit import iatool, casalog
 
@@ -61,6 +62,14 @@ def reg_to_mask(regfile, baseimage):
     cleanbox_mask = baseimage.replace(".image.tt0", ".image").replace(".image", ".mask")
     cleanbox_mask_image = baseimage
 
+    if os.path.exists(cleanbox_mask):
+        ia.open(cleanbox_mask)
+        stats = ia.statistics()
+        ia.close()
+
+        if stats['sum'] == stats['npts']:
+            shutil.rmtree(cleanbox_mask)
+
     if not os.path.exists(cleanbox_mask) or not os.path.exists(cleanbox_mask_image):
 
         # create a mask based on region selection (no thresholding here)
@@ -79,7 +88,7 @@ def reg_to_mask(regfile, baseimage):
 
         imghdu.data = mask.astype('int16')
         imghdu.header['BITPIX'] = 16
-        imghdu.writeto(cleanbox_mask+'.fits', clobber=True)
+        imghdu.writeto(cleanbox_mask+'.fits', overwrite=True)
         importfits(fitsimage=cleanbox_mask+'.fits',
                    imagename=cleanbox_mask_image,
                    overwrite=True)
