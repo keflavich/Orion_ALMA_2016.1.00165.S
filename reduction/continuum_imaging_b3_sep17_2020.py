@@ -56,7 +56,7 @@ for uvrange, uvrangename in (
                    cell= cell,
                    weighting = 'briggs',
                    robust = robust,
-                   niter = int(1e6),
+                   niter = int(2e4),
                    threshold = depth1,
                    interactive = False,
                    outframe='LSRK',
@@ -100,7 +100,7 @@ for uvrange, uvrangename in (
                    cell= cell,
                    weighting = 'briggs',
                    robust = robust,
-                   niter = int(1e6),
+                   niter = int(2e4), # can only manage 20,000 iterations in 4 days...
                    threshold = depth2,
                    interactive = False,
                    outframe='LSRK',
