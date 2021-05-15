@@ -2,11 +2,11 @@
 #SBATCH --mail-type=NONE          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail	
 #SBATCH --ntasks=8
-#SBATCH --mem=200gb                     # Job memory request
+#SBATCH --mem=300gb                     # Job memory request
 #SBATCH --partition=bigmem
 #SBATCH --nodes=1
-#SBATCH --time=296:00:00               # Time limit hrs:min:sec
-#SBATCH --qos=astronomy-dept
+#SBATCH --time=96:00:00               # Time limit hrs:min:sec
+#SBATCH --qos=astronomy-dept-b
 #SBATCH --account=astronomy-dept
 pwd; hostname; date
 
