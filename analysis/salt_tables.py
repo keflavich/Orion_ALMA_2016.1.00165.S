@@ -206,6 +206,7 @@ sis_tables = [SiS,
 
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
 salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
+salt_table_names = ['KCl', 'K37Cl', '41KCl', 'NaCl', 'Na37Cl', '41K37Cl']
 
 # fix table units
 for tbl in SO2, SO, S34O, MgCl, HCl, AlOH, AlO, NaCN, CaCl:
