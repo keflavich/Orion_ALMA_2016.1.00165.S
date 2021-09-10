@@ -23,7 +23,7 @@ paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
 paperpath2 = os.path.join(root, 'paper_salts')
 tablepath = os.path.join(root, 'tables')
 saltpath = os.path.join(root, 'salt_data')
-saltpath = '../salt_data/'
+#saltpath = '../salt_data/'
 
 
 
