@@ -132,7 +132,11 @@ cabezasNaCl.rename_column('V0','vl')
 cabezasNaCl.rename_column('Eup','E_U')
 cabezasNaCl.add_column(Column(name='E_L', data=cabezasNaCl['E_U'] - cabezasNaCl['Freq'].quantity.to(u.eV, u.spectral()).to(u.K, u.temperature_energy())))
 cabezasNaCl.add_column(Column(name='QNs', data=['v={0}-{1} J={2}-{3}'.format(row['vu'], row['vl'], row['Ju'], row['Jl']) for row in cabezasNaCl]))
-NaCl = cabezasNaCl[cabezasNaCl['Iso'] == b'35']
+isomsk = cabezasNaCl['Iso'] == '35'
+if np.isscalar(isomsk):
+    # this is an incomprehensible failure...
+    isomsk = cabezasNaCl['Iso'] == b'35'
+NaCl = cabezasNaCl[isomsk]
 NaCl.add_column(Column(name='Species',
                        data=['23Na-35Clv={0}-{1} J={2}-{3}'
                              .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
