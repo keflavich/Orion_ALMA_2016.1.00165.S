@@ -151,7 +151,10 @@ Na37Cl_offset_model = get_offset_model(Na37Cl_diff)
 
 Na37Cl['Freq'] = Na37Cl['Freq'] + Na37Cl_offset_model(Na37Cl['vu'], Na37Cl['Ju'])
 
-Na37Cl = cabezasNaCl[cabezasNaCl['Iso'] == b'37']
+isomsk = cabezasNaCl['Iso'] == '37'
+if np.isscalar(isomsk):
+    isomsk = cabezasNaCl['Iso'] == b'37'
+Na37Cl = cabezasNaCl[isomsk]
 Na37Cl.add_column(Column(name='Species',
                          data=['23Na-37Clv={0}-{1} J={2}-{3}'
                                .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
