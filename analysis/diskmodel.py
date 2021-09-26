@@ -75,7 +75,7 @@ for fn, freq, band, thresh in [#('Orion_SourceI_B6_continuum_r-2_longbaselines_S
     # old version diskends = coordinates.SkyCoord(['5:35:14.5232 -5:22:30.73',
     # old version                                  '5:35:14.5132 -5:22:30.54'],
     # old version                                 frame='fk5', unit=(u.hour, u.deg))
-    diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
+    diskend_regs = regions.Regions.read(paths.rpath('diskends.reg'))
     diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs])
 
     diskends_pix = np.array(mywcs.wcs_world2pix(diskends.ra.deg, diskends.dec.deg, 0))

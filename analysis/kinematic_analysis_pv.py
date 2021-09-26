@@ -68,7 +68,7 @@ coord = coordinates.SkyCoord(83.81048816210084, -5.3751716623649575,
 #                                                               u.deg),
 #                                   frame='icrs')
 #diskycoorddict[source] = diskycoords
-diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
+diskycoord_list = regions.Regions.read(paths.rpath("{0}_disk_pvextract.reg"
                                                .format(source)))
 diskycoorddict[source] = coordinates.SkyCoord([diskycoord_list[0].start,
                                                diskycoord_list[0].end])
@@ -307,7 +307,7 @@ masers_7mm = Table.read(paths.rpath('7mm_maser_velocity_table.fits'))
 
 
 # this is the center position used to reference the maser positions
-maser_center_reg = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0]
+maser_center_reg = regions.Regions.read(paths.rpath('sourceI_center.reg'))[0]
 maser_center = maser_center_reg.center
 
 xpoints_3mm = u.Quantity(list(map(lambda x,y:

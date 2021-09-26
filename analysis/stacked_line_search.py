@@ -37,7 +37,7 @@ if not os.path.exists(vmap_name):
     vmap = m1
     vmap[~mask] = np.nan
 
-    r =regions.read_ds9(paths.rpath('sourceI_enclosing_ellipse.reg'))[0]
+    r =regions.Regions.read(paths.rpath('sourceI_enclosing_ellipse.reg'))[0]
     rp = r.to_pixel(vmap.wcs)
     mask = rp.to_mask()
 

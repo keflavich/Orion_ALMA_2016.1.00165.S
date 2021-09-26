@@ -13,7 +13,7 @@ ring_ap_fn = paths.rpath('nw_of_bn_ring.reg')
 regfs = {x: ring_ap_fn for x in (3,6,7)}
 regfs[9] = paths.rpath('nw_of_bn_ring_660GHzAp.reg')
 regfs[8] = paths.rpath('nw_of_bn_ring_660GHzAp.reg')
-regs = {x: regions.read_ds9(regfs[x]) for x in regfs}
+regs = {x: regions.Regions.read(regfs[x]) for x in regfs}
 
 photdata = {}
 photpeak = {}
