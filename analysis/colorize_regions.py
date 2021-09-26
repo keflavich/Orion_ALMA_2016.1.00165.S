@@ -4,7 +4,7 @@ import pylab as pl
 
 def colorize_region(fn, vlims=None, ):
 
-    regs = regions.read_ds9(fn)
+    regs = regions.Regions.read(fn)
 
     if vlims is not None:
         vmin,vmax = vlims

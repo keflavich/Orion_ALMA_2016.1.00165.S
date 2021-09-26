@@ -39,7 +39,7 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
     ('SiOv=1_5-4', (-30, 45), (-0.2, 0.2, -0.2, 0.2), (65.1, 60.5)),
    ):
 
-    regs = regions.read_ds9(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
+    regs = regions.Regions.read(paths.rpath('velo_centroid_guesses_{linename}.reg').format(linename=linename))
 
     guesses = {}
 
@@ -143,14 +143,14 @@ for linename,(vmin,vmax),limits,(cenx, ceny) in (
         cached_gaussfit_results[linename] = results
 
 
-    diskend_regs = regions.read_ds9(paths.rpath('diskends.reg'))
+    diskend_regs = regions.Regions.read(paths.rpath('diskends.reg'))
     diskends = coordinates.SkyCoord([reg.center for reg in diskend_regs]).icrs
 
     #center = coordinates.SkyCoord(diskends.ra.mean(), diskends.dec.mean(),
     #                              frame=diskends.frame)
-    center_cont = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0].center.transform_to(coordinates.ICRS)
-    center_U = regions.read_ds9(paths.rpath('sourceI_center.reg'))[1].center.transform_to(coordinates.ICRS)
-    center_h2o = regions.read_ds9(paths.rpath('sourceI_center.reg'))[2].center.transform_to(coordinates.ICRS)
+    center_cont = regions.Regions.read(paths.rpath('sourceI_center.reg'))[0].center.transform_to(coordinates.ICRS)
+    center_U = regions.Regions.read(paths.rpath('sourceI_center.reg'))[1].center.transform_to(coordinates.ICRS)
+    center_h2o = regions.Regions.read(paths.rpath('sourceI_center.reg'))[2].center.transform_to(coordinates.ICRS)
 
     center = center_cont
 

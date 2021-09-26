@@ -7,7 +7,7 @@ import regions
 tbl = Table.read(paths.rpath('3mmmSiOmasers_sourceI_average_centroids.txt'),
                  format='ascii', data_start=3)
 
-center_reg = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0]
+center_reg = regions.Regions.read(paths.rpath('sourceI_center.reg'))[0]
 center = center_reg.center[0]
 
 with open(paths.rpath('3mm_sio_masers.reg'), 'w') as fh:

@@ -12,7 +12,7 @@ fh = fits.open('/Users/adam/Dropbox/Orion_VLBA/3mm_ORION_CASA_mom1.fits')[0]
 # approximate center to be placed on approximate source I center
 xcen, ycen = 4182,3793
 
-center_reg = regions.read_ds9(paths.rpath('sourceI_center.reg'))[0]
+center_reg = regions.Regions.read(paths.rpath('sourceI_center.reg'))[0]
 center = center_reg.center[0]
 
 fits_data = fh.data.squeeze()
