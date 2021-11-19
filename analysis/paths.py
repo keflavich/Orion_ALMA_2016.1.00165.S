@@ -7,6 +7,9 @@ if 'nmpost' in socket.gethostname():
 elif 'rng9000' in socket.gethostname():
     root = '/home/rng90003/orion/2016.1.00165.S'
     imagingpath = os.path.join(root, 'imaging/')
+elif 'ufhpc' in socket.gethostname():
+    root = '/orange/adamginsburg/orion/2016.1.00165.S'
+    imagingpath = os.path.join(root, 'imaging/')    
 else:
     root = os.path.expanduser('~/work/orion/alma_lb/')
     imagingpath = fullcubepath = '/Volumes/external/orion/'
@@ -20,6 +23,7 @@ paperfigpath = os.path.join(root, 'paper_sourceImass/figures/')
 paperpath2 = os.path.join(root, 'paper_salts')
 tablepath = os.path.join(root, 'tables')
 saltpath = os.path.join(root, 'salt_data')
+#saltpath = '../salt_data/'
 
 
 

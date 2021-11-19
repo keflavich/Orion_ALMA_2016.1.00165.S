@@ -9,6 +9,8 @@ from astroquery.vizier import Vizier
 
 Splatalogue.set_default_options(show_upper_degeneracy=True)
 Splatalogue.LINES_LIMIT = 1e5
+nu_lower = 80*u.GHz
+nu_upper = 1000*u.GHz
 
 def mt(x):
     return minimize_table(x,
@@ -26,7 +28,7 @@ def load_barton(species):
                            format='ascii.ipac')
     tbl.add_column(table.Column(name='Species', data=[species+row['QNs'] for row in tbl]))
     tbl.rename_column('Frequency', 'Freq')
-    tbl = tbl[(tbl['Freq']>1) & (tbl['Freq']<500) & (tbl['E_U'] < 1e4) & (tbl['vu']<=10)]
+    tbl = tbl[(tbl['Freq']>1) & (tbl['Freq']<nu_upper.to(u.GHz).value) & (tbl['E_U'] < 1e4) & (tbl['vu']<=10)]
     return tbl
 
 kcl_offset = (1+17*u.km/u.s/constants.c).decompose()
@@ -59,7 +61,7 @@ def match_splat_barton(splat, barton):
     result.add_column(table.Column(data=result['Freq_1'] - result['Freq_2'], name='Splat-Barton'))
     return result
 
-KCls = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' KCl', line_lists=['SLAIM']))
+KCls = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' KCl', line_lists=['SLAIM']))
 KCl = load_barton('39K-35Cl')
 
 KCl_diff = match_splat_barton(KCls, KCl[KCl['vu']<4])
@@ -69,7 +71,7 @@ KCl['Freq'] = KCl['Freq'] + KCl_offset_model(KCl['vu'], KCl['Ju'])
 
 
 
-K37Cls = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' K37Cl', line_lists=['SLAIM']))
+K37Cls = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' K37Cl', line_lists=['SLAIM']))
 K37Cl = load_barton('39K-37Cl')
 
 K37Cl_diff = match_splat_barton(K37Cls, K37Cl[K37Cl['vu']<4])
@@ -78,7 +80,7 @@ K37Cl_offset_model = get_offset_model(K37Cl_diff)
 K37Cl['Freq'] = K37Cl['Freq'] + K37Cl_offset_model(K37Cl['vu'], K37Cl['Ju'])
 
 
-K41Cls = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name='41KCl', line_lists=['SLAIM']))
+K41Cls = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name='41KCl', line_lists=['SLAIM']))
 K41Cl = load_barton('41K-35Cl')
 
 K41Cl_diff = match_splat_barton(K41Cls, K41Cl[K41Cl['vu']<4])
@@ -91,11 +93,11 @@ K41Cl37 = load_barton('41K-37Cl')
 # using 41KCl b/c there's nothing to fit here
 K41Cl37['Freq'] = K41Cl37['Freq'] + K41Cl_offset_model(K41Cl37['vu'], K41Cl37['Ju'])
 
-AlOH = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' AlOH'))
-AlO = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' AlO '))
-AlCl = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' AlCl'))
-AlF = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' AlF'))
-#NaF = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaF'))
+AlOH = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' AlOH'))
+AlO = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' AlO '))
+AlCl = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' AlCl'))
+AlF = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' AlF'))
+#NaF = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaF'))
 
 AlF = load_barton('27Al-19F')
 AlCl = load_barton('27Al-35Cl')
@@ -103,14 +105,14 @@ Al37Cl = load_barton('27Al-37Cl')
 NaF = load_barton('23Na-19F')
 
 
-#NaO = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaO'))
-#NaOH = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaOH'))
-#NaCH = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaCH'))
-CaS = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' CaS'))
-CaO = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' CaO'))
-NaCN = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaCN'))
-CaCl = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' CaCl'))
-NaCls = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaCl', line_lists=['SLAIM']))
+#NaO = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaO'))
+#NaOH = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaOH'))
+#NaCH = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaCH'))
+CaS = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' CaS'))
+CaO = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' CaO'))
+NaCN = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaCN'))
+CaCl = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' CaCl'))
+NaCls = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaCl', line_lists=['SLAIM']))
 NaClbarton = load_barton('23Na-35Cl')
 
 NaCl_diff = match_splat_barton(NaCls, NaClbarton[NaClbarton['vu']<4])
@@ -132,14 +134,18 @@ cabezasNaCl.rename_column('V0','vl')
 cabezasNaCl.rename_column('Eup','E_U')
 cabezasNaCl.add_column(Column(name='E_L', data=cabezasNaCl['E_U'] - cabezasNaCl['Freq'].quantity.to(u.eV, u.spectral()).to(u.K, u.temperature_energy())))
 cabezasNaCl.add_column(Column(name='QNs', data=['v={0}-{1} J={2}-{3}'.format(row['vu'], row['vl'], row['Ju'], row['Jl']) for row in cabezasNaCl]))
-NaCl = cabezasNaCl[cabezasNaCl['Iso'] == b'35']
+isomsk = cabezasNaCl['Iso'] == '35'
+if np.isscalar(isomsk):
+    # this is an incomprehensible failure...
+    isomsk = cabezasNaCl['Iso'] == b'35'
+NaCl = cabezasNaCl[isomsk]
 NaCl.add_column(Column(name='Species',
                        data=['23Na-35Clv={0}-{1} J={2}-{3}'
                              .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
                              for row in NaCl]))
 
 
-Na37Cls = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' Na37Cl'))
+Na37Cls = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' Na37Cl'))
 Na37Cl = load_barton('23Na-37Cl')
 
 Na37Cl_diff = match_splat_barton(Na37Cls, Na37Cl[Na37Cl['vu']<4])
@@ -147,33 +153,36 @@ Na37Cl_offset_model = get_offset_model(Na37Cl_diff)
 
 Na37Cl['Freq'] = Na37Cl['Freq'] + Na37Cl_offset_model(Na37Cl['vu'], Na37Cl['Ju'])
 
-Na37Cl = cabezasNaCl[cabezasNaCl['Iso'] == b'37']
+isomsk = cabezasNaCl['Iso'] == '37'
+if np.isscalar(isomsk):
+    isomsk = cabezasNaCl['Iso'] == b'37'
+Na37Cl = cabezasNaCl[isomsk]
 Na37Cl.add_column(Column(name='Species',
                          data=['23Na-37Clv={0}-{1} J={2}-{3}'
                                .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
                                for row in NaCl]))
 
 
-MgCl = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' MgCl'))
+MgCl = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' MgCl'))
 #MgCl = [row for row in MgCl if len(row['Resolved QNs']) < 20]
 #not detected:
-HCl = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' HCl'))
-#NaCN = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaCN')
-#NaO = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' NaO')
-#FeCO = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' FeCO')
+HCl = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' HCl'))
+#NaCN = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaCN')
+#NaO = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' NaO')
+#FeCO = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' FeCO')
 #whiffs at 230 GHz:
-# MgCCH = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name='MgCCH')
+# MgCCH = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name='MgCCH')
 #too many isotopologues don't have anything
-# SiS = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name='Silicon monosulfide')
+# SiS = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name='Silicon monosulfide')
 #LOTS of lines.  No way.
-# MnO = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name='MnO')
+# MnO = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name='MnO')
 # SO is real, but only the main isotopologue?
-#SO = Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name='Sulfur Monoxide')
-SO = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' SO '))
-S34O = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' 34SO '))
+#SO = Splatalogue.query_lines(nu_lower, nu_upper, chemical_name='Sulfur Monoxide')
+SO = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' SO '))
+S34O = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' 34SO '))
 # only low-J lines of SO2...
 # no, SO2 isn't really believable.
-SO2 = mt(Splatalogue.query_lines(80*u.GHz, 500*u.GHz, chemical_name=' SO2',
+SO2 = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' SO2',
                                  energy_max=3500, energy_type='eu_k'))
 
 assert len(SO2) > 1000
@@ -199,6 +208,7 @@ sis_tables = [SiS,
 
 salt_colors = ['b', 'm', 'darkgreen', 'orange', 'c', 'y']
 salt_tables = [KCl, K37Cl, K41Cl, NaCl, Na37Cl, K41Cl37]
+salt_table_names = ['KCl', 'K37Cl', '41KCl', 'NaCl', 'Na37Cl', '41K37Cl']
 
 # fix table units
 for tbl in SO2, SO, S34O, MgCl, HCl, AlOH, AlO, NaCN, CaCl:

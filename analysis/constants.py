@@ -24,13 +24,13 @@ source = 'sourceI'
 #                                                    2)], unit=(u.deg,
 #                                                               u.deg),
 #                                   frame='fk5')
-diskycoord_list = regions.read_ds9(paths.rpath("{0}_disk_pvextract.reg"
+diskycoord_list = regions.Regions.read(paths.rpath("{0}_disk_pvextract.reg"
                                                .format(source)))
 diskycoords = coordinates.SkyCoord([diskycoord_list[0].start,
                                     diskycoord_list[0].end])
 
 #source = coordinates.SkyCoord(83.81048617*u.deg, -5.37516858*u.deg, frame='icrs')
-source = coordinates.SkyCoord(regions.read_ds9(paths.rpath('sourceI_center.reg'))[0].center)
+source = coordinates.SkyCoord(regions.Regions.read(paths.rpath('sourceI_center.reg'))[0].center)
 
 extraction_path = pvextractor.Path(diskycoords, width=0.01*u.arcsec)
 origin = offset_to_point(source.ra.deg,

@@ -10,8 +10,8 @@ import regions
 from radio_beam import Beam
 
 
-noiseregion = regions.read_ds9(paths.rpath('noise_estimate_region.reg'))[0]
-sourceIcircle = regions.read_ds9(paths.rpath('sourceI_enclosing_circle.reg'))[0]
+noiseregion = regions.Regions.read(paths.rpath('noise_estimate_region.reg'))[0]
+sourceIcircle = regions.Regions.read(paths.rpath('sourceI_enclosing_circle.reg'))[0]
 
 
 tabletext = (r"""
