@@ -11,7 +11,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from constants import d_orion
 
-def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
+def show_pv(data, ww, origin=0*u.arcsec, vrange=[-20,20]*u.km/u.s,
+            vcen=5*u.km/u.s, imvmin=0, imvmax=1, contour=False,
+            distance=d_orion,
+            xoffset_label=0.1*u.arcsec):
 
     if ww.wcs.cunit[1] == 'm/s':
         scalefactor = 1000.0
@@ -42,8 +45,11 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
                                           vrange[0]*scalefactor,
                                           0)[0]*u.arcsec
     assert rightmost_position > 0
-    maxdist = ((rightmost_position)*d_orion).to(u.au, u.dimensionless_angles())
+    maxdist = ((rightmost_position)*distance).to(u.au, u.dimensionless_angles())
     assert maxdist > 0
+    print(f'leftmost: {leftmost_position}')
+    print(f'rightmost: {rightmost_position}')
+
 
 
     #imvmin,imvmax = (np.nanmin(data[plotted_slice]),
@@ -65,27 +71,32 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
 
 
     trans = ax.get_transform('world')
-    length = (50*u.au / (d_orion)).to(u.deg, u.dimensionless_angles())
-    endpoints_x = u.Quantity([0.1*u.arcsec, 0.1*u.arcsec+length]) + leftmost_position
-    ax.plot(endpoints_x.to(u.arcsec),
+    length = (50*u.au / (distance)).to(u.deg, u.dimensionless_angles())
+    endpoints_x = u.Quantity([xoffset_label, xoffset_label+length]) + leftmost_position
+    print(f"endpoints_x = {endpoints_x}")
+    ax.plot((endpoints_x).to(u.deg),
             ([vrange[0]+2]*2*u.km/u.s).to(u.m/u.s),
             'r',
             transform=trans,
             zorder=100, linewidth=2)
-    ax.text(endpoints_x.mean().value,
+    ax.text((endpoints_x).to(u.deg).mean().value,
             (vrange[0]+3)*scalefactor,
             "50 au", color='r', transform=trans, ha='center')
-    ax.plot(u.Quantity([leftmost_position, rightmost_position]).value,
+    ax.plot(u.Quantity([leftmost_position, rightmost_position]).to(u.deg).value,
             u.Quantity([vcen,vcen]).to(u.m/u.s).value, 'w--', transform=trans)
 
-
-    ax.vlines(0, #origin.to(u.arcsec).value,
+    ax.vlines(origin, #origin.to(u.deg).value,
               (vrange[0]-5)*scalefactor,
               (vrange[1]+5)*scalefactor,
               color='w', linestyle='--', linewidth=2.0,
               alpha=0.6, transform=trans)
 
     ax.set_xlim(good_limits)
+
+    # DEBUG print(ww.wcs_world2pix(0,vrange[0]*scalefactor,0)[1],
+    # DEBUG       ww.wcs_world2pix(0,vrange[1]*scalefactor,0)[1])
+    # DEBUG print(ax.get_ylim())
+    # DEBUG print(ax.axis())
 
     ax.set_ylim(ww.wcs_world2pix(0,vrange[0]*scalefactor,0)[1],
                 ww.wcs_world2pix(0,vrange[1]*scalefactor,0)[1])
@@ -98,10 +109,12 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
     aspect = 1*data.shape[1]/data.shape[0]
     ax.set_aspect(aspect)
 
+    #ax.xticks(rotation=45)
     #ax.set_aspect('equal')
 
     ax.coords[1].set_format_unit(u.km/u.s)
-
+    ax.coords[0].set_format_unit(u.arcsec)
+    ax.coords[0].set_major_formatter('x.xx')
 
     # create an axes on the right side of ax. The width of cax will be 5%
     # of ax and the padding between cax and ax will be fixed at 0.05 inch.
@@ -119,11 +132,11 @@ def show_pv(data, ww, origin, vrange, vcen, imvmin, imvmax, contour=False):
     cb.ax.set_position([bb.x1+0.03, bb.y0, 0.05, bb.y1-bb.y0])
 
     ax.set_xlim(good_limits)
+    ax.coords[0].set_ticklabel(exclude_overlapping=True, rotation=45, pad=45)
 
     return fig,ax,cb,con
 
-
-def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
+def show_keplercurves(ax, origin=0*u.arcsec, maxdist=150*u.au, vcen=5*u.km/u.s, masses=[15],
                       linestyles='-',
                       linewidths=None,
                       colors=['r'],
@@ -131,6 +144,8 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
                       yaxis_unit=u.m/u.s,
                       show_other_powerlaws=False,
                       trans=None,
+                      distance=d_orion,
+                      inclination=90*u.deg,
                      ):
 
     if trans is None:
@@ -139,7 +154,7 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
     # Since we reset the CRVAL to be the origin, we don't need to
     # add origin as an offset any more
     # Rather than remove it, I'm just resetting it to zero...
-    origin = 0*u.arcsec
+    #origin = 0*u.arcsec
 
     # overlay a Keplerian velocity curve
     positions = u.Quantity(np.linspace(0,maxdist,1000), u.au)
@@ -152,7 +167,7 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
     for mass,color,linestyle,linewidth in zip(masses,colors,linestyles,linewidths):
         # this is the 3d velocity, so assumes edge-on
         vel = (((constants.G * mass*u.M_sun)/(positions))**0.5).to(yaxis_unit)
-        loc = (positions/(d_orion)).to(u.arcsec, u.dimensionless_angles())
+        loc = (positions/(distance)).to(u.arcsec, u.dimensionless_angles())
         lines += ax.plot((origin+loc).to(u.arcsec), (vcen+vel).to(yaxis_unit),
                          linestyle=linestyle, color=color, linewidth=linewidth,
                          alpha=1.0, transform=trans)
@@ -160,7 +175,7 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
         #ax.plot((origin+loc).to(u.arcsec), (vcen-vel).to(yaxis_unit), 'b:', linewidth=1.0, alpha=1.0, transform=trans)
         lines += ax.plot((origin-loc).to(u.arcsec), (vcen-vel).to(yaxis_unit),
                          linestyle=linestyle, color=color, linewidth=linewidth,
-                         alpha=1.0, transform=trans)
+                         alpha=1.0, transform=trans, label=f'{mass} M$_\\odot$')
 
         if show_other_powerlaws:
             vcurve = positions**-1 / (positions[200]**-1) * (vel[200])
@@ -177,9 +192,9 @@ def show_keplercurves(ax, origin, maxdist, vcen, masses=[15],
     for mass in radii:
         for radius,color in zip(*radii[mass]):
             rad_as = (radius*u.au/d_orion).to(u.arcsec, u.dimensionless_angles())
-            vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(yaxis_unit)
+            vel = (((constants.G * mass*u.M_sun)/(radius*u.au))**0.5).to(yaxis_unit) * sin(inclination)
             print("rad, vel: {0}, {1}".format(rad_as, vel))
-            lines += ax.plot(u.Quantity([-rad_as, rad_as]),
+            lines += ax.plot(u.Quantity([-rad_as, rad_as]) + origin,
                              (vcen+u.Quantity([-vel, vel])).to(yaxis_unit),
                              color=color, linestyle='--',
                              transform=trans)

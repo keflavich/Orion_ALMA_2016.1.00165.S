@@ -160,7 +160,7 @@ Na37Cl = cabezasNaCl[isomsk]
 Na37Cl.add_column(Column(name='Species',
                          data=['23Na-37Clv={0}-{1} J={2}-{3}'
                                .format(row['vu'], row['vl'], row['Ju'], row['Jl'])
-                               for row in NaCl]))
+                               for row in Na37Cl]))
 
 
 MgCl = mt(Splatalogue.query_lines(nu_lower, nu_upper, chemical_name=' MgCl'))
