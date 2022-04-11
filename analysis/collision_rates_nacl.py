@@ -4,6 +4,15 @@ to make f2py return the value 'rr'
 
 then run
 f2py -c -m rates_ios rates_ios.f
+
+
+rates_ios comes from
+================================================================================
+Title: Hints of a spiral structure in the innermost regions around IRC+10216
+Authors: G. Quintana-Lacaci, J. Cernicharo, M. Agúndex, L. Velilla Prieto, A. Castro-Carrizo,
+N. Marcelino, C. Cabezas, I. Peña, J.L. Alonso, J. Zuñiga, A. Requena, A. Bastida, Y. Kalugina,
+F. Lique, M. Guélin
+================================================================================
 """
 import itertools
 import numpy as np
