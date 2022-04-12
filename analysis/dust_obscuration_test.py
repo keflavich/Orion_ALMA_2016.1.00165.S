@@ -17,9 +17,10 @@ import dust_emissivity
 from astropy import units as u
 from astropy.table import Table
 from kcl_rotation_diagram import fit_tex
-from astroquery.vamdc import Vamdc
+#from astroquery.vamdc import Vamdc
 from dust_emissivity.dust import kappa
 from radex_modeling import chi2, GOF_plot
+from pyspeckit.spectrum.models.lte_molecule import get_molecular_parameters
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 rslt = rr()
@@ -81,13 +82,14 @@ pl.plot(rslt['upperstateenergy'].data, np.log10(rslt['upperlevelpop'].data * sca
 #pl.plot(rslt[Jeight]['upperstateenergy'].data, np.log10(rslt[Jeight]['upperlevelpop'].data), 's', label=None)
 
 
-nacl = Vamdc.query_molecule('NaCl$')
+frqs, einsteinAij, degeneracies, EU, partfunc = get_molecular_parameters('NaCl, v=0-15', catalog='CDMS', fmin=85*u.GHz, fmax=360*u.GHz)
 
 fit_tex(u.Quantity(rslt[vone & obs]['upperstateenergy'], u.K), rslt[vone &
                                                                     obs]['upperlevelpop']*scaling,
-        molecule=nacl,plot=True, min_nupper=1e-50)
+        partition_func=partfunc, plot=True, min_nupper=1e-50)
 fit_tex(u.Quantity(rslt[Jeight]['upperstateenergy'], u.K),
-        rslt[Jeight]['upperlevelpop']*scaling, molecule=nacl,plot=True,
+        rslt[Jeight]['upperlevelpop']*scaling, partition_func=partfunc,
+        plot=True,
         min_nupper=1e-50, color='k')
 pl.legend(loc='upper right')
 

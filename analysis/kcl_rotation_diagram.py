@@ -18,6 +18,7 @@ from lte_modeling_tools import (rovib_lte_model_generator,
                                 simple_lte_model_generator, kkms_of_nupper,
                                 nupper_of_kkms)
 from pyspeckit.spectrum.models import lte_molecule as plm
+from pyspeckit.spectrum.models.lte_molecule import get_molecular_parameters
 
 vib_constants = {'KCl': (281*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
                  'K37Cl': (275.87497*u.cm**-1).to(u.eV, u.spectral()).to(u.K, u.temperature_energy()),
