@@ -1,3 +1,4 @@
+import os
 import pyradex
 import pylab as pl
 import numpy as np
@@ -145,11 +146,11 @@ if not os.path.exists(modfigdir):
     os.mkdir(modfigdir)
 
 def makeplot(rslt, title=None, savename=None):
-    f1 = pl.figure()
-    ax1 = pl.subplot(2,1,1)
-    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], ',')
-    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], ',')
-    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], ',')
+    f1 = pl.figure(figsize=(8,8))
+    ax1 = pl.subplot(1,1,1)
+    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.')
+    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.')
+    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.')
     ax1.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['T_B'], 'o', color=L0.get_color(), label='v=0')
     ax1.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['T_B'], 'o', color=L1.get_color(), label='v=1')
     ax1.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['T_B'], 'o', color=L2.get_color(), label='v=2')
@@ -158,6 +159,7 @@ def makeplot(rslt, title=None, savename=None):
     ax1.set_xlabel("E$_U$ [K]")
     ax1.set_ylabel("T$_B$ [K]")
     ax1.set_ylim(0.1, 200)
+    ax1.set_xlim(-10,1500)
     pl.legend(loc='best')
     pl.tight_layout()
     if title is not None:
@@ -168,9 +170,9 @@ def makeplot(rslt, title=None, savename=None):
 
     f2 = pl.figure()
     ax1 = pl.subplot(2,1,1)
-    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], ',')
-    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], ',')
-    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], ',')
+    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.')
+    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.')
+    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.')
     ax1.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['T_B'], 'o', color=L0.get_color(), label='v=0')
     ax1.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['T_B'], 'o', color=L1.get_color(), label='v=1')
     ax1.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['T_B'], 'o', color=L2.get_color(), label='v=2')
@@ -185,9 +187,9 @@ def makeplot(rslt, title=None, savename=None):
         ax1.set_title(title)
 
     ax2 = pl.subplot(2,1,2)
-    L0, = ax2.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['upperlevelpop'], ',')
-    L1, = ax2.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['upperlevelpop'], ',')
-    L2, =ax2.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['upperlevelpop'], ',')
+    L0, = ax2.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['upperlevelpop'], '.')
+    L1, = ax2.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['upperlevelpop'], '.')
+    L2, =ax2.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['upperlevelpop'], '.')
     ax2.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['upperlevelpop'], 'o', color=L0.get_color(), label='v=0')
     ax2.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['upperlevelpop'], 'o', color=L1.get_color(), label='v=1')
     ax2.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['upperlevelpop'], 'o', color=L2.get_color(), label='v=2')
@@ -201,17 +203,17 @@ def makeplot(rslt, title=None, savename=None):
     pl.tight_layout()
 
     if savename is not None:
-        f1.savefig(f'{modfigdir}/{savename}_twopanel.png', bbox_inches='tight', dpi=200)
+        f2.savefig(f'{modfigdir}/{savename}_twopanel.png', bbox_inches='tight', dpi=200)
 
 rr.background_brightness = artificial_29um
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
 makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron')
 
 rslt = (rr(density=1e10*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=2.73))
-makeplot(rslt, title="High density, low-column", savename='thin2e14anddense1e10')))
+makeplot(rslt, title="High density, low-column", savename='thin2e14anddense1e10')
 
 rslt = (rr(density=1e10*u.cm**-3, column=1e18*u.cm**-2, temperature=150*u.K, tbg=2.73))
-makeplot(rslt, title="Optically Thick, high-density high-column", savename='thick1e18anddense1e10'))
+makeplot(rslt, title="Optically Thick, high-density high-column", savename='thick1e18anddense1e10')
 
 
 rslt = (rr(density=1e11*u.cm**-3, column=1e19*u.cm**-2, temperature=150*u.K, tbg=2.73))
