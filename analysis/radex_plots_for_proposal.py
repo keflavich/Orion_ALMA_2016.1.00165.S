@@ -139,7 +139,13 @@ pl.tight_layout()
 #print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=1000*u.K)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
 #print(chi2(rr.get_table()))
 
-def makeplot(rslt):
+
+modfigdir = '/orange/adamginsburg/salt/figures/models'
+if not os.path.exists(modfigdir):
+    os.mkdir(modfigdir)
+
+def makeplot(rslt, title=None, savename=None):
+    f1 = pl.figure()
     ax1 = pl.subplot(2,1,1)
     L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], ',')
     L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], ',')
@@ -154,6 +160,29 @@ def makeplot(rslt):
     ax1.set_ylim(0.1, 200)
     pl.legend(loc='best')
     pl.tight_layout()
+    if title is not None:
+        ax1.set_title(title)
+
+    if savename is not None:
+        f1.savefig(f'{modfigdir}/{savename}_onepanel.png', bbox_inches='tight', dpi=200)
+
+    f2 = pl.figure()
+    ax1 = pl.subplot(2,1,1)
+    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], ',')
+    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], ',')
+    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], ',')
+    ax1.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['T_B'], 'o', color=L0.get_color(), label='v=0')
+    ax1.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['T_B'], 'o', color=L1.get_color(), label='v=1')
+    ax1.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['T_B'], 'o', color=L2.get_color(), label='v=2')
+    ax1.semilogy(rslt[B4]['upperstateenergy'], rslt[B4]['T_B'], 's', markerfacecolor='none', label='Band 4')
+    ax1.semilogy(rslt[B7]['upperstateenergy'], rslt[B7]['T_B'], 's', markerfacecolor='none', label='Band 7')
+    ax1.set_xlabel("E$_U$ [K]")
+    ax1.set_ylabel("T$_B$ [K]")
+    ax1.set_ylim(0.1, 200)
+    pl.legend(loc='best')
+    pl.tight_layout()
+    if title is not None:
+        ax1.set_title(title)
 
     ax2 = pl.subplot(2,1,2)
     L0, = ax2.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['upperlevelpop'], ',')
@@ -171,37 +200,25 @@ def makeplot(rslt):
     #pl.legend(loc='best')
     pl.tight_layout()
 
+    if savename is not None:
+        f1.savefig(f'{modfigdir}/{savename}_twopanel.png', bbox_inches='tight', dpi=200)
+
 rr.background_brightness = artificial_29um
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
-
-pl.figure()
-pl.title("Model 1: 29$\\mu$m bump")
-makeplot(rslt)
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron')
 
 rslt = (rr(density=1e10*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=2.73))
-
-pl.figure()
-pl.title("Model 2: High density, low-column")
-makeplot(rslt)
+makeplot(rslt, title="High density, low-column", savename='thin2e14anddense1e10')))
 
 rslt = (rr(density=1e10*u.cm**-3, column=1e18*u.cm**-2, temperature=150*u.K, tbg=2.73))
-
-pl.figure()
-pl.title("Model 3: Optically Thick, high-density high-column")
-makeplot(rslt)
+makeplot(rslt, title="Optically Thick, high-density high-column", savename='thick1e18anddense1e10'))
 
 
 rslt = (rr(density=1e11*u.cm**-3, column=1e19*u.cm**-2, temperature=150*u.K, tbg=2.73))
-
-pl.figure()
-pl.title("Model 4: Optically Thicker, higher-density higher-column")
-makeplot(rslt)
+makeplot(rslt, title="Optically Thicker, higher-density higher-column", savename='thick1e19anddense1e11')
 
 rslt = (rr(density=1e4*u.cm**-3, column=1e20*u.cm**-2, temperature=150*u.K, tbg=2.73))
-
-pl.figure()
-pl.title("Model 5: Low-density, High-column")
-makeplot(rslt)
+makeplot(rslt, title="Low-density, High-column", savename='lown1e4highN1e20')
 
 artificial_295um = bgfunc(freq)
 artificial_295um[rovib_range] += 1e-9*rr.background_brightness.unit * np.exp(-(wl[rovib_range]-29.5*u.um)**2/(2*(2.5*u.um)**2))
@@ -211,12 +228,8 @@ artificial_285um[rovib_range] += 1e-9*rr.background_brightness.unit * np.exp(-(w
 
 rr.background_brightness = artificial_285um
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
-pl.figure()
-pl.title("Model 6: 28.5$\\mu$m bump")
-makeplot(rslt)
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron')
 
 rr.background_brightness = artificial_295um
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
-pl.figure()
-pl.title("Model 7: 29.5$\\mu$m bump")
-makeplot(rslt)
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron')
