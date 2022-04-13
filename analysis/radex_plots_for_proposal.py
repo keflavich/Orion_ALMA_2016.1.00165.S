@@ -145,12 +145,19 @@ modfigdir = '/orange/adamginsburg/salt/figures/models'
 if not os.path.exists(modfigdir):
     os.mkdir(modfigdir)
 
+pl.rcParams['font.size'] = 16
+pl.rcParams['figure.facecolor'] = 'w'
+
+
+tkin = 150 * u.K
+ymax = tkin.value
+
 def makeplot(rslt, title=None, savename=None):
-    f1 = pl.figure(figsize=(8,8))
+    f1 = pl.figure(figsize=(6,6))
     ax1 = pl.subplot(1,1,1)
-    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.')
-    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.')
-    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.')
+    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.', markersize=2)
+    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.', markersize=2)
+    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.', markersize=2)
     ax1.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['T_B'], 'o', color=L0.get_color(), label='v=0')
     ax1.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['T_B'], 'o', color=L1.get_color(), label='v=1')
     ax1.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['T_B'], 'o', color=L2.get_color(), label='v=2')
@@ -158,7 +165,9 @@ def makeplot(rslt, title=None, savename=None):
     ax1.semilogy(rslt[B7]['upperstateenergy'], rslt[B7]['T_B'], 's', markerfacecolor='none', label='Band 7')
     ax1.set_xlabel("E$_U$ [K]")
     ax1.set_ylabel("T$_B$ [K]")
-    ax1.set_ylim(0.1, 200)
+    ax1.set_ylim(0.1, ymax)
+    ax1.set_yscale('linear')
+    ax1.set_ylim(-1, ymax)
     ax1.set_xlim(-10,1500)
     pl.legend(loc='best')
     pl.tight_layout()
@@ -170,9 +179,9 @@ def makeplot(rslt, title=None, savename=None):
 
     f2 = pl.figure()
     ax1 = pl.subplot(2,1,1)
-    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.')
-    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.')
-    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.')
+    L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.', markersize=2)
+    L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.', markersize=2)
+    L2, =ax1.semilogy(rslt[vtwo]['upperstateenergy'], rslt[vtwo]['T_B'], '.', markersize=2)
     ax1.semilogy(rslt[vzero & obs]['upperstateenergy'], rslt[vzero & obs]['T_B'], 'o', color=L0.get_color(), label='v=0')
     ax1.semilogy(rslt[vone & obs]['upperstateenergy'], rslt[vone & obs]['T_B'], 'o', color=L1.get_color(), label='v=1')
     ax1.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['T_B'], 'o', color=L2.get_color(), label='v=2')
@@ -180,7 +189,7 @@ def makeplot(rslt, title=None, savename=None):
     ax1.semilogy(rslt[B7]['upperstateenergy'], rslt[B7]['T_B'], 's', markerfacecolor='none', label='Band 7')
     ax1.set_xlabel("E$_U$ [K]")
     ax1.set_ylabel("T$_B$ [K]")
-    ax1.set_ylim(0.1, 200)
+    ax1.set_ylim(0.1, ymax)
     pl.legend(loc='best')
     pl.tight_layout()
     if title is not None:
@@ -205,22 +214,25 @@ def makeplot(rslt, title=None, savename=None):
     if savename is not None:
         f2.savefig(f'{modfigdir}/{savename}_twopanel.png', bbox_inches='tight', dpi=200)
 
-rr.background_brightness = artificial_29um
-rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
-makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron')
 
-rslt = (rr(density=1e10*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=2.73))
+
+rslt = (rr(density=1e10*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=2.73))
+print(rr.temperature)
+rr.temperature = tkin
+print(rr.temperature)
 makeplot(rslt, title="High density, low-column", savename='thin2e14anddense1e10')
 
-rslt = (rr(density=1e10*u.cm**-3, column=1e18*u.cm**-2, temperature=150*u.K, tbg=2.73))
+rslt = (rr(density=1e10*u.cm**-3, column=1e18*u.cm**-2, temperature=tkin, tbg=2.73))
 makeplot(rslt, title="Optically Thick, high-density high-column", savename='thick1e18anddense1e10')
 
 
-rslt = (rr(density=1e11*u.cm**-3, column=1e19*u.cm**-2, temperature=150*u.K, tbg=2.73))
+rslt = (rr(density=1e11*u.cm**-3, column=1e19*u.cm**-2, temperature=tkin, tbg=2.73))
 makeplot(rslt, title="Optically Thicker, higher-density higher-column", savename='thick1e19anddense1e11')
 
-rslt = (rr(density=1e4*u.cm**-3, column=1e20*u.cm**-2, temperature=150*u.K, tbg=2.73))
+rslt = (rr(density=1e4*u.cm**-3, column=1e20*u.cm**-2, temperature=tkin, tbg=2.73))
 makeplot(rslt, title="Low-density, High-column", savename='lown1e4highN1e20')
+
+pl.close('all')
 
 artificial_295um = bgfunc(freq)
 artificial_295um[rovib_range] += 1e-9*rr.background_brightness.unit * np.exp(-(wl[rovib_range]-29.5*u.um)**2/(2*(2.5*u.um)**2))
@@ -229,9 +241,114 @@ artificial_285um[rovib_range] += 1e-9*rr.background_brightness.unit * np.exp(-(w
 
 
 rr.background_brightness = artificial_285um
-rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
+rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
 makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron')
 
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron')
+
 rr.background_brightness = artificial_295um
-rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=150*u.K, tbg=None))
+rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
 makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron')
+
+pl.close('all')
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e4*u.cm**-3, column=2e15*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e15')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e4*u.cm**-3, column=2e15*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e15')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e4*u.cm**-3, column=2e15*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e15')
+
+pl.close('all')
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e4*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e16')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e4*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e16')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e4*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e16')
+
+
+pl.close('all')
+
+
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e6*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e14_n1e6')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e6*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e14_n1e6')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e6*u.cm**-3, column=2e14*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e14_n1e6')
+
+pl.close('all')
+
+
+
+
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e6*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e16_n1e6')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e6*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e16_n1e6')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e6*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e16_n1e6')
+
+pl.close('all')
+
+
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e7*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e16_n1e7')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e7*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e16_n1e7')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e7*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e16_n1e7')
+
+pl.close('all')
+
+
+rr.background_brightness = artificial_285um
+rslt = (rr(density=1e8*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="28.5$\\mu$m bump", savename='dust28.5micron_N2e16_n1e8')
+
+rr.background_brightness = artificial_29um
+rslt = (rr(density=1e8*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29$\\mu$m bump", savename='dust29micron_N2e16_n1e8')
+
+rr.background_brightness = artificial_295um
+rslt = (rr(density=1e8*u.cm**-3, column=2e16*u.cm**-2, temperature=tkin, tbg=None))
+makeplot(rslt, title="29.5$\\mu$m bump", savename='dust29.5micron_N2e16_n1e8')
+
+pl.close('all')
