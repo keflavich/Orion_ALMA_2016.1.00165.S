@@ -65,14 +65,17 @@ for spw in (0,1,3):
     spwband[spw]['B10_850'] = f'/orange/adamginsburg/salt/hirota/ALMA-SourceI/band10_850G_spw{spw}-subim.FITS'
 
 for spw in (0,1,2,3):
-    for band in ('B3', 'B6', 'B7.lb', 'B8_495', 'B10_850'):
-        fn = spwband[spw][band]
+    for band in ('B10_850', 'B3', 'B6', 'B7.lb', 'B8_495', ):
+        if band in spwband[spw]:
+            fn = spwband[spw][band]
+        else:
+            continue
         flist = glob.glob(fn)
         if len(flist) == 0:
             print(f"Skipped spw {spw} band {band}")
             continue
         assert len(flist) > 0
-        cube = SpectralCube.read(flist[0])
+        cube = SpectralCube.read(flist[0]).with_spectral_unit(u.GHz)
         if hasattr(cube, 'beams'):
             jtok = cube.beams.common_beam().jtok(cube.spectral_axis).mean()
         else:
@@ -84,6 +87,7 @@ for spw in (0,1,2,3):
             csp = cube[:,yy,xx].to(u.K)
 
             sp = pyspeckit.Spectrum(data=csp.value, unit=csp.unit, xarr=csp.spectral_axis)
+            sp.xarr.convert_to_unit(u.GHz)
 
             rms = stats.mad_std(sp.data)
             sp.error[:] = rms
@@ -98,7 +102,7 @@ for spw in (0,1,2,3):
 
                 linename = row['Species']
                 freq = u.Quantity(row['Frequency'], u.GHz)
-                detection = row['Flag'][1] == 'd'
+                detection = (row['Flag'][1] == 'd') or (row['Flag'] == '--')
                 if not detection:
                     continue
 
@@ -132,7 +136,7 @@ for spw in (0,1,2,3):
                            )
 
                 if doplot:
-                    sp.plotter.axis.plot(slc.xarr.as_unit(u.GHz), slc.specfit.model, color='r')
+                    sp.plotter.axis.plot(slc.xarr.as_unit(u.GHz), slc.specfit.model, color='r', linewidth=0.5)
                     slc.plotter.savefig(paths.fpath(f'spectral_fits/{linename}_{band}_{spw}_{freq.value}_{cname}.png'))
 
                 fitvel = u.Quantity(slc.specfit.parinfo['SHIFT0'], u.km/u.s)
@@ -219,7 +223,7 @@ for spw in (0,1,2,3):
                                       'corner': cname,
                                      }
             if doplot:
-                sp.plotter.axis.set_ylim(-20, 125)
+                sp.plotter.axis.set_ylim(-20, 250)
                 sp.plotter.line_ids(linenames, linefreqs, velocity_offset=vel,
                                        label1_size=16,
                                        auto_yloc_fraction=0.75)
@@ -232,7 +236,7 @@ for spw in (0,1,2,3):
                     elif 'K' in obj.get_label():
                         obj.set_color('b')
                         obj.set_zorder(10)
-                sp.plotter.axis.set_ylim(-20, 225)
+                sp.plotter.axis.set_ylim(-20, 250)
 
                 sp.plotter.savefig(paths.fpath(f'spectral_fits/SrcI_{band}_{spw}_{cname}_fits.png'))
 
@@ -240,10 +244,11 @@ linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
 def makecol(colname, unit=None, linefits=linefits, parname=None, error=False, linenames=linenames):
     if parname is not None:
         if error:
-            return u.Quantity([linefits[ln][colname][parname].error
-                if linefits[ln][colname][parname].error else np.nan for ln in linenames for cname in linefits[ln]], unit)
+            return u.Quantity([linefits[ln][cname][colname][parname].error
+                if linefits[ln][cname][colname][parname].error else np.nan
+                for ln in linenames for cname in linefits[ln]], unit)
         else:
-            return u.Quantity([linefits[ln][colname][parname].value for ln in linenames for cname in linefits[ln]], unit)
+            return u.Quantity([linefits[ln][cname][colname][parname].value for ln in linenames for cname in linefits[ln]], unit)
     if unit is not None:
         return u.Quantity([linefits[ln][cname][colname] for ln in linenames for cname in linefits[ln]], unit)
     else:
@@ -253,7 +258,7 @@ freqs = table.Column(name='Frequency', data=makecol('freq', unit=u.GHz))
 velos = table.Column(name='Fitted Velocity', data=makecol('vel', u.km/u.s))
 vwidths = table.Column(name='Fitted Width', data=makecol('vwidth', u.km/u.s))
 evelos = table.Column(name='Fitted Velocity error', data=makecol('evel', unit=u.km/u.s))
-evwidths = table.Column(name='Fitted Width error', data=makecol('evwid', unit=u.km/u.s))
+evwidths = table.Column(name='Fitted Width error', data=makecol('evwidth', unit=u.km/u.s))
 #ampls = table.Column(name='Fitted Amplitude', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*1e3 for ln in linenames], u.mJy))
 #amplsK = table.Column(name='Fitted Amplitude K', data=u.Quantity([linefits[ln]['pars']['AMPLITUDE0'].value*linefits[ln]['jtok'].value for ln in linenames], u.K))
 amplsK = table.Column(name='Fitted Amplitude K', data=makecol('pars', parname='AMPLITUDE0', unit=u.K))

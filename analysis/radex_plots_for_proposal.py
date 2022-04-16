@@ -7,6 +7,10 @@ import dust_emissivity
 from astropy import units as u
 from astropy.table import Table
 from radex_modeling import chi2
+from kcl_rotation_diagram import fit_tex
+
+from pyspeckit.spectrum.models.lte_molecule import get_molecular_parameters
+frqs, einsteinAij, degeneracies, EU, partfunc = get_molecular_parameters('NaCl, v=0-15', catalog='CDMS', fmin=85*u.GHz, fmax=500*u.GHz)
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
 rslt = rr()
@@ -177,7 +181,7 @@ def makeplot(rslt, title=None, savename=None):
     if savename is not None:
         f1.savefig(f'{modfigdir}/{savename}_onepanel.png', bbox_inches='tight', dpi=200)
 
-    f2 = pl.figure()
+    f2 = pl.figure(figsize=(10,8))
     ax1 = pl.subplot(2,1,1)
     L0, = ax1.semilogy(rslt[vzero]['upperstateenergy'], rslt[vzero]['T_B'], '.', markersize=2)
     L1, = ax1.semilogy(rslt[vone]['upperstateenergy'], rslt[vone]['T_B'], '.', markersize=2)
@@ -190,6 +194,7 @@ def makeplot(rslt, title=None, savename=None):
     ax1.set_xlabel("E$_U$ [K]")
     ax1.set_ylabel("T$_B$ [K]")
     ax1.set_ylim(0.1, ymax)
+    ax1.set_xlim(-10, 1250)
     pl.legend(loc='best')
     pl.tight_layout()
     if title is not None:
@@ -204,11 +209,28 @@ def makeplot(rslt, title=None, savename=None):
     ax2.semilogy(rslt[vtwo & obs]['upperstateenergy'], rslt[vtwo & obs]['upperlevelpop'], 'o', color=L2.get_color(), label='v=2')
     ax2.semilogy(rslt[B4]['upperstateenergy'], rslt[B4]['upperlevelpop'], 's', markerfacecolor='none', label='Band 4')
     ax2.semilogy(rslt[B7]['upperstateenergy'], rslt[B7]['upperlevelpop'], 's', markerfacecolor='none', label='Band 7')
+
+
+    # introduce an arbitrary scaling value to obtain 'reasonable' column densities
+    #scaling = 1e12 * u.cm**-2
+    scaling = 1*u.cm**-2
+    fit_tex(u.Quantity(rslt[vone & obs]['upperstateenergy'], u.K),
+            rslt[vone & obs]['upperlevelpop']*scaling,
+            axis=ax2,
+            partition_func=partfunc, plot=True, min_nupper=1e-50, labeltemonly=True, logy=False)
+    fit_tex(u.Quantity(rslt[Jeight]['upperstateenergy'], u.K),
+            rslt[Jeight]['upperlevelpop']*scaling,
+            partition_func=partfunc,
+            plot=True,
+            axis=ax2,
+            min_nupper=1e-50, color='k', labeltemonly=True, logy=False)
+
     #ax2.semilogy(rslt[Jeight]['upperstateenergy'], rslt[Jeight]['upperlevelpop'], 's', markerfacecolor='none', label='J=8')
     ax2.set_xlabel("E$_U$ [K]")
     ax2.set_ylabel("N$_U$")
-    #pl.ylim(0.1, 200)
-    #pl.legend(loc='best')
+    ax2.set_ylim(1e-5, 0.5)
+    ax2.set_xlim(-10, 1250)
+    pl.legend(loc='best')
     pl.tight_layout()
 
     if savename is not None:

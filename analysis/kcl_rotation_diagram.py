@@ -274,6 +274,9 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
             marker='o',
             max_uplims='half',
             label='',
+            axis=None,
+            labeltemonly=False,
+            logy=True,
            ):
     """
     Fit the Boltzmann diagram
@@ -372,28 +375,34 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
 
     if plot:
         import pylab as pl
-        L, = pl.plot(eupper, np.log10(nupperoverg_tofit), marker=marker,
+        ax = pl.gca() if axis is None else axis
+        yplot = np.log10(nupperoverg_tofit) if logy else nupperoverg_tofit
+        L, = ax.plot(eupper, yplot, marker=marker,
                      color=color, markeredgecolor='none', alpha=0.5,
                      linestyle='none',
                      #markersize=2,
                     )
         if uplims is not None:
-            L, = pl.plot(eupper[upperlim_mask],
-                         np.log10(uplims)[upperlim_mask], 'bv', alpha=0.2,
+            yupplims = np.log10(uplims) if logy else uplims 
+            L, = ax.plot(eupper[upperlim_mask],
+                         yuplims[upperlim_mask], 'bv', alpha=0.2,
                          markersize=2)
-            #L, = pl.plot(eupper[upperlim_mask],
+            #L, = ax.plot(eupper[upperlim_mask],
             #             np.log10(nupperoverg)[upperlim_mask], 'bv', alpha=0.2)
         if errors is not None:
-            yerr = np.array([np.log10(nupperoverg_tofit)-np.log10(nupperoverg_tofit-errors),
-                             np.log10(nupperoverg_tofit+errors)-np.log10(nupperoverg_tofit)])
+            if logy:
+                yerr = np.array([np.log10(nupperoverg_tofit)-np.log10(nupperoverg_tofit-errors),
+                                 np.log10(nupperoverg_tofit+errors)-np.log10(nupperoverg_tofit)])
+            else:
+                yerr = errors
             # if lower limit is nan, set to zero
             yerr[0,:] = np.nan_to_num(yerr[0,:])
             if np.any(np.isnan(yerr[1,:])):
                 #raise ValueError("*** Some upper limits are NAN")
                 print(ValueError("*** Some upper limits are NAN"))
             # use 'good' to exclude plotting errorbars for upper limits
-            pl.errorbar(eupper.value[good],
-                        np.log10(nupperoverg_tofit)[good],
+            ax.errorbar(eupper.value[good],
+                        yplot[good],
                         yerr=yerr[:,good],
                         linestyle='none',
                         linewidth=0.5,
@@ -403,18 +412,27 @@ def fit_tex(eupper, nupperoverg, verbose=False, plot=False, uplims=None,
         xax = np.array([0, eupper.max().value+500])
         line = (xax*(-1/result.tem.value) +
                 result.logcolumn.value)
-        pl.plot(xax, np.log10(np.exp(line)), '--',
+        if labeltemonly:
+            labeltext = '{2}$T={0:0.1f}$'.format(tex, np.log10(Ntot.value), label)
+        else:
+            labeltext = '{2}$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value), label)
+
+        if logy:
+            pline = np.log10(np.exp(line))
+        else:
+            pline = np.exp(line)
+        ax.plot(xax, pline, '--',
                 color=color,
                 alpha=0.6,
                 linewidth=1.0,
-                label='{2}$T={0:0.1f}$ $\log(N)={1:0.1f}$'.format(tex, np.log10(Ntot.value), label))
-        pl.ylabel("log N$_u$/g (cm$^{-2}$)")
-        pl.xlabel("E$_u$ (K)")
+                label=labeltext)
+        ax.set_ylabel("log N$_u$/g (cm$^{-2}$)")
+        ax.set_xlabel("E$_u$ (K)")
 
         if (uplims is not None) and ((errors is None) or replace_errors_with_uplims):
             # if errors are specified, their errorbars will be better
             # representations of what's actually being fit
-            pl.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
+            ax.plot(eupper, np.log10(uplims), marker='_', alpha=0.5,
                     linestyle='none', color='k')
 
     return Ntot, tex, result.tem, result.logcolumn

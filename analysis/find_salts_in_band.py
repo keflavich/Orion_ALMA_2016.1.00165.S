@@ -1,6 +1,7 @@
 import os
 import json
 import pyspeckit
+from spectral_cube import SpectralCube
 
 from astropy import units as u
 from astropy.utils.console import ProgressBar
@@ -30,6 +31,29 @@ for spw in (0,1,2,3):
                                                      spw,
                                                      float(row['Aij']))
 
+hirota = {'band8_438G': (0,1,2,3),
+          'band10_850G': (0,1,3),
+          'band8_495G': (0,1,2),
+          'band7_330G': (0,1,2,3)}
+
+for band in hirota:
+    for spw in hirota[band]:
+
+        fn = f'/orange/adamginsburg/salt/hirota/ALMA-SourceI/{band}_spw{spw}-subim.FITS'
+        cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
+        xmin, xmax = cube.spectral_extrema
+
+        for tbl in ProgressBar(salt_tables):
+            tbl = tbl[(tbl['Freq'] > xmin.value) &
+                      (tbl['Freq'] < xmax.value)]
+            for row in ProgressBar(tbl):
+                if (row['Freq'] < xmax.value) & (row['Freq'] > xmin.value):
+                    salts_in_band[row['Species']] = (float(row['Freq']),
+                                                     float(row['E_U']),
+                                                     band,
+                                                     spw,
+                                                     float(row['Aij']))
+
 
 with open('salts_in_band.json', 'w') as fh:
     json.dump(salts_in_band, fh)
@@ -49,8 +73,9 @@ if not os.path.exists(salttablepath):
 else:
     tbl_ = Table.read(salttablepath, format='ascii.ipac')
     new_flagcolumn = [tbl_[tbl_['Species'] == row['Species']]['Flag'][0]
-                      for row in tbl
                       if any(tbl_['Species'] == row['Species'])
+                      else '--'
+                      for row in tbl
                      ]
     tbl.remove_column('Flag')
     tbl.add_column(Column(name='Flag', data=new_flagcolumn))
