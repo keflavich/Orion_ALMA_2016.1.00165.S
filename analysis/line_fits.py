@@ -81,6 +81,7 @@ for spw in (0,1,2,3):
         else:
             jtok = cube.beam.jtok(cube.spectral_axis).mean()
 
+        linenames, linefreqs = [],[]
         for cen, vel, cname in ((topright, trv, 'topright'), (bottomleft, blv, 'bottomleft')): 
 
             xx,yy = map(int, cube.wcs.celestial.world_to_pixel(cen))
@@ -96,7 +97,6 @@ for spw in (0,1,2,3):
             if doplot:
                 sp.plotter(figure=pl.figure(1, figsize=(16,6)), clear=True)
 
-            linenames, linefreqs = [],[]
             #for linename, freq in lines.disk_lines.items():
             for row in detection_table:
 
@@ -240,7 +240,7 @@ for spw in (0,1,2,3):
 
                 sp.plotter.savefig(paths.fpath(f'spectral_fits/SrcI_{band}_{spw}_{cname}_fits.png'))
 
-linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
+#linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
 def makecol(colname, unit=None, linefits=linefits, parname=None, error=False, linenames=linenames):
     if parname is not None:
         if error:
@@ -268,19 +268,19 @@ eamplsK = table.Column(name='Fitted Amplitude error K', data=makecol('pars', par
 integrated = table.Column(name='Integrated Intensity', data=amplsK.quantity*vwidths.quantity*np.sqrt(2*np.pi))
 eintegrated = table.Column(name='Integrated Intensity error',
     data=((amplsK.quantity**2*evwidths.quantity**2) + (vwidths.quantity**2*eamplsK.quantity**2))**0.5)
-jtok = table.Column(name='Jy/K', data=makecol('jtok', unit=u.Jy/u.K))
-eu = table.Column(name='EU_K', data=makecol('EU_K', unit=u.Jy/u.K))
+jtok = table.Column(name='Jy/K', data=makecol('jtok', unit=u.K)) # jtok is in K...
+eu = table.Column(name='EU_K', data=makecol('EU_K', unit=u.K))
 species = table.Column(name='Species', data=makecol('species'))
-qn = table.Column(name='QNs', data=makecol('qns'))
+qn = table.Column(name='QNs', data=makecol('qn'))
 deg = table.Column(name='deg', data=makecol('deg'))
 Aij = table.Column(name='Aij', data=makecol('aul'))
 flag = table.Column(name='Flag', data=makecol('flag'))
 corner = table.Column(name='Corner', data=makecol('corner'))
 
 vre = re.compile('v=([0-9]+)')
-vstate = [int(vre.search(ss).groups()[0]) for ss in species]
+vstate = [int(vre.search(ss).groups()[0]) if ss else '????' for ss in species]
 jre = re.compile('J=([0-9]+)-([0-9]+)')
-Ju,Jl = zip(*[map(int, jre.search(ss).groups()) for ss in species])
+Ju,Jl = zip(*[map(int, jre.search(ss).groups()) if ss else '????' for ss in species])
 qnv = (Column(name='v', data=vstate))
 qnju = (Column(name='J$_u$', data=Ju))
 qnjl = (Column(name='J$_l$', data=Jl))
