@@ -240,8 +240,7 @@ for spw in (0,1,2,3):
 
                 sp.plotter.savefig(paths.fpath(f'spectral_fits/SrcI_{band}_{spw}_{cname}_fits.png'))
 
-#linenames = table.Column(name='Line Name', data=sorted(linefits.keys()))
-def makecol(colname, unit=None, linefits=linefits, parname=None, error=False, linenames=linenames):
+def makecol(colname, unit=None, linefits=linefits, parname=None, error=False, linenames=sorted(linefits.keys())):
     if parname is not None:
         if error:
             return u.Quantity([linefits[ln][cname][colname][parname].error
@@ -276,6 +275,7 @@ deg = table.Column(name='deg', data=makecol('deg'))
 Aij = table.Column(name='Aij', data=makecol('aul'))
 flag = table.Column(name='Flag', data=makecol('flag'))
 corner = table.Column(name='Corner', data=makecol('corner'))
+linenames = table.Column(name='Line Name', data=[x for x in linefits.keys() for cname in linefits[x]])
 
 vre = re.compile('v=([0-9]+)')
 vstate = [int(vre.search(ss).groups()[0]) if ss else '????' for ss in species]

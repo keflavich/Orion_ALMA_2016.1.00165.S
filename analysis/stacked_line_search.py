@@ -61,11 +61,11 @@ for band in ('B3', 'B6', 'B7'):
 
             # load the cube
             try:
-                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.fits'
+                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.cb.K.fits'
                          .format(spw, band, robust, suffix))
                 fullcube = (SpectralCube.read(fn, use_dask=True))
             except FileNotFoundError:
-                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.fits'
+                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.cb.K.fits'
                          .format(spw, band, robust, suffix))
                 fullcube = (SpectralCube.read(fn, use_dask=True))
             print(fn,fullcube.spectral_extrema)
@@ -83,11 +83,12 @@ for band in ('B3', 'B6', 'B7'):
             # in your spectrum)
             fullcube = fullcube.with_mask(fullcube < 0.5*u.Jy/u.beam)
 
-            fullcube = fullcube.mask_out_bad_beams(0.1)
+            if False:
+                #shouldn't need this if we load the .cb.K files
+                fullcube = fullcube.mask_out_bad_beams(0.1)
 
-            cb = fullcube.beams.common_beam()
-            fullcube = fullcube.convolve_to(cb).to(u.K)
-
+                cb = fullcube.beams.common_beam()
+                fullcube = fullcube.convolve_to(cb).to(u.K)
 
 
             # reproject the velocity map into the cube's coordinate system
