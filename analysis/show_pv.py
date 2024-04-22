@@ -13,7 +13,7 @@ from constants import d_orion
 
 def show_pv(data, ww, origin=0*u.arcsec, vrange=[-20,20]*u.km/u.s,
             vcen=5*u.km/u.s, imvmin=0, imvmax=1, contour=False,
-            distance=d_orion,
+            distance=d_orion, aspect=None,
             xoffset_label=0.1*u.arcsec):
 
     if ww.wcs.cunit[1] == 'm/s':
@@ -106,7 +106,8 @@ def show_pv(data, ww, origin=0*u.arcsec, vrange=[-20,20]*u.km/u.s,
 
     # ax.set_aspect(4)
     #ax.set_aspect(2*data.shape[1]/data.shape[0])
-    aspect = 1*data.shape[1]/data.shape[0]
+    if aspect is None:
+        aspect = 1*data.shape[1]/data.shape[0]
     ax.set_aspect(aspect)
 
     #ax.xticks(rotation=45)

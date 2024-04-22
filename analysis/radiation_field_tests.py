@@ -33,6 +33,18 @@ def bgfunc(freq, disktem=150*u.K, diskdilution=1/2., startem=4000*u.K, stardilut
             dust_emissivity.blackbody.blackbody(nu=freq, temperature=startem) * stardilution +
             dust_emissivity.blackbody.blackbody(nu=freq, temperature=cmbtem) * cmbdilution)
 
+def bgfunc_mod(freq, disktem=150*u.K, diskdilution=1/2., startem=4000*u.K, stardilution=(100*u.R_sun)**2/(30*u.au)**2,
+           cmbtem=2.73*u.K, cmbdilution=1.0, beta=1.5, column=1e22*u.cm**-2, return_components=False,
+               outunit=(u.erg/u.s/u.cm**2/u.Hz/u.sr)):
+    components =  ((dust_emissivity.blackbody.modified_blackbody(nu=freq, beta=beta, temperature=disktem, column=column) * diskdilution).to(outunit),
+                   (dust_emissivity.blackbody.blackbody(nu=freq, temperature=startem) * stardilution).to(outunit),
+                   (dust_emissivity.blackbody.blackbody(nu=freq, temperature=cmbtem) * cmbdilution).to(outunit))
+    if return_components:
+        return components
+    else:
+        return sum(components)
+
+
 def bg_with_artificial(freq, rovib_range=rovib_range, gcen=29*u.um,
                        gwidth=1.0*u.um,
                        gamp=5e-8*rr.background_brightness.unit, **kwargs):
@@ -155,3 +167,46 @@ for band in (B3,B4,B6,B7,B8):
 
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field_withproposednewobs.pdf'))
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field_withproposednewobs.svg'))
+
+
+# June 8, 2022 version - discussion w/Ceccarelli about optically thin dust disk
+rr.background_brightness = bgfunc_mod(freq)
+rslt = (rr(density=1e8*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None))
+
+plotwl = np.logspace(0, 5, 1000)*u.um
+plotfreq = plotwl.to(u.GHz, u.spectral())
+rovib_range_plot = (plotwl>25*u.um) & (plotwl<45*u.um)
+plotbg = bgfunc_mod(plotfreq)
+
+fig7 = pl.figure(7, figsize=(10,8))
+fig7.clf()
+ax1 = pl.subplot(2,1,1)
+pl.loglog(plotwl, plotbg, linestyle='-', label='Model radiation field')
+pl.loglog(wl, rr.background_brightness, marker='.', linestyle='none')
+pl.xlabel("Wavelength [$\mu$m]")
+pl.ylabel("Background Brightness\n[{}]".format(rr.background_brightness.unit.to_string(format='latex')))
+pl.legend(loc='best')
+ax2 = pl.subplot(2,1,2)
+
+# introduce an arbitrary scaling value to obtain 'reasonable' column densities
+scaling = 1e12 * u.cm**-2
+
+pl.plot(rslt['upperstateenergy'].data, np.log10(rslt['upperlevelpop'].data * scaling.value), '.', label=None, alpha=0.15)
+
+#nacl = Vamdc.query_molecule('NaCl$')
+frqs, einsteinAij, degeneracies, EU, partfunc = get_molecular_parameters('NaCl, v=0-15', catalog='CDMS', fmin=85*u.GHz, fmax=360*u.GHz)
+
+fit_tex(u.Quantity(rslt[vone & obs]['upperstateenergy'], u.K), rslt[vone &
+                                                                    obs]['upperlevelpop']*scaling,
+        partition_func=partfunc,plot=True, min_nupper=1e-50, labeltemonly=True)
+fit_tex(u.Quantity(rslt[Jeight]['upperstateenergy'], u.K),
+        rslt[Jeight]['upperlevelpop']*scaling, partition_func=partfunc,plot=True,
+        min_nupper=1e-50, color='k', labeltemonly=True)
+pl.legend(loc='upper right')
+
+pl.xlabel("E$_U$ [K]")
+pl.ylabel("log upper state population")
+pl.ylim(6,11)
+pl.tight_layout()
+fig1.savefig(paths.fpath('simulated_populations_with_modbb_radiation_field.pdf'))
+fig1.savefig(paths.fpath('simulated_populations_with_modbb_radiation_field.svg'))

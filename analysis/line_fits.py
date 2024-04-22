@@ -497,43 +497,46 @@ def get_meas(x):
     except:
         return np.nan
 
-abund = {}
-for row in NaCltbl:
-    match = (Na37Cltbl['v'] == row['v']) & (Na37Cltbl['J$_u$'] == row['J$_u$']) & (Na37Cltbl['J$_l$'] == row['J$_l$'])
-    if match.any():
-        if match.sum() > 1:
-            raise ValueError
-        abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(Na37Cltbl[match]['Amplitude'][0])
-
-
 maskKCl = np.array([ln.startswith(salt_to_barton['KCl']) for ln in tbl['Line Name']])
 maskK37Cl = np.array([ln.startswith(salt_to_barton['K37Cl']) for ln in tbl['Line Name']])
 K37Cltbl = tbl[maskK37Cl]
 KCltbl = tbl[maskKCl]
-
-for row in KCltbl:
-    match = (K37Cltbl['v'] == row['v']) & (K37Cltbl['J$_u$'] == row['J$_u$']) & (K37Cltbl['J$_l$'] == row['J$_l$'])
-    if match.any():
-        if match.sum() > 1:
-            raise ValueError
-        abund[row['Line Name']] = get_meas(row['Amplitude']) / get_meas(K37Cltbl[match]['Amplitude'][0])
-
-print(abund)
-
-print("Measured 35/37Cl abundance = {0} +/- {1}".format(np.mean(list(abund.values())),
-                                                        np.std(list(abund.values()))))
 
 
 maskK41Cl = np.array([ln.startswith(salt_to_barton['41KCl']) for ln in tbl['Line Name']])
 K41Cltbl = tbl[maskK41Cl]
 KCltbl = tbl[maskKCl]
 
-for row in KCltbl:
-    match = (K41Cltbl['v'] == row['v']) & (K41Cltbl['J$_u$'] == row['J$_u$']) & (K41Cltbl['J$_l$'] == row['J$_l$'])
-    if match.any():
-        if match.sum() > 1:
-            raise ValueError
-        abund[row['Line Name']+"_41"] = get_meas(row['Amplitude']) / get_meas(K41Cltbl[match]['Amplitude'][0])
+for cname in ('bottomleft', 'topright'):
+    abund = {}
+    for row in NaCltbl:
+        match = (Na37Cltbl['v'] == row['v']) & (Na37Cltbl['J$_u$'] == row['J$_u$']) & (Na37Cltbl['J$_l$'] == row['J$_l$']) & (Na37Cltbl['Corner'] == cname) & (row['Corner'] == cname)
+        if match.any():
+            if match.sum() > 1:
+                raise ValueError
+            abund[(row['Line Name'], cname)] = get_meas(row['Amplitude']) / get_meas(Na37Cltbl[match]['Amplitude'][0])
+
+
+    for row in KCltbl:
+        match = (K37Cltbl['v'] == row['v']) & (K37Cltbl['J$_u$'] == row['J$_u$']) & (K37Cltbl['J$_l$'] == row['J$_l$']) & (K37Cltbl['Corner'] == cname) & (row['Corner'] == cname)
+        if match.any():
+            if match.sum() > 1:
+                raise ValueError
+            abund[(row['Line Name'], cname)] = get_meas(row['Amplitude']) / get_meas(K37Cltbl[match]['Amplitude'][0])
+
+
+    for row in KCltbl:
+        match = (K41Cltbl['v'] == row['v']) & (K41Cltbl['J$_u$'] == row['J$_u$']) & (K41Cltbl['J$_l$'] == row['J$_l$']) & (K41Cltbl['Corner'] == cname) & (row['Corner'] == cname)
+        if match.any():
+            if match.sum() > 1:
+                raise ValueError
+            abund[(row['Line Name']+"_41", cname)] = get_meas(row['Amplitude']) / get_meas(K41Cltbl[match]['Amplitude'][0])
+
+print(abund)
+
+print("Measured 35/37Cl abundance = {0} +/- {1}".format(np.mean(list(abund.values())),
+                                                        np.std(list(abund.values()))))
+
 
 
 
