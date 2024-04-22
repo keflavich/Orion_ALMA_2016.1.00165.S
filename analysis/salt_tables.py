@@ -14,12 +14,21 @@ nu_upper = 1000*u.GHz
 
 def mt(x):
     return minimize_table(x,
-                          columns=['Species', 'Chemical Name', 'Resolved QNs',
-                                   'Freq-GHz(rest frame,redshifted)',
-                                   'Meas Freq-GHz(rest frame,redshifted)',
-                                   'Log<sub>10</sub> (A<sub>ij</sub>)',
-                                   'E_U (K)',
-                                   'Upper State Degeneracy',
+                          columns=[#'Species',
+                                   'species_id',
+                                   #'Chemical Name',
+                                   'chemical_name',
+                                   #'Resolved QNs',
+                                   'resolved_QNs',
+                                   #'Freq-GHz(rest frame,redshifted)',
+                                   #'Meas Freq-GHz(rest frame,redshifted)',
+                                   'orderedfreq',
+                                   #'Log<sub>10</sub> (A<sub>ij</sub>)',
+                                   'aij',
+                                   # 'E_U (K)',
+                                   'upper_state_energy_K',
+                                   #'Upper State Degeneracy',
+                                   'upperStateDegen'
                                   ],)
 
 
