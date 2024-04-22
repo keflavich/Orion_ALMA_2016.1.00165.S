@@ -13,7 +13,7 @@ nu_lower = 80*u.GHz
 nu_upper = 1000*u.GHz
 
 def mt(x):
-    return minimize_table(x,
+    tb = minimize_table(x,
                           columns=[#'Species',
                                    'species_id',
                                    #'Chemical Name',
@@ -30,6 +30,9 @@ def mt(x):
                                    #'Upper State Degeneracy',
                                    'upperStateDegen'
                                   ],)
+    tb['EU_K'] = tb['upper_state_energy_K']
+    tb['log10_Aij'] = tb['aij']
+    return tb
 
 
 def load_barton(species):
@@ -225,7 +228,8 @@ for tbl in SO2, SO, S34O, MgCl, HCl, AlOH, AlO, NaCN, CaCl:
     tbl['EU_K'].unit = u.K
     tbl.add_column(Column(name='E_U', data=tbl["EU_K"], unit=u.K))
     tbl.add_column(Column(data=10**tbl['log10_Aij'], unit=u.s**-1, name='Aij'))
-    tbl.rename_column('Upper State Degeneracy', 'gu')
+    #tbl.rename_column('Upper State Degeneracy', 'gu')
+    tbl.rename_column('upperStateDegen', 'gu')
 
 if __name__ == "__main__":
 

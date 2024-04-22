@@ -4,7 +4,7 @@ import numpy as np
 import paths
 import dust_emissivity
 from astropy import units as u
-from astropy.table import Table
+from astropy.table import Table, Column
 from radex_modeling import chi2
 
 rr = pyradex.Radex(species='nacl', temperature=1000, density=1e8, column=4e13)
@@ -132,6 +132,11 @@ plotbg[rovib_range_plot] += 1e-9*rr.background_brightness.unit * np.exp(-(plotwl
 
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None))
 print(chi2(rslt))
+# Save the output
+rslt.write('radexplot_levelpops.ecsv', overwrite=True)
+Table(data=[Column(wl, name='Wavelength'),
+            Column(rr.background_brightness, name='BackgroundBrightness')]).write('radexplot_backgroundbrightness.ecsv', overwrite=True)
+
 vone = np.array([row['upperlevel'][0] == '1' for row in rslt], dtype='bool')
 vzero = np.array([row['upperlevel'][0] == '0' for row in rslt], dtype='bool')
 vtwo = np.array([row['upperlevel'][0] == '2' for row in rslt], dtype='bool')

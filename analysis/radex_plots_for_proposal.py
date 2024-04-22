@@ -145,7 +145,10 @@ pl.tight_layout()
 #print(chi2(rr.get_table()))
 
 
-modfigdir = '/orange/adamginsburg/salt/figures/models'
+if os.path.exists('/orange'):
+    modfigdir = '/orange/adamginsburg/salt/figures/models'
+else:
+    modfigdir = '/Users/adam/work/orion/alma_lb/figures/models'
 if not os.path.exists(modfigdir):
     os.mkdir(modfigdir)
 

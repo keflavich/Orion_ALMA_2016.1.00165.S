@@ -9,7 +9,7 @@ elif 'rng9000' in socket.gethostname():
     imagingpath = os.path.join(root, 'imaging/')
 elif 'ufhpc' in socket.gethostname():
     root = '/orange/adamginsburg/orion/2016.1.00165.S'
-    imagingpath = os.path.join(root, 'imaging/')    
+    imagingpath = os.path.join(root, 'imaging/')
 else:
     root = os.path.expanduser('~/work/orion/alma_lb/')
     imagingpath = fullcubepath = '/Volumes/external/orion/'
