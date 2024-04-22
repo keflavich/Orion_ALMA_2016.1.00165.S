@@ -132,10 +132,6 @@ plotbg[rovib_range_plot] += 1e-9*rr.background_brightness.unit * np.exp(-(plotwl
 
 rslt = (rr(density=1e4*u.cm**-3, column=2e14*u.cm**-2, temperature=100*u.K, tbg=None))
 print(chi2(rslt))
-# Save the output
-rslt.write('radexplot_levelpops.ecsv', overwrite=True)
-Table(data=[Column(wl, name='Wavelength'),
-            Column(rr.background_brightness, name='BackgroundBrightness')]).write('radexplot_backgroundbrightness.ecsv', overwrite=True)
 
 vone = np.array([row['upperlevel'][0] == '1' for row in rslt], dtype='bool')
 vzero = np.array([row['upperlevel'][0] == '0' for row in rslt], dtype='bool')
@@ -159,6 +155,8 @@ pl.xlabel("E$_U$ [K]")
 pl.ylabel("Upper state population")
 pl.tight_layout()
 # MOVED to dust_obscuration pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
+# actually moved to radiation_field_tests?
+# Save the output
 
 
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=1000*u.K)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])

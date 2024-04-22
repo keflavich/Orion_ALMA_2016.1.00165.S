@@ -98,10 +98,6 @@ pl.ylabel("log upper state population")
 pl.tight_layout()
 pl.savefig(paths.fpath('simulated_populations_with_stellar_radiation_field.pdf'))
 
-# Save the output
-rslt.write('radexplot_levelpops.ecsv', overwrite=True)
-Table(data=[Column(wl, name='Wavelength'),
-            Column(rr.background_brightness, name='BackgroundBrightness')]).write('radexplot_backgroundbrightness.ecsv', overwrite=True)
 
 
 # the referee asked about tau

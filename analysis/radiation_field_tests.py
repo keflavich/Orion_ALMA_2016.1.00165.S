@@ -4,7 +4,7 @@ import numpy as np
 import paths
 import dust_emissivity
 from astropy import units as u
-from astropy.table import Table
+from astropy.table import Table, Column
 from kcl_rotation_diagram import fit_tex
 #from astroquery.vamdc import Vamdc
 from pyspeckit.spectrum.models.lte_molecule import get_molecular_parameters
@@ -108,6 +108,10 @@ pl.tight_layout()
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.pdf'))
 pl.savefig(paths.fpath('simulated_populations_with_wacky_radiation_field.svg'))
 
+rslt.write('radexplot_levelpops.ecsv', overwrite=True)
+Table(data=[Column(wl, name='Wavelength'),
+            Column(rr.background_brightness, name='BackgroundBrightness')]).write('radexplot_backgroundbrightness.ecsv', overwrite=True)
+
 # the referee asked about tau
 # blue = all
 # orange = observed
@@ -120,7 +124,7 @@ pl.ylabel("Optical Depth")
 # What about the observable T_B?
 # (note that RADEX is using the background-subtracted brightness in the T_B column, which isn't what we want)
 pl.figure(3, figsize=(10,8)).clf()
-T_B = (rr.source_brightness*u.sr).to(u.K, u.brightness_temperature(1*u.sr, rr.frequency))
+T_B = (rr.source_brightness*u.sr).to(u.K, u.brightness_temperature(rr.frequency, 1*u.sr, ))
 pl.plot(rslt['upperstateenergy'].data, T_B, '.')
 pl.plot(rslt['upperstateenergy'].data[obs], T_B[obs], '.')
 pl.xlabel("Upper state energy")
