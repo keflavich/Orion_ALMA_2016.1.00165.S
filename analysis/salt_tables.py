@@ -32,6 +32,7 @@ def mt(x):
                                   ],)
     tb['EU_K'] = tb['upper_state_energy_K']
     tb['log10_Aij'] = tb['aij']
+    tb['Freq'] = u.Quantity(tb['Freq'], u.MHz)
     return tb
 
 
@@ -64,13 +65,17 @@ def get_offset_model(species_diff_table):
 
 def match_splat_barton(splat, barton):
     closest_inds = []
-    for row in splat:
-        closest = np.argmin(np.abs(barton['Freq']-row['Freq']))
+    splat_freqs = splat['Freq'].quantity
+    for frq in splat_freqs:
+        assert np.min(np.abs(barton['Freq'].quantity - frq)) < 1*u.GHz
+        closest = np.argmin(np.abs(barton['Freq'].quantity - frq))
         closest_inds.append(closest)
 
     barton_ = barton[np.array(closest_inds)]
     result = table.hstack([splat, barton_])
-    result.add_column(table.Column(data=result['Freq_1'] - result['Freq_2'], name='Splat-Barton'))
+    diff = u.Quantity(result['Freq_1'].quantity - result['Freq_2'].quantity, u.GHz)
+    assert np.min(np.abs(diff)) < 1*u.GHz
+    result.add_column(table.Column(data=diff, name='Splat-Barton'))
     return result
 
 KCls = mt(Splatalogue.query_lines(min_frequency=nu_lower, max_frequency=nu_upper, chemical_name=' KCl', line_lists=['SLAIM']))
@@ -80,6 +85,8 @@ KCl_diff = match_splat_barton(KCls, KCl[KCl['vu']<4])
 KCl_offset_model = get_offset_model(KCl_diff)
 
 KCl['Freq'] = KCl['Freq'] + KCl_offset_model(KCl['vu'], KCl['Ju'])
+assert KCl['Freq'].quantity.min() > 5*u.GHz
+assert KCl['Freq'].quantity.min() < 10*u.GHz
 
 
 
@@ -224,12 +231,17 @@ salt_table_names = ['KCl', 'K37Cl', '41KCl', 'NaCl', 'Na37Cl', '41K37Cl']
 
 # fix table units
 for tbl in SO2, SO, S34O, MgCl, HCl, AlOH, AlO, NaCN, CaCl:
-    tbl['Freq'].unit = u.GHz
+    assert tbl['Freq'].quantity.min() > nu_lower
+    assert tbl['Freq'].quantity.max() < nu_upper
     tbl['EU_K'].unit = u.K
     tbl.add_column(Column(name='E_U', data=tbl["EU_K"], unit=u.K))
     tbl.add_column(Column(data=10**tbl['log10_Aij'], unit=u.s**-1, name='Aij'))
     #tbl.rename_column('Upper State Degeneracy', 'gu')
     tbl.rename_column('upperStateDegen', 'gu')
+
+for tbl in salt_tables:
+    assert tbl['Freq'].quantity.min() > 5*u.GHz
+    assert tbl['Freq'].quantity.max() < 100*u.THz
 
 if __name__ == "__main__":
 
