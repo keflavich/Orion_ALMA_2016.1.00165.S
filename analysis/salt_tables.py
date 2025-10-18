@@ -46,6 +46,7 @@ def load_barton(species):
 
 kcl_offset = (1+17*u.km/u.s/constants.c).decompose()
 nacl_offset = (1+3.*u.km/u.s/constants.c).decompose()
+# instead, calculate it below
 kcl_offset = 1
 nacl_offset = 1
 
