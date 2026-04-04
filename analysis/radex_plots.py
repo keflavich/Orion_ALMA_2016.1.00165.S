@@ -114,7 +114,7 @@ artificial_two = bb100_half_plus_cmb.copy()/4
 artificial_two[rovib_range] = 1e-10*rr.background_brightness.unit * (np.arange(1, rovib_range.sum()+1)/rovib_range.sum()*4 + 1)[::-1]
 rr.background_brightness = artificial_two
 
-def bgfunc(freq, disktem=100*u.K, diskdilution=1/5., startem=4000*u.K, stardilution=(100*u.R_sun)**2/(30*u.au)**2, 
+def bgfunc(freq, disktem=100*u.K, diskdilution=1/5., startem=4000*u.K, stardilution=(100*u.R_sun)**2/(30*u.au)**2,
            cmbtem=2.73*u.K, cmbdilution=1.0):
     return (dust_emissivity.blackbody.blackbody(nu=freq, temperature=disktem) * diskdilution +
             dust_emissivity.blackbody.blackbody(nu=freq, temperature=startem) * stardilution +
@@ -161,6 +161,22 @@ pl.tight_layout()
 
 print(rr(density=1e4*u.cm**-3, column=1e14*u.cm**-2, temperature=100*u.K, tbg=1000*u.K)[v0_76 | v1_76 | v2_76 | v3_76 | v10 | v21 | v32])
 print(chi2(rr.get_table()))
+
+print("2025-10-17: What are the optical depths in the vibrational lines?")
+pl.figure(figsize=(10,10))
+for density in (1e4,1e7)*u.cm**-3:
+    for column in (1e14, 1e17)*u.cm**-2:
+        for temperature in (100, 500)*u.K:
+            tbl = rr(density=density, column=column, temperature=temperature, tbg=300*u.K)
+            dv1 = np.array([np.abs(int(x[0]) - int(y[0])) == 1 for x,y in zip(tbl['upperlevel'], tbl['lowerlevel'])])
+            pl.clf()
+            pl.scatter(tbl['frequency'][dv1], tbl['tau'][dv1],  c=tbl['Tex'][dv1])
+            pl.xlabel("Frequency [GHz]")
+            pl.ylabel(r"$\tau$")
+            pl.title(f"N(NaCl) = {column.to_string(format='latex')}, T={temperature.to_string(format='latex')}, tbg=300 K, n={density.to_string(format='latex')}, dV=1 km/s")
+            cb = pl.colorbar()
+            cb.set_label("T$_{ex}$")
+            pl.savefig(paths.fpath(f'vibrational_optical_depth_N={np.log10(column.value):0.1f}_n={np.log10(density.value):0.1f}_tgas={temperature}.png'), bbox_inches='tight')
 
 
 if False:
