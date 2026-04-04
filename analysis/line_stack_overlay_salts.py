@@ -62,7 +62,10 @@ for fn in flist:
 
     basefn = os.path.split(fn)[-1]
 
-    sp_st.plotter(ymin=-0.0025, ymax=0.01)
+    if 'B6high' in fn:
+        sp_st.plotter(ymin=-0.005, ymax=0.02)
+    else:
+        sp_st.plotter(ymin=-0.0025, ymax=0.01)
     sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
                            label1_size=16,
                            auto_yloc_fraction=0.75)
@@ -73,7 +76,7 @@ for fn in flist:
         if in_band.any():
             sp_st.plotter.line_ids(detection_table['Species'][in_band],
                                    u.Quantity(detection_table['Frequency'][in_band], u.GHz),
-                                   velocity_offset=-vcen,
+                                   velocity_offset=0*u.km/u.s,
                                    label1_size=16,
                                    auto_yloc_fraction=0.75)
     for txt in sp_st.plotter.axis.texts:
