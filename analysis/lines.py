@@ -188,6 +188,10 @@ disk_lines = {'Si34S_13-12':229.5008677*u.GHz,
               'SiSv=1_13-12': 234.8129678*u.GHz, # again from Henrik
               'SiSv=0_13-12': 235.9613634*u.GHz, # again from Henrik
               #'U344.4': 344.4537*u.GHz,
+              'NaClv=2_12-11': 153.93311*u.GHz,
+              'NaClv=2_11-10': 141.1147600000000*u.GHz,
+              'NaClv=0_11-10': 143.23737100000002*u.GHz,
+              'NaClv=0_12-11': 156.248639*u.GHz,
              }
 
 outflow_lines = {'Si34S_13-12': 229.499086*u.GHz,

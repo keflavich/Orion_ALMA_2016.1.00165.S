@@ -47,19 +47,37 @@ if doplot:
     pl.figure(0).clf()
 
 
+stacked_inputs = []
 for spw in (0,1,2,3):
     for band in ('B3', 'B6', 'B7.lb'):
         fn = paths.dpath('stacked_spectra/OrionSourceI_{band}_spw{0}_robust0.5.fits'
                          .format(spw, band=band))
+        stacked_inputs.append((band, spw, fn))
+
+for band, spw in (('B4', 25), ('B4', 27), ('B4', 29), ('B4', 31), ('B4', 33),
+                  ('B6high', 25), ('B6high', 27), ('B6high', 29), ('B6high', 31)):
+    fn = paths.dpath('stacked_spectra/OrionSourceI_2025.1.00236.S_{band}_spw{spw}_K.fits'
+                     .format(band=band, spw=spw))
+    stacked_inputs.append((band, spw, fn))
+
+
+for band, spw, fn in stacked_inputs:
         sp = pyspeckit.Spectrum(fn)
 
         rms = stats.mad_std(sp.data)
         sp.error[:] = rms
         print(rms)
 
-        beams = fits.open(fn)[1]
-        beam_area = np.median(beams.data['BMAJ'] * beams.data['BMIN'] * np.pi *
-                              u.arcsec**2)
+        hdul = fits.open(fn)
+        if len(hdul) > 1 and hdul[1].data is not None and 'BMAJ' in hdul[1].data.names and 'BMIN' in hdul[1].data.names:
+            beam_area = np.median(hdul[1].data['BMAJ'] * hdul[1].data['BMIN'] * np.pi *
+                                  u.arcsec**2)
+        else:
+            hdr = hdul[0].header
+            if 'BMAJ' not in hdr or 'BMIN' not in hdr:
+                raise KeyError(f"Missing beam information in {fn}")
+            beam_area = (hdr['BMAJ'] * u.deg * hdr['BMIN'] * u.deg * np.pi).to(u.arcsec**2)
+        hdul.close()
         jtok = u.brightness_temperature(frequency=sp.xarr.mean(),
                                         beam_area=beam_area)
 
@@ -201,7 +219,7 @@ qnjl = (Column(name='J$_l$', data=Jl))
 
 tbl1 = table.Table([linenames, species, qn, qnv, qnju, qnjl, freqs, velos, evelos, vwidths, evwidths, ampls, eampls, amplsK, eamplsK, integrated, eintegrated, jtok, eu, deg, Aij, flag, ])
 
-tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width')
+tbl1.write(paths.tpath('fitted_stacked_lines.txt'), format='ascii.fixed_width', overwrite=True)
 
 
 
@@ -229,7 +247,7 @@ badmask |= ((tbl['Fitted Width error'] > tbl['Fitted Width']) |
            )
 
 
-tbl.write(paths.tpath('line_fits.txt'), format='ascii.fixed_width')
+tbl.write(paths.tpath('line_fits.txt'), format='ascii.fixed_width', overwrite=True)
 
 formats = {'Frequency': lambda x: "{0:0.5f}".format(x),
            'Fitted Width': lambda x: "-" if np.isnan(x) else "{0:0.1f}".format(x),

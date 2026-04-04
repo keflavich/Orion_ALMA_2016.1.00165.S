@@ -48,7 +48,10 @@ detection_table = detection_table[~nondetections]
 
 
 
-flist = [fn] if 'fn' in locals() else glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust0.5.fits'))
+flist = ([locals()['fn']] if 'fn' in locals()
+         else sorted(glob.glob(paths.dpath('stacked_spectra/OrionSourceI_*robust0.5*.fits')) +
+                     glob.glob(paths.dpath('stacked_spectra/OrionSourceI_2025.1.00236.S_B4_spw*_K.fits')) +
+                     glob.glob(paths.dpath('stacked_spectra/OrionSourceI_2025.1.00236.S_B6high_spw*_K.fits'))))
 for fn in flist:
     print(fn)
 
@@ -63,6 +66,16 @@ for fn in flist:
     sp_st.plotter.line_ids(linetexnames, linefreqs, velocity_offset=-vcen,
                            label1_size=16,
                            auto_yloc_fraction=0.75)
+    if len(sp_st.plotter.axis.texts) == 0:
+        # Fallback for bands not covered by lines.py IDs (e.g. new 2025 data).
+        in_band = ((detection_table['Frequency'] > sp_st.xarr.min().to(u.GHz).value) &
+                   (detection_table['Frequency'] < sp_st.xarr.max().to(u.GHz).value))
+        if in_band.any():
+            sp_st.plotter.line_ids(detection_table['Species'][in_band],
+                                   u.Quantity(detection_table['Frequency'][in_band], u.GHz),
+                                   velocity_offset=-vcen,
+                                   label1_size=16,
+                                   auto_yloc_fraction=0.75)
     for txt in sp_st.plotter.axis.texts:
         txt.set_backgroundcolor((1,1,1,0.9))
 
