@@ -55,6 +55,35 @@ for band in hirota:
                                                      float(row['Aij']))
 
 
+basedir = '/orange/adamginsburg/orion/'
+project_2025_1_00236 = [
+    ('2025.1.00236.S_X4da7_B4', 25, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw25.cube.I.selfcal.pbcor.fits'),
+    ('2025.1.00236.S_X4da7_B4', 27, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw27.cube.I.selfcal.pbcor.fits'),
+    ('2025.1.00236.S_X4da7_B4', 29, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw29.cube.I.selfcal.pbcor.fits'),
+    ('2025.1.00236.S_X4da7_B4', 31, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw31.cube.I.selfcal.pbcor.fits'),
+    ('2025.1.00236.S_X4da7_B4', 33, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw33.cube.I.selfcal.pbcor.fits'),
+    ('2025.1.00236.S_X4dab_B6', 25, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw25.cube.I.pbcor.fits'),
+    ('2025.1.00236.S_X4dab_B6', 27, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw27.cube.I.pbcor.fits'),
+    ('2025.1.00236.S_X4dab_B6', 29, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw29.cube.I.pbcor.fits'),
+    ('2025.1.00236.S_X4dab_B6', 31, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw31.cube.I.pbcor.fits'),
+]
+
+for band, spw, fn in project_2025_1_00236:
+    cube = SpectralCube.read(fn).with_spectral_unit(u.GHz)
+    xmin, xmax = cube.spectral_extrema
+
+    for tbl in ProgressBar(salt_tables):
+        tbl = tbl[(tbl['Freq'] > xmin.value) &
+                  (tbl['Freq'] < xmax.value)]
+        for row in ProgressBar(tbl):
+            if (row['Freq'] < xmax.value) & (row['Freq'] > xmin.value):
+                salts_in_band[row['Species']] = (float(row['Freq']),
+                                                 float(row['E_U']),
+                                                 band,
+                                                 spw,
+                                                 float(row['Aij']))
+
+
 with open('salts_in_band.json', 'w') as fh:
     json.dump(salts_in_band, fh)
 

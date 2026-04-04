@@ -24,6 +24,20 @@ import paths
 from paths import fcp
 
 
+basedir = '/orange/adamginsburg/orion'
+project_2025_1_00236 = [
+    ('B4', 25, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw25.cube.I.selfcal.pbcor.fits'),
+    ('B4', 27, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw27.cube.I.selfcal.pbcor.fits'),
+    ('B4', 29, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw29.cube.I.selfcal.pbcor.fits'),
+    ('B4', 31, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw31.cube.I.selfcal.pbcor.fits'),
+    ('B4', 33, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da5/group.uid___A001_X3833_X4da6/member.uid___A001_X3833_X4da7/product/member.uid___A001_X3833_X4da7.Orion_SrcI_sci.spw33.cube.I.selfcal.pbcor.fits'),
+    ('B6high', 25, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw25.cube.I.pbcor.fits'),
+    ('B6high', 27, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw27.cube.I.pbcor.fits'),
+    ('B6high', 29, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw29.cube.I.pbcor.fits'),
+    ('B6high', 31, f'{basedir}/2025.1.00236.S/2025.1.00236.S/science_goal.uid___A001_X3833_X4da9/group.uid___A001_X3833_X4daa/member.uid___A001_X3833_X4dab/product/member.uid___A001_X3833_X4dab.Orion_SrcI_sci.spw31.cube.I.pbcor.fits'),
+]
+
+
 # step 1: create a velocity map
 
 vmap_name = paths.dpath('disk_velocity_map.fits')
@@ -53,59 +67,71 @@ vmap = spectral_cube.lower_dimensional_structures.Projection.from_hdu(hdu)
 
 # step 2: stack
 
+cubes_to_process = []
+
 for band in ('B3', 'B6', 'B7'):
     for spw in (0,1,2,3):
         for robust in (-2, 0.5, 2):
 
             suffix = '.lb' if band == 'B7' else ''
 
-            # load the cube
-            try:
-                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.cb.K.fits'
-                         .format(spw, band, robust, suffix))
-                fullcube = (SpectralCube.read(fn, use_dask=True))
-            except FileNotFoundError:
-                fn = fcp('OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.cb.K.fits'
-                         .format(spw, band, robust, suffix))
-                fullcube = (SpectralCube.read(fn, use_dask=True))
-            print(fn,fullcube.spectral_extrema)
+            fn = None
+            templates = [
+                'OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000_medsub.image.pbcor.cb.K.fits',
+                'OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000_medsub.image.pbcor.cb.K.fits',
+                'OrionSourceI_only.{1}{3}.robust{2}.spw{0}.maskedclarkclean10000.image.pbcor.cb.K.fits',
+                'OrionSourceI_only.{1}{3}.robust{2}.spw{0}.clarkclean10000.image.pbcor.cb.K.fits',
+            ]
+            for template in templates:
+                candidate = fcp(template.format(spw, band, robust, suffix))
+                external_candidate = candidate.replace('/imaging/', '/external/')
+                if os.path.exists(candidate):
+                    fn = candidate
+                    break
+                if os.path.exists(external_candidate):
+                    fn = external_candidate
+                    break
+            if fn is None:
+                print(f"Skipping missing cube for band={band} spw={spw} robust={robust}")
+                continue
 
+            outname = 'OrionSourceI_{1}{3}_spw{0}_robust{2}'.format(spw, band, robust, suffix)
+            cubes_to_process.append((fn, outname))
 
-            # convert the cube to velocity units with an arbitrary reference point
-            # (this step assumes the cube is in frequency or wavelength; if the
-            # cube is not, it should be skipped)
-            fullcube = fullcube.with_spectral_unit(u.km/u.s,
-                                                   velocity_convention='radio',
-                                                   rest_value=fullcube.spectral_axis.mean())
+for band, spw, fn in project_2025_1_00236:
+    outname = 'OrionSourceI_2025.1.00236.S_{0}_spw{1}'.format(band, spw)
+    cubes_to_process.append((fn, outname))
 
-            # mask out super bright SiO masers; they break the FFT shifting tool
-            # (this step can be skipped if there's nothing anomalously bright
-            # in your spectrum)
-            fullcube = fullcube.with_mask(fullcube < 0.5*u.Jy/u.beam)
+for fn, outname in cubes_to_process:
+    fullcube = SpectralCube.read(fn, use_dask=True)
+    print(fn, fullcube.spectral_extrema)
 
-            if False:
-                #shouldn't need this if we load the .cb.K files
-                fullcube = fullcube.mask_out_bad_beams(0.1)
+    # convert the cube to velocity units with an arbitrary reference point
+    # (this step assumes the cube is in frequency or wavelength; if the
+    # cube is not, it should be skipped)
+    fullcube = fullcube.with_spectral_unit(u.km/u.s,
+                                           velocity_convention='radio',
+                                           rest_value=fullcube.spectral_axis.mean())
 
-                cb = fullcube.beams.common_beam()
-                fullcube = fullcube.convolve_to(cb).to(u.K)
+    # mask out super bright SiO masers; threshold depends on cube units
+    if fullcube.unit.is_equivalent(u.Jy/u.beam):
+        fullcube = fullcube.with_mask(fullcube < 0.5*u.Jy/u.beam)
+    elif fullcube.unit.is_equivalent(u.K):
+        fullcube = fullcube.with_mask(fullcube < 500*u.K)
 
+    # reproject the velocity map into the cube's coordinate system
+    vmap_proj,_ = reproject.reproject_interp(vmap.hdu,
+                                             fullcube.wcs.celestial,
+                                             shape_out=fullcube.shape[1:])
+    vmap_proj = u.Quantity(vmap_proj, u.km/u.s)
 
-            # reproject the velocity map into the cube's coordinate system
-            vmap_proj,_ = reproject.reproject_interp(vmap.hdu,
-                                                     fullcube.wcs.celestial,
-                                                     shape_out=fullcube.shape[1:])
-            vmap_proj = u.Quantity(vmap_proj, u.km/u.s)
+    # perform the stacking!
+    stack = spectral_cube.analysis_utilities.stack_spectra(fullcube, vmap_proj,
+                                                           v0=0.0*u.km/u.s)
+    fstack = stack.with_spectral_unit(u.GHz)
 
-            # perform the stacking!
-            stack = spectral_cube.analysis_utilities.stack_spectra(fullcube, vmap_proj,
-                                                                   v0=0.0*u.km/u.s)
-            fstack = stack.with_spectral_unit(u.GHz)
+    fstack.write(paths.dpath(f'stacked_spectra/{outname}_K.fits'),
+                 overwrite=True)
 
-            fstack.write(paths.dpath('stacked_spectra/OrionSourceI_{1}{3}_spw{0}_robust{2}_K.fits'
-                                     .format(spw, band, robust, suffix)),
-                         overwrite=True)
-
-            pl.clf()
-            fstack.quicklook(filename=paths.fpath('stacked_spectra/OrionSourceI_{1}{3}_spw{0}_robust{2}.pdf')
-                             .format(spw, band, robust, suffix))
+    pl.clf()
+    fstack.quicklook(filename=paths.fpath(f'stacked_spectra/{outname}.pdf'))
